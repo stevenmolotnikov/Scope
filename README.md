@@ -1,6 +1,6 @@
-# Perplex
+# TokenLens
 
-A token-level control tool for AI safety research that visualizes and analyzes the probability distribution of generated tokens.
+A ChatGPT-style interface with real-time token probability visualization for AI research and model analysis.
 
 ## Motivation
 
@@ -14,12 +14,12 @@ Rather than asking *"Is there something suspicious in this output?"*, we ask *"W
 
 ## Features
 
-- **Token-level probability calculation**: Compute per-token probabilities and ranks given a prompt and output
-- **Interactive web visualization**: Color-coded token display with probability/rank information
-- **Threshold-based flagging**: Identify tokens with low probability or high rank
-- **Multiple viewing modes**: Switch between probability-based and rank-based analysis
-- **Direct analysis**: Run new analyses through the web interface
-- **Model comparison**: Track which model was used for each analysis
+- **ChatGPT-style interface**: Interactive chat with streaming token generation
+- **Real-time token probabilities**: See probability distributions as tokens are generated
+- **Color-coded visualization**: Tokens colored from red (low probability) to green (high probability)
+- **Hover tooltips**: Detailed probability, rank, and top alternatives for each token
+- **Model selection**: Choose from multiple models (Llama, Gemma, etc.)
+- **Legacy mode**: Access original analysis tools at `/old` route
 
 ## Installation
 
@@ -39,19 +39,29 @@ python probability_monitor.py prompts/my_prompt.txt outputs/my_output.txt --mode
 
 This saves a JSON file to the `probabilities/` directory containing per-token probability and rank data.
 
-### Web Interface
+### Web Interface (ChatGPT-Style)
 
-Launch the interactive visualization tool:
+Launch the chat interface:
 
 ```bash
 python app.py
 ```
 
-Navigate to `http://localhost:5000` to:
+Navigate to `http://localhost:5001` to:
+- **Chat with models**: Send messages and see streaming responses with token probabilities
+- **Inspect tokens**: Hover over any token to see:
+  - Exact probability value
+  - Rank in the vocabulary
+  - Top 3 alternative tokens the model considered
+- **Model selection**: Switch between different models in the header
+- **Clear chat**: Start fresh conversations anytime
+
+### Legacy Interface
+
+The original analysis interface is still available at `http://localhost:5001/old`:
 - **Load File**: View existing probability analyses
 - **New Analysis**: Run direct analysis on prompt/output pairs
 - **Adjust thresholds**: Configure probability/rank thresholds for flagging tokens
-- **Inspect tokens**: Hover over tokens to see detailed probability information
 
 ### Output Format
 

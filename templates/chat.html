@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokenLens - Chat Interface</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-text">TokenLens</span>
+                </div>
+                <div class="model-selector">
+                    <select id="model-select">
+                        <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
+                        <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
+                        <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
+                    </select>
+                </div>
+                <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+            </div>
+        </header>
+
+        <!-- Messages Area -->
+        <div class="messages-container" id="messages-container">
+            <div class="welcome-message">
+                <h2>Welcome to TokenLens</h2>
+                <p>Chat with AI and see token probabilities in real-time</p>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea 
+                    id="user-input" 
+                    placeholder="Type your message..." 
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                ></textarea>
+                <button id="send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M2 10L18 2L10 18L8 11L2 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isGenerating = false;
+        let conversationHistory = [];
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function clearChat() {
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.innerHTML = `
+                <div class="welcome-message">
+                    <h2>Welcome to TokenLens</h2>
+                    <p>Chat with AI and see token probabilities in real-time</p>
+                </div>
+            `;
+            conversationHistory = [];
+        }
+
+        function sendMessage() {
+            if (isGenerating) return;
+            
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Clear input
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Remove welcome message if present
+            const welcomeMsg = document.querySelector('.welcome-message');
+            if (welcomeMsg) {
+                welcomeMsg.remove();
+            }
+            
+            // Add user message to history
+            conversationHistory.push({
+                role: 'user',
+                content: message
+            });
+            
+            // Display user message
+            addUserMessage(message);
+            
+            // Start generating assistant response
+            generateResponse();
+        }
+
+        function addUserMessage(content) {
+            const messagesContainer = document.getElementById('messages-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-text">${escapeHtml(content)}</div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function generateResponse() {
+            isGenerating = true;
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = true;
+            
+            const messagesContainer = document.getElementById('messages-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant-message';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-tokens" id="streaming-tokens"></div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            
+            const tokensContainer = document.getElementById('streaming-tokens');
+            const modelName = document.getElementById('model-select').value;
+            
+            let assistantResponse = '';
+            
+            try {
+                // Use fetch with streaming for POST requests
+                const response = await fetch('/stream', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages: conversationHistory,
+                        model: modelName
+                    })
+                });
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                while (true) {
+                    const {done, value} = await reader.read();
+                    if (done) break;
+                    
+                    // Decode the chunk
+                    const chunk = decoder.decode(value, {stream: true});
+                    
+                    // Parse SSE format (data: {...}\n\n)
+                    const lines = chunk.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const jsonStr = line.substring(6);
+                            try {
+                                const data = JSON.parse(jsonStr);
+                                
+                                if (data.type === 'token') {
+                                    assistantResponse += data.token;
+                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives);
+                                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                } else if (data.type === 'done') {
+                                    // Add assistant response to conversation history
+                                    conversationHistory.push({
+                                        role: 'assistant',
+                                        content: assistantResponse
+                                    });
+                                    isGenerating = false;
+                                    sendBtn.disabled = false;
+                                } else if (data.type === 'error') {
+                                    console.error('Error:', data.message);
+                                    tokensContainer.innerHTML += `<div class="error-message">Error: ${escapeHtml(data.message)}</div>`;
+                                    isGenerating = false;
+                                    sendBtn.disabled = false;
+                                }
+                            } catch (e) {
+                                // Skip invalid JSON
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                tokensContainer.innerHTML += `<div class="error-message">Connection error. Please try again.</div>`;
+                isGenerating = false;
+                sendBtn.disabled = false;
+            }
+        }
+
+        function addToken(container, token, probability, rank, vocabSize, topAlternatives) {
+            const tokenSpan = document.createElement('span');
+            tokenSpan.className = 'token';
+            
+            // Color based on probability
+            const color = getColorForProb(probability);
+            tokenSpan.style.backgroundColor = color;
+            
+            // Add classes for whitespace tokens (for styling) but display them as-is
+            if (token.includes('\n')) {
+                tokenSpan.classList.add('newline-token');
+            } else if (token === ' ' || /^\s+$/.test(token)) {
+                tokenSpan.classList.add('space-token');
+            } else if (token.includes('\t')) {
+                tokenSpan.classList.add('tab-token');
+            }
+            
+            // Display the actual token as-is
+            tokenSpan.textContent = token;
+            
+            // Create tooltip with escaped/readable whitespace
+            const tooltip = document.createElement('span');
+            tooltip.className = 'custom-tooltip';
+            
+            // For tooltip, show escaped version of whitespace
+            let displayTokenForTooltip = token
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r')
+                .replace(/\t/g, '\\t')
+                .replace(/ /g, '·');
+            
+            let tooltipHTML = `
+                <strong>Token:</strong> "${escapeHtml(displayTokenForTooltip)}"<br>
+                <strong>Probability:</strong> ${probability.toFixed(6)}<br>
+                <strong>Rank:</strong> ${rank} / ${vocabSize}
+            `;
+            
+            if (topAlternatives && topAlternatives.length > 0) {
+                tooltipHTML += '<br><br><strong>Top 3 Alternatives:</strong><ol class="alternatives-list">';
+                topAlternatives.forEach(alt => {
+                    // Also escape whitespace in alternatives
+                    let altDisplay = alt.token
+                        .replace(/\n/g, '\\n')
+                        .replace(/\r/g, '\\r')
+                        .replace(/\t/g, '\\t')
+                        .replace(/ /g, '·');
+                    tooltipHTML += `<li>${escapeHtml(altDisplay)}: ${alt.probability.toFixed(4)}</li>`;
+                });
+                tooltipHTML += '</ol>';
+            }
+            
+            tooltip.innerHTML = tooltipHTML;
+            tokenSpan.appendChild(tooltip);
+            
+            container.appendChild(tokenSpan);
+            
+            // Add line break elements for tokens containing newlines
+            // (since tokens have white-space: nowrap, newlines won't render without this)
+            if (token.includes('\n')) {
+                container.appendChild(document.createElement('br'));
+            }
+        }
+
+        function getColorForProb(probability) {
+            // Map probability to color: red (low) to green (high)
+            const hue = 120 * probability;
+            return `hsl(${hue}, 70%, 60%)`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('user-input');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+    </script>
+</body>
+</html>

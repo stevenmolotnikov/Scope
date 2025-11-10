@@ -1,10 +1,11 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, session
+from flask import Flask, render_template, url_for, request, redirect, flash, session, Response, stream_with_context
 import json
 import os
 import math
 import datetime
 import re
 import secrets
+import time
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -249,6 +250,18 @@ def load_model_and_tokenizer(model_name):
     
     print(f"Loading model: {model_name}")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    
+    # Ensure pad token is set (some models don't have it by default)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+        print(f"Set pad_token to eos_token: {tokenizer.eos_token}")
+    
+    # Print tokenizer info
+    print(f"Tokenizer: {tokenizer.__class__.__name__}")
+    print(f"Has chat template: {tokenizer.chat_template is not None}")
+    if tokenizer.chat_template:
+        print(f"Chat template preview: {tokenizer.chat_template[:100]}...")
+    
     model = AutoModelForCausalLM.from_pretrained(model_name)
     model.eval()
     
@@ -321,7 +334,143 @@ def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_
     return token_data, vocab_size
 
 
+def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=3):
+    """Generate tokens one at a time with probabilities using streaming.
+    
+    Args:
+        messages: List of message dicts with 'role' and 'content' keys
+                  e.g., [{"role": "user", "content": "Hello!"}]
+    """
+    import torch
+    
+    # Apply chat template to format messages correctly for the model
+    if hasattr(tokenizer, 'apply_chat_template') and tokenizer.chat_template is not None:
+        # Use the model's chat template
+        formatted_prompt = tokenizer.apply_chat_template(
+            messages, 
+            tokenize=False, 
+            add_generation_prompt=True
+        )
+        print(f"Using chat template. Formatted prompt: {formatted_prompt[:200]}...")
+        input_ids = tokenizer.encode(formatted_prompt, return_tensors="pt").to(device)
+    else:
+        # Fallback: just use the last user message
+        print("No chat template available, using raw message")
+        prompt_text = messages[-1]['content'] if messages else ""
+        input_ids = tokenizer.encode(prompt_text, return_tensors="pt").to(device)
+    
+    vocab_size = tokenizer.vocab_size
+    
+    # Generate tokens one by one
+    generated_ids = input_ids.clone()
+    
+    for _ in range(max_new_tokens):
+        with torch.no_grad():
+            outputs = model(generated_ids)
+            logits = outputs.logits[:, -1, :]  # Get logits for the last token
+            
+        # Calculate probabilities
+        probabilities = torch.softmax(logits, dim=-1)
+        
+        # Sample next token (greedy for now)
+        next_token_id = torch.argmax(probabilities, dim=-1).item()
+        
+        # Get probability and rank of selected token
+        token_prob = probabilities[0, next_token_id].item()
+        
+        # Calculate rank
+        sorted_indices = torch.argsort(probabilities[0], descending=True)
+        token_rank = (sorted_indices == next_token_id).nonzero(as_tuple=True)[0].item() + 1
+        
+        # Get top k alternatives
+        top_k_probs, top_k_indices = torch.topk(probabilities[0], top_k)
+        top_k_tokens = [
+            tokenizer.decode([idx.item()])
+            for idx in top_k_indices
+        ]
+        
+        top_alternatives = [
+            {"token": token, "probability": prob.item()}
+            for token, prob in zip(top_k_tokens, top_k_probs)
+        ]
+        
+        # Decode the token
+        token_str = tokenizer.decode([next_token_id])
+        
+        # Check for EOS tokens (including chat-specific ones)
+        eos_token_ids = [tokenizer.eos_token_id]
+        # Add additional EOS tokens for chat models (like Llama's <|eot_id|>)
+        if hasattr(tokenizer, 'convert_tokens_to_ids'):
+            additional_eos = ['<|eot_id|>', '<|end_of_text|>', '</s>']
+            for token in additional_eos:
+                try:
+                    token_id = tokenizer.convert_tokens_to_ids(token)
+                    if token_id is not None and token_id != tokenizer.unk_token_id:
+                        eos_token_ids.append(token_id)
+                except:
+                    pass
+        
+        if next_token_id in eos_token_ids:
+            print(f"EOS token detected: {token_str} (id: {next_token_id})")
+            break
+        
+        # Yield token data
+        yield {
+            "token": token_str,
+            "probability": token_prob,
+            "rank": token_rank,
+            "vocab_size": vocab_size,
+            "top_alternatives": top_alternatives
+        }
+        
+        # Append to generated sequence
+        generated_ids = torch.cat([generated_ids, torch.tensor([[next_token_id]], device=device)], dim=1)
+
+
 @app.route('/')
+def chat():
+    """Chat interface route."""
+    return render_template('chat.html')
+
+
+@app.route('/stream', methods=['POST'])
+def stream():
+    """SSE endpoint for streaming token generation."""
+    try:
+        data = request.get_json()
+        messages = data.get('messages', [])
+        model_name = data.get('model', DEFAULT_MODEL)
+        
+        if not messages:
+            return Response("data: " + json.dumps({"type": "error", "message": "No messages provided"}) + "\n\n", mimetype='text/event-stream')
+        
+        def generate():
+            try:
+                # Load model
+                model, tokenizer, device = load_model_and_tokenizer(model_name)
+                
+                # Generate tokens with streaming
+                for token_data in generate_streaming_tokens(model, tokenizer, device, messages):
+                    # Send token data as SSE
+                    yield f"data: {json.dumps({'type': 'token', **token_data})}\n\n"
+                
+                # Send completion signal
+                yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                
+            except Exception as e:
+                print(f"Error during streaming: {e}")
+                import traceback
+                traceback.print_exc()
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+        
+        return Response(stream_with_context(generate()), mimetype='text/event-stream')
+    
+    except Exception as e:
+        print(f"Error parsing request: {e}")
+        return Response("data: " + json.dumps({"type": "error", "message": f"Invalid request: {str(e)}"}) + "\n\n", mimetype='text/event-stream')
+
+
+@app.route('/old')
 def index():
     """Main route for token probability visualization."""
     # Parse request parameters
