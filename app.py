@@ -262,8 +262,26 @@ def load_model_and_tokenizer(model_name):
     if tokenizer.chat_template:
         print(f"Chat template preview: {tokenizer.chat_template[:100]}...")
     
+    # Print EOS token info for debugging
+    print(f"EOS token: {tokenizer.eos_token} (id: {tokenizer.eos_token_id})")
+    
+    # Check for multiple EOS tokens (newer tokenizers)
+    if hasattr(tokenizer, 'eos_token_ids'):
+        print(f"Multiple EOS token IDs: {tokenizer.eos_token_ids}")
+    
+    if hasattr(tokenizer, 'additional_special_tokens') and tokenizer.additional_special_tokens:
+        print(f"Additional special tokens (first 5): {tokenizer.additional_special_tokens[:5]}")
+    
     model = AutoModelForCausalLM.from_pretrained(model_name)
     model.eval()
+    
+    # Check model's generation config for EOS tokens
+    if hasattr(model, 'generation_config') and hasattr(model.generation_config, 'eos_token_id'):
+        gen_eos = model.generation_config.eos_token_id
+        if isinstance(gen_eos, list):
+            print(f"Model generation config EOS token IDs: {gen_eos}")
+        else:
+            print(f"Model generation config EOS token ID: {gen_eos}")
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f"Using device: {device}")
@@ -334,16 +352,18 @@ def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_
     return token_data, vocab_size
 
 
-def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=3):
+def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=3, prefill=None):
     """Generate tokens one at a time with probabilities using streaming.
     
     Args:
         messages: List of message dicts with 'role' and 'content' keys
                   e.g., [{"role": "user", "content": "Hello!"}]
+        prefill: Optional text to prepend to assistant's response
     """
     import torch
     
     # Apply chat template to format messages correctly for the model
+    formatted_prompt = None
     if hasattr(tokenizer, 'apply_chat_template') and tokenizer.chat_template is not None:
         # Use the model's chat template
         formatted_prompt = tokenizer.apply_chat_template(
@@ -357,9 +377,55 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         # Fallback: just use the last user message
         print("No chat template available, using raw message")
         prompt_text = messages[-1]['content'] if messages else ""
+        formatted_prompt = prompt_text
         input_ids = tokenizer.encode(prompt_text, return_tensors="pt").to(device)
     
+    # If prefill is provided, add it to the input
+    if prefill:
+        print(f"Prefilling with: {prefill[:100]}...")
+        prefill_ids = tokenizer.encode(prefill, return_tensors="pt", add_special_tokens=False).to(device)
+        input_ids = torch.cat([input_ids, prefill_ids], dim=1)
+    
     vocab_size = tokenizer.vocab_size
+    
+    # Return formatted prompt info along with metadata
+    yield {
+        'type': 'metadata',
+        'formatted_prompt': formatted_prompt,
+        'prompt_length': input_ids.size(1)
+    }
+    
+    # Get EOS token IDs directly from tokenizer configuration
+    eos_token_ids = set()
+    
+    # Standard EOS token
+    if tokenizer.eos_token_id is not None:
+        eos_token_ids.add(tokenizer.eos_token_id)
+    
+    # Check if tokenizer has multiple EOS tokens (newer HuggingFace feature)
+    if hasattr(tokenizer, 'eos_token_ids'):
+        eos_ids = tokenizer.eos_token_ids
+        if isinstance(eos_ids, (list, tuple)):
+            eos_token_ids.update(eos_ids)
+        elif eos_ids is not None:
+            eos_token_ids.add(eos_ids)
+    
+    # Get generation config stop token IDs (most reliable for chat models)
+    try:
+        if hasattr(model, 'generation_config') and hasattr(model.generation_config, 'eos_token_id'):
+            eos_from_config = model.generation_config.eos_token_id
+            if isinstance(eos_from_config, (list, tuple)):
+                eos_token_ids.update(eos_from_config)
+            elif eos_from_config is not None:
+                eos_token_ids.add(eos_from_config)
+    except:
+        pass
+    
+    print(f"EOS token IDs from tokenizer/model config: {sorted(eos_token_ids)}")
+    if eos_token_ids:
+        # Show what tokens these IDs correspond to
+        eos_tokens_decoded = [tokenizer.decode([tid]) for tid in eos_token_ids]
+        print(f"EOS tokens: {eos_tokens_decoded}")
     
     # Generate tokens one by one
     generated_ids = input_ids.clone()
@@ -397,24 +463,7 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         # Decode the token
         token_str = tokenizer.decode([next_token_id])
         
-        # Check for EOS tokens (including chat-specific ones)
-        eos_token_ids = [tokenizer.eos_token_id]
-        # Add additional EOS tokens for chat models (like Llama's <|eot_id|>)
-        if hasattr(tokenizer, 'convert_tokens_to_ids'):
-            additional_eos = ['<|eot_id|>', '<|end_of_text|>', '</s>']
-            for token in additional_eos:
-                try:
-                    token_id = tokenizer.convert_tokens_to_ids(token)
-                    if token_id is not None and token_id != tokenizer.unk_token_id:
-                        eos_token_ids.append(token_id)
-                except:
-                    pass
-        
-        if next_token_id in eos_token_ids:
-            print(f"EOS token detected: {token_str} (id: {next_token_id})")
-            break
-        
-        # Yield token data
+        # Yield token data (including special tokens so user can see them)
         yield {
             "token": token_str,
             "probability": token_prob,
@@ -422,6 +471,11 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
             "vocab_size": vocab_size,
             "top_alternatives": top_alternatives
         }
+        
+        # Check for EOS tokens AFTER yielding so they're visible
+        if next_token_id in eos_token_ids:
+            print(f"EOS token detected: {token_str} (id: {next_token_id})")
+            break
         
         # Append to generated sequence
         generated_ids = torch.cat([generated_ids, torch.tensor([[next_token_id]], device=device)], dim=1)
@@ -433,6 +487,110 @@ def chat():
     return render_template('chat.html')
 
 
+@app.route('/chat/<conversation_id>')
+def chat_with_id(conversation_id):
+    """Chat interface route with specific conversation ID."""
+    return render_template('chat.html', conversation_id=conversation_id)
+
+
+@app.route('/api/conversations', methods=['GET'])
+def get_conversations():
+    """Get all conversations."""
+    conversations_dir = 'conversations'
+    if not os.path.exists(conversations_dir):
+        return json.dumps({})
+    
+    conversations = {}
+    for filename in os.listdir(conversations_dir):
+        if filename.endswith('.json'):
+            try:
+                with open(os.path.join(conversations_dir, filename), 'r', encoding='utf-8') as f:
+                    conv = json.load(f)
+                    conversations[conv['id']] = conv
+            except:
+                pass
+    
+    return json.dumps(conversations)
+
+
+@app.route('/api/conversations/<conversation_id>', methods=['GET', 'PUT', 'DELETE'])
+def manage_conversation(conversation_id):
+    """Get, update, or delete a specific conversation."""
+    conversations_dir = 'conversations'
+    filepath = os.path.join(conversations_dir, f'{conversation_id}.json')
+    
+    if request.method == 'GET':
+        if os.path.exists(filepath):
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return json.dumps(json.load(f))
+        return json.dumps(None), 404
+    
+    elif request.method == 'PUT':
+        if not os.path.exists(conversations_dir):
+            os.makedirs(conversations_dir)
+            print(f"Created conversations directory: {conversations_dir}")
+        
+        conversation = request.get_json()
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(conversation, f, ensure_ascii=False, indent=2)
+        
+        print(f"Saved conversation: {conversation_id} - {conversation.get('title', 'Untitled')}")
+        return json.dumps({'success': True})
+    
+    elif request.method == 'DELETE':
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            print(f"Deleted conversation: {conversation_id}")
+            return json.dumps({'success': True})
+        return json.dumps({'success': False}), 404
+
+
+@app.route('/api/search-tokens', methods=['POST'])
+def search_tokens():
+    """Search for tokens in the tokenizer vocabulary."""
+    try:
+        data = request.get_json()
+        query = data.get('query', '').strip()
+        model_name = data.get('model', DEFAULT_MODEL)
+        
+        if not query:
+            return json.dumps([])
+        
+        # Load tokenizer
+        model, tokenizer, device = load_model_and_tokenizer(model_name)
+        
+        # Search for matching tokens
+        results = []
+        query_lower = query.lower()
+        
+        # Get vocabulary
+        vocab = tokenizer.get_vocab()
+        
+        # Find tokens that contain the query (case-insensitive)
+        matches = []
+        for token_str, token_id in vocab.items():
+            if query_lower in token_str.lower():
+                # Decode the token properly
+                decoded = tokenizer.decode([token_id])
+                matches.append({
+                    'token': decoded,
+                    'token_id': token_id,
+                    'raw': token_str
+                })
+                
+                if len(matches) >= 20:  # Limit results
+                    break
+        
+        # Sort by length (shorter matches first, likely more relevant)
+        matches.sort(key=lambda x: len(x['token']))
+        
+        return json.dumps(matches[:10])  # Return top 10
+        
+    except Exception as e:
+        print(f"Error searching tokens: {e}")
+        return json.dumps([]), 500
+
+
 @app.route('/stream', methods=['POST'])
 def stream():
     """SSE endpoint for streaming token generation."""
@@ -440,6 +598,7 @@ def stream():
         data = request.get_json()
         messages = data.get('messages', [])
         model_name = data.get('model', DEFAULT_MODEL)
+        prefill = data.get('prefill', None)
         
         if not messages:
             return Response("data: " + json.dumps({"type": "error", "message": "No messages provided"}) + "\n\n", mimetype='text/event-stream')
@@ -450,8 +609,14 @@ def stream():
                 model, tokenizer, device = load_model_and_tokenizer(model_name)
                 
                 # Generate tokens with streaming
-                for token_data in generate_streaming_tokens(model, tokenizer, device, messages):
-                    # Send token data as SSE
+                first_token = True
+                for token_data in generate_streaming_tokens(model, tokenizer, device, messages, prefill=prefill):
+                    # Mark first token so frontend can show special context
+                    if first_token:
+                        token_data['is_first_token'] = True
+                        first_token = False
+                    
+                    # Send token data as SSE immediately (no buffering)
                     yield f"data: {json.dumps({'type': 'token', **token_data})}\n\n"
                 
                 # Send completion signal
@@ -463,7 +628,11 @@ def stream():
                 traceback.print_exc()
                 yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
         
-        return Response(stream_with_context(generate()), mimetype='text/event-stream')
+        response = Response(stream_with_context(generate()), mimetype='text/event-stream')
+        # Disable buffering for immediate streaming
+        response.headers['Cache-Control'] = 'no-cache'
+        response.headers['X-Accel-Buffering'] = 'no'
+        return response
     
     except Exception as e:
         print(f"Error parsing request: {e}")
@@ -614,4 +783,5 @@ def analyze():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    # Enable threaded mode for better streaming performance
+    app.run(debug=True, port=5001, threaded=True)

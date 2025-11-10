@@ -20,16 +20,11 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual environments
+# Virtual Environment
 venv/
-ENV/
 env/
+ENV/
 .venv
-
-# Flask
-instance/
-.webassets-cache
-.env
 
 # IDE
 .vscode/
@@ -38,20 +33,18 @@ instance/
 *.swo
 *~
 
+# Flask
+instance/
+.webassets-cache
+
+# Conversations (user data)
+conversations/
+
+# Model cache
+models/
+checkpoints/
+
 # OS
 .DS_Store
 Thumbs.db
-
-# Model cache (HuggingFace models can be large)
-models/
-.cache/
-huggingface/
-
-# Output files
-outputs/*.txt
-probabilities/*.json
-!probabilities/.gitkeep
-
-# Logs
-*.log
 

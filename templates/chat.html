@@ -10,34 +10,115 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
 </head>
 <body>
-    <div class="chat-container">
-        <!-- Header -->
-        <header class="chat-header">
-            <div class="header-content">
-                <div class="logo">
-                    <span class="logo-text">TokenLens</span>
-                </div>
-                <div class="model-selector">
-                    <select id="model-select">
-                        <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
-                        <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
-                        <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
-                    </select>
-                </div>
-                <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" onclick="createNewChat()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    New Chat
+                </button>
             </div>
-        </header>
+            
+            <div class="conversations-list" id="conversations-list">
+                <!-- Conversations will be dynamically added here -->
+            </div>
+        </aside>
 
-        <!-- Messages Area -->
-        <div class="messages-container" id="messages-container">
-            <div class="welcome-message">
-                <h2>Welcome to TokenLens</h2>
-                <p>Chat with AI and see token probabilities in real-time</p>
+        <!-- Main Chat Area -->
+        <div class="chat-container">
+            <!-- Header -->
+            <header class="chat-header">
+                <div class="header-content">
+                    <button class="sidebar-toggle-main" onclick="toggleSidebar()">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 10H17M3 5H17M3 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <div class="logo">
+                        <span class="logo-text">TokenLens</span>
+                    </div>
+                    <div class="mode-selector">
+                        <select id="mode-select" onchange="switchMode()">
+                            <option value="default">Default</option>
+                            <option value="comparison">Model Comparison</option>
+                            <option value="prefill">Prefilling</option>
+                        </select>
+                    </div>
+                    <div class="model-selector">
+                        <select id="model-select" onchange="saveCurrentConversation()">
+                            <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
+                            <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
+                            <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
+                        </select>
+                    </div>
+                    <button class="clear-btn" onclick="deleteCurrentChat()">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 4H14M6 4V2H10V4M3 4V14H13V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Messages Area -->
+            <div class="messages-container" id="messages-container">
+                <div class="welcome-message">
+                    <h2>Welcome to TokenLens</h2>
+                    <p>Chat with AI and see token probabilities in real-time</p>
+                </div>
             </div>
-        </div>
+            
+            <!-- Comparison Mode Container (hidden by default) -->
+            <div class="comparison-container hidden" id="comparison-container">
+                <div class="comparison-panel">
+                    <div class="comparison-panel-header">
+                        <select id="model-select-1" class="comparison-model-select">
+                            <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
+                            <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
+                            <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
+                        </select>
+                    </div>
+                    <div class="comparison-messages" id="comparison-messages-1">
+                        <div class="welcome-message">
+                            <p>Model 1</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-divider"></div>
+                <div class="comparison-panel">
+                    <div class="comparison-panel-header">
+                        <select id="model-select-2" class="comparison-model-select">
+                            <option value="meta-llama/Llama-3.1-8B-Instruct" selected>Llama-3.1-8B-Instruct</option>
+                            <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
+                            <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
+                        </select>
+                    </div>
+                    <div class="comparison-messages" id="comparison-messages-2">
+                        <div class="welcome-message">
+                            <p>Model 2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         <!-- Input Area -->
         <div class="input-container">
+            <div class="prefill-input-wrapper hidden" id="prefill-wrapper">
+                <label for="prefill-input" class="prefill-label">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M7 2V12M2 7H12" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Prefill assistant response
+                </label>
+                <input 
+                    type="text" 
+                    id="prefill-input" 
+                    placeholder='e.g., "Sure, " or "I cannot..."'
+                    class="prefill-input"
+                />
+            </div>
             <div class="input-wrapper">
                 <textarea 
                     id="user-input" 
@@ -52,11 +133,50 @@
                 </button>
             </div>
         </div>
+        </div>
+    </div>
+
+    <!-- Token Context Menu -->
+    <div id="token-context-menu" class="context-menu hidden">
+        <div class="context-menu-section">
+            <div class="context-menu-header">Choose Alternative Token</div>
+            <div id="top-alternatives-list" class="alternatives-menu-list">
+                <!-- Top 3 alternatives will be inserted here -->
+            </div>
+        </div>
+        <div class="context-menu-section">
+            <input type="text" id="token-search-input" placeholder="Search or type token..." class="token-search-input">
+            <div id="token-search-results" class="token-search-results">
+                <!-- Search results will appear here -->
+            </div>
+        </div>
+        <div class="context-menu-section">
+            <button class="context-menu-btn primary" id="inject-regenerate-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 1V7M7 7H13M7 7L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Inject and Regenerate
+            </button>
+            <button class="context-menu-btn" id="branch-conversation-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 3V11M7 3L4 6M7 3L10 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Branch to New Chat
+            </button>
+        </div>
     </div>
 
     <script>
         let isGenerating = false;
         let conversationHistory = [];
+        let currentConversationId = null;
+        let conversations = {};
+        let selectedTokenElement = null;
+        let selectedAlternativeToken = null;
+        let currentMode = 'default';
+        
+        // Get conversation ID from URL if provided by backend
+        const urlConversationId = {{ ('"%s"' % conversation_id) if conversation_id else 'null' }};
 
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -74,6 +194,7 @@
                 </div>
             `;
             conversationHistory = [];
+            saveCurrentConversation();
         }
 
         function sendMessage() {
@@ -84,7 +205,14 @@
             
             if (!message) return;
             
-            // Clear input
+            // Get prefill text if in prefill mode
+            let prefillText = null;
+            if (currentMode === 'prefill') {
+                const prefillInput = document.getElementById('prefill-input');
+                prefillText = prefillInput.value.trim() || null;
+            }
+            
+            // Clear inputs
             input.value = '';
             input.style.height = 'auto';
             
@@ -100,14 +228,23 @@
                 content: message
             });
             
-            // Display user message
-            addUserMessage(message);
-            
-            // Start generating assistant response
-            generateResponse();
+            // Handle based on current mode
+            if (currentMode === 'comparison') {
+                // Display user message in both panels
+                addUserMessageToComparison(message);
+                
+                // Generate responses for both models
+                generateComparisonResponses(message, prefillText);
+            } else {
+                // Display user message
+                addUserMessage(message);
+                
+                // Start generating assistant response (with prefill if provided)
+                generateResponse(prefillText);
+            }
         }
 
-        function addUserMessage(content) {
+        function addUserMessage(content, scroll = true) {
             const messagesContainer = document.getElementById('messages-container');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message user-message';
@@ -117,10 +254,28 @@
                 </div>
             `;
             messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            if (scroll) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+        
+        function addUserMessageToComparison(content) {
+            // Add user message to both comparison panels
+            for (let i = 1; i <= 2; i++) {
+                const messagesContainer = document.getElementById(`comparison-messages-${i}`);
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message user-message';
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-text">${escapeHtml(content)}</div>
+                    </div>
+                `;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         }
 
-        async function generateResponse() {
+        async function generateResponse(prefillText = null) {
             isGenerating = true;
             const sendBtn = document.getElementById('send-btn');
             sendBtn.disabled = true;
@@ -138,19 +293,34 @@
             const tokensContainer = document.getElementById('streaming-tokens');
             const modelName = document.getElementById('model-select').value;
             
-            let assistantResponse = '';
+            let assistantResponse = prefillText || '';
+            let responseTokens = [];
+            
+            // If we have prefill text, display it first with special styling
+            if (prefillText) {
+                const prefillSpan = document.createElement('span');
+                prefillSpan.className = 'prefilled-text';
+                prefillSpan.textContent = prefillText;
+                tokensContainer.appendChild(prefillSpan);
+            }
             
             try {
                 // Use fetch with streaming for POST requests
+                const requestBody = {
+                    messages: conversationHistory,
+                    model: modelName
+                };
+                
+                if (prefillText) {
+                    requestBody.prefill = prefillText;
+                }
+                
                 const response = await fetch('/stream', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        messages: conversationHistory,
-                        model: modelName
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 const reader = response.body.getReader();
@@ -171,16 +341,37 @@
                             try {
                                 const data = JSON.parse(jsonStr);
                                 
-                                if (data.type === 'token') {
+                                if (data.type === 'metadata') {
+                                    // Show formatted prompt preview (collapsible)
+                                    const promptPreview = document.createElement('div');
+                                    promptPreview.className = 'prompt-preview';
+                                    promptPreview.innerHTML = `
+                                        <details>
+                                            <summary>Show formatted prompt (${data.prompt_length} tokens)</summary>
+                                            <pre>${escapeHtml(data.formatted_prompt)}</pre>
+                                        </details>
+                                    `;
+                                    tokensContainer.appendChild(promptPreview);
+                                } else if (data.type === 'token') {
                                     assistantResponse += data.token;
-                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives);
+                                    const tokenIdx = responseTokens.length;
+                                    responseTokens.push({
+                                        token: data.token,
+                                        probability: data.probability,
+                                        rank: data.rank,
+                                        vocab_size: data.vocab_size,
+                                        top_alternatives: data.top_alternatives
+                                    });
+                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx);
                                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                                 } else if (data.type === 'done') {
                                     // Add assistant response to conversation history
                                     conversationHistory.push({
                                         role: 'assistant',
-                                        content: assistantResponse
+                                        content: assistantResponse,
+                                        tokens: responseTokens
                                     });
+                                    saveCurrentConversation();
                                     isGenerating = false;
                                     sendBtn.disabled = false;
                                 } else if (data.type === 'error') {
@@ -203,43 +394,63 @@
             }
         }
 
-        function addToken(container, token, probability, rank, vocabSize, topAlternatives) {
+        function addToken(container, token, probability, rank, vocabSize, topAlternatives, tokenIndex) {
             const tokenSpan = document.createElement('span');
             tokenSpan.className = 'token';
+            
+            // Store token data for context menu
+            tokenSpan.dataset.token = token;
+            tokenSpan.dataset.probability = probability;
+            tokenSpan.dataset.rank = rank;
+            tokenSpan.dataset.vocabSize = vocabSize;
+            tokenSpan.dataset.topAlternatives = JSON.stringify(topAlternatives);
+            tokenSpan.dataset.tokenIndex = tokenIndex;
             
             // Color based on probability
             const color = getColorForProb(probability);
             tokenSpan.style.backgroundColor = color;
             
-            // Handle display - use actual token but make whitespace visible
+            // Handle special tokens - check for any whitespace, not just exact matches
             let displayToken = token;
-            let needsLineBreak = false;
+            let isWhitespace = false;
+            let isSpecialToken = false;
             
-            // For pure whitespace, we need to make it visible or it won't render
-            if (token.includes('\n')) {
-                // Keep the token as-is but add a line break after
+            // Check for special tokens (like <end_of_turn>, <|eot_id|>, etc.)
+            if (token.startsWith('<') && token.endsWith('>')) {
+                tokenSpan.classList.add('special-token');
+                isSpecialToken = true;
+            }
+            // Check if token contains newlines
+            else if (token.includes('\n')) {
+                // Count newlines
+                const newlineCount = (token.match(/\n/g) || []).length;
+                displayToken = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
                 tokenSpan.classList.add('newline-token');
-                needsLineBreak = true;
-                // For display, just show the non-newline parts or use a placeholder
-                if (token.trim().length === 0) {
-                    // Pure whitespace with newlines - use empty span with line break after
-                    displayToken = '';
-                }
-            } else if (token === ' ') {
-                // Single space - use non-breaking space to make it visible
-                displayToken = '\u00A0'; // Non-breaking space
+                isWhitespace = true;
+            } 
+            // Check if token is only spaces
+            else if (token === ' ' || /^\s+$/.test(token)) {
+                const spaceCount = token.length;
+                displayToken = spaceCount === 1 ? '·' : `·×${spaceCount}`;
                 tokenSpan.classList.add('space-token');
-            } else if (/^\s+$/.test(token)) {
-                // Multiple spaces or other whitespace - use non-breaking spaces
-                displayToken = '\u00A0'.repeat(token.length);
+                isWhitespace = true;
+            }
+            // Check for tab characters
+            else if (token.includes('\t')) {
+                const tabCount = (token.match(/\t/g) || []).length;
+                displayToken = tabCount === 1 ? '→' : `→×${tabCount}`;
                 tokenSpan.classList.add('space-token');
-            } else if (token.includes('\t')) {
-                displayToken = '\u00A0\u00A0\u00A0\u00A0'; // 4 non-breaking spaces for tab
-                tokenSpan.classList.add('tab-token');
+                isWhitespace = true;
             }
             
-            // Set the display token
+            // Use textContent to prevent any HTML rendering issues
             tokenSpan.textContent = displayToken;
+            
+            // Add click handler for context menu
+            tokenSpan.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showTokenContextMenu(tokenSpan, e);
+            });
             
             // Create tooltip with escaped/readable whitespace
             const tooltip = document.createElement('span');
@@ -275,11 +486,57 @@
             tooltip.innerHTML = tooltipHTML;
             tokenSpan.appendChild(tooltip);
             
+            // Add smart tooltip positioning on hover
+            tokenSpan.addEventListener('mouseenter', function() {
+                positionTooltip(tokenSpan, tooltip);
+            });
+            
             container.appendChild(tokenSpan);
             
-            // Add line break elements for tokens containing newlines
-            if (needsLineBreak) {
-                container.appendChild(document.createElement('br'));
+            // Add actual newline break if token contains newlines
+            if (token.includes('\n')) {
+                const newlineCount = (token.match(/\n/g) || []).length;
+                for (let i = 0; i < newlineCount; i++) {
+                    container.appendChild(document.createElement('br'));
+                }
+            }
+        }
+
+        function positionTooltip(tokenElement, tooltip) {
+            // Remove all positioning classes first
+            tooltip.classList.remove('tooltip-below', 'tooltip-left', 'tooltip-right');
+            
+            // Get positions and dimensions
+            const tokenRect = tokenElement.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            const margin = 10;
+            
+            // Check vertical positioning
+            // Default is above (bottom: calc(100% + 8px) in CSS)
+            // Calculate where tooltip would be if positioned above
+            const tooltipAboveTop = tokenRect.top - tooltipRect.height - 8;
+            
+            // If tooltip would go above viewport, position below instead
+            if (tooltipAboveTop < margin) {
+                tooltip.classList.add('tooltip-below');
+            }
+            
+            // Check horizontal positioning
+            // Default is centered (left: 50%, transform: translateX(-50%) in CSS)
+            // Calculate where tooltip edges would be if centered
+            const tooltipCenterLeft = tokenRect.left + (tokenRect.width / 2) - (tooltipRect.width / 2);
+            const tooltipCenterRight = tooltipCenterLeft + tooltipRect.width;
+            
+            // If tooltip would go off left edge, align to left of token
+            if (tooltipCenterLeft < margin) {
+                tooltip.classList.add('tooltip-left');
+            }
+            // If tooltip would go off right edge, align to right of token
+            else if (tooltipCenterRight > viewportWidth - margin) {
+                tooltip.classList.add('tooltip-right');
             }
         }
 
@@ -295,12 +552,822 @@
             return div.innerHTML;
         }
 
+        // ===== MODE SWITCHING =====
+        
+        function switchMode() {
+            const mode = document.getElementById('mode-select').value;
+            currentMode = mode;
+            
+            const appContainer = document.querySelector('.app-container');
+            const inputContainer = document.querySelector('.input-container');
+            const modelSelector = document.querySelector('.model-selector');
+            
+            // Remove all mode classes
+            appContainer.classList.remove('mode-default', 'mode-comparison', 'mode-prefill');
+            
+            // Apply new mode class
+            appContainer.classList.add(`mode-${mode}`);
+            
+            // Show/hide elements based on mode
+            if (mode === 'comparison') {
+                // Show dual model selectors and comparison layout
+                showComparisonMode();
+            } else {
+                hideComparisonMode();
+            }
+            
+            if (mode === 'prefill') {
+                // Show prefill input
+                showPrefillMode();
+            } else {
+                hidePrefillMode();
+            }
+        }
+        
+        function showPrefillMode() {
+            const prefillWrapper = document.getElementById('prefill-wrapper');
+            prefillWrapper.classList.remove('hidden');
+        }
+        
+        function hidePrefillMode() {
+            const prefillWrapper = document.getElementById('prefill-wrapper');
+            prefillWrapper.classList.add('hidden');
+            // Clear prefill input when hiding
+            document.getElementById('prefill-input').value = '';
+        }
+        
+        function showComparisonMode() {
+            const comparisonContainer = document.getElementById('comparison-container');
+            comparisonContainer.classList.remove('hidden');
+            
+            // Set default models if not already set
+            const model1Select = document.getElementById('model-select-1');
+            const model2Select = document.getElementById('model-select-2');
+            
+            if (!model1Select.value) {
+                model1Select.value = 'meta-llama/Llama-3.1-8B-Instruct';
+            }
+            if (!model2Select.value) {
+                model2Select.value = 'google/gemma-2-2b-it';
+            }
+        }
+        
+        function hideComparisonMode() {
+            const comparisonContainer = document.getElementById('comparison-container');
+            comparisonContainer.classList.add('hidden');
+        }
+        
+        async function generateComparisonResponses(message, prefillText = null) {
+            isGenerating = true;
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = true;
+            
+            const model1Name = document.getElementById('model-select-1').value;
+            const model2Name = document.getElementById('model-select-2').value;
+            
+            // Create message containers for both models
+            const model1Container = document.getElementById('comparison-messages-1');
+            const model2Container = document.getElementById('comparison-messages-2');
+            
+            // Add assistant message placeholders
+            const messageDiv1 = document.createElement('div');
+            messageDiv1.className = 'message assistant-message';
+            messageDiv1.innerHTML = `
+                <div class="message-content">
+                    <div class="message-tokens" id="streaming-tokens-1"></div>
+                </div>
+            `;
+            model1Container.appendChild(messageDiv1);
+            
+            const messageDiv2 = document.createElement('div');
+            messageDiv2.className = 'message assistant-message';
+            messageDiv2.innerHTML = `
+                <div class="message-content">
+                    <div class="message-tokens" id="streaming-tokens-2"></div>
+                </div>
+            `;
+            model2Container.appendChild(messageDiv2);
+            
+            // Generate from both models simultaneously
+            const response1Promise = generateForModel(model1Name, 'streaming-tokens-1', prefillText);
+            const response2Promise = generateForModel(model2Name, 'streaming-tokens-2', prefillText);
+            
+            // Wait for both to complete
+            const [response1, response2] = await Promise.all([response1Promise, response2Promise]);
+            
+            // Highlight divergences
+            highlightDivergences('streaming-tokens-1', 'streaming-tokens-2', response1.tokens, response2.tokens);
+            
+            // Save to conversation history (combine both responses)
+            conversationHistory.push({
+                role: 'assistant',
+                content: response1.text,
+                tokens: response1.tokens,
+                comparison: {
+                    model1: model1Name,
+                    model2: model2Name,
+                    response1: response1,
+                    response2: response2
+                }
+            });
+            
+            saveCurrentConversation();
+            isGenerating = false;
+            sendBtn.disabled = false;
+        }
+        
+        function highlightDivergences(container1Id, container2Id, tokens1, tokens2) {
+            const container1 = document.getElementById(container1Id);
+            const container2 = document.getElementById(container2Id);
+            
+            const tokenElements1 = container1.querySelectorAll('.token');
+            const tokenElements2 = container2.querySelectorAll('.token');
+            
+            const minLength = Math.min(tokens1.length, tokens2.length);
+            
+            // Find first divergence point
+            let firstDivergence = -1;
+            for (let i = 0; i < minLength; i++) {
+                if (tokens1[i].token !== tokens2[i].token) {
+                    firstDivergence = i;
+                    break;
+                }
+            }
+            
+            // Highlight divergent tokens
+            if (firstDivergence >= 0) {
+                // Mark all tokens from divergence point onward
+                for (let i = firstDivergence; i < tokenElements1.length; i++) {
+                    if (tokenElements1[i]) {
+                        tokenElements1[i].classList.add('divergent-token');
+                    }
+                }
+                for (let i = firstDivergence; i < tokenElements2.length; i++) {
+                    if (tokenElements2[i]) {
+                        tokenElements2[i].classList.add('divergent-token');
+                    }
+                }
+                
+                // Mark the first divergent token specially
+                if (tokenElements1[firstDivergence]) {
+                    tokenElements1[firstDivergence].classList.add('first-divergence');
+                }
+                if (tokenElements2[firstDivergence]) {
+                    tokenElements2[firstDivergence].classList.add('first-divergence');
+                }
+            }
+        }
+        
+        async function generateForModel(modelName, containerId, prefillText = null) {
+            const tokensContainer = document.getElementById(containerId);
+            let assistantResponse = prefillText || '';
+            let responseTokens = [];
+            
+            // Show prefilled text if provided
+            if (prefillText) {
+                const prefillSpan = document.createElement('span');
+                prefillSpan.className = 'prefilled-text';
+                prefillSpan.textContent = prefillText;
+                tokensContainer.appendChild(prefillSpan);
+            }
+            
+            try {
+                const requestBody = {
+                    messages: conversationHistory,
+                    model: modelName
+                };
+                
+                if (prefillText) {
+                    requestBody.prefill = prefillText;
+                }
+                
+                const response = await fetch('/stream', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                while (true) {
+                    const {done, value} = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, {stream: true});
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const jsonStr = line.substring(6);
+                            try {
+                                const data = JSON.parse(jsonStr);
+                                
+                                if (data.type === 'token') {
+                                    assistantResponse += data.token;
+                                    const tokenIdx = responseTokens.length;
+                                    responseTokens.push({
+                                        token: data.token,
+                                        probability: data.probability,
+                                        rank: data.rank,
+                                        vocab_size: data.vocab_size,
+                                        top_alternatives: data.top_alternatives
+                                    });
+                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx);
+                                } else if (data.type === 'done') {
+                                    break;
+                                }
+                            } catch (e) {
+                                // Skip invalid JSON
+                            }
+                        }
+                    }
+                }
+                
+                return {
+                    text: assistantResponse,
+                    tokens: responseTokens,
+                    model: modelName
+                };
+                
+            } catch (error) {
+                console.error('Generation failed:', error);
+                tokensContainer.innerHTML += `<div class="error-message">Error: ${error.message}</div>`;
+                return {
+                    text: '',
+                    tokens: [],
+                    model: modelName
+                };
+            }
+        }
+
+        // ===== TOKEN CONTEXT MENU =====
+        
+        function showTokenContextMenu(tokenElement, event) {
+            const menu = document.getElementById('token-context-menu');
+            const alternativesList = document.getElementById('top-alternatives-list');
+            const searchInput = document.getElementById('token-search-input');
+            const searchResults = document.getElementById('token-search-results');
+            
+            // Store reference to clicked token
+            selectedTokenElement = tokenElement;
+            selectedAlternativeToken = null;
+            
+            // Get token data
+            const topAlternatives = JSON.parse(tokenElement.dataset.topAlternatives);
+            
+            // Populate top 3 alternatives
+            alternativesList.innerHTML = '';
+            topAlternatives.forEach((alt, idx) => {
+                const altItem = document.createElement('div');
+                altItem.className = 'alternative-item';
+                altItem.onclick = () => selectAlternativeToken(alt.token, altItem);
+                
+                let displayToken = alt.token;
+                if (alt.token.includes('\n')) {
+                    displayToken = '↵';
+                } else if (alt.token === ' ') {
+                    displayToken = '·';
+                }
+                
+                altItem.innerHTML = `
+                    <span class="alt-token">${escapeHtml(displayToken)}</span>
+                    <span class="alt-prob">${(alt.probability * 100).toFixed(1)}%</span>
+                `;
+                alternativesList.appendChild(altItem);
+            });
+            
+            // Clear search
+            searchInput.value = '';
+            searchResults.innerHTML = '';
+            
+            // Position menu near the token
+            const rect = tokenElement.getBoundingClientRect();
+            menu.style.top = `${rect.bottom + 5}px`;
+            menu.style.left = `${rect.left}px`;
+            
+            // Show menu
+            menu.classList.remove('hidden');
+            
+            // Focus search input
+            searchInput.focus();
+        }
+        
+        function selectAlternativeToken(token, element) {
+            selectedAlternativeToken = token;
+            
+            // Update UI to show selection
+            document.querySelectorAll('.alternative-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+        
+        function hideContextMenu() {
+            const menu = document.getElementById('token-context-menu');
+            menu.classList.add('hidden');
+            selectedTokenElement = null;
+            selectedAlternativeToken = null;
+        }
+        
+        // Close context menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('token-context-menu');
+            if (!menu.contains(e.target) && !e.target.classList.contains('token')) {
+                hideContextMenu();
+            }
+        });
+        
+        // Token search with debouncing
+        let searchTimeout = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('token-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
+                    
+                    if (query.length < 1) {
+                        document.getElementById('token-search-results').innerHTML = '';
+                        return;
+                    }
+                    
+                    searchTimeout = setTimeout(() => searchTokens(query), 300);
+                });
+            }
+            
+            // Setup button handlers
+            const injectBtn = document.getElementById('inject-regenerate-btn');
+            if (injectBtn) {
+                injectBtn.onclick = () => injectAndRegenerate();
+            }
+            
+            const branchBtn = document.getElementById('branch-conversation-btn');
+            if (branchBtn) {
+                branchBtn.onclick = () => branchConversation();
+            }
+        });
+        
+        async function searchTokens(query) {
+            const modelName = document.getElementById('model-select').value;
+            const resultsDiv = document.getElementById('token-search-results');
+            
+            try {
+                const response = await fetch('/api/search-tokens', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query: query, model: modelName})
+                });
+                
+                const results = await response.json();
+                
+                resultsDiv.innerHTML = '';
+                results.forEach(result => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.onclick = () => selectAlternativeToken(result.token, item);
+                    
+                    let displayToken = result.token;
+                    if (result.token.includes('\n')) {
+                        displayToken = '↵';
+                    } else if (result.token === ' ') {
+                        displayToken = '·';
+                    }
+                    
+                    item.innerHTML = `<span class="alt-token">${escapeHtml(displayToken)}</span>`;
+                    resultsDiv.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Token search failed:', error);
+            }
+        }
+        
+        async function injectAndRegenerate() {
+            if (!selectedTokenElement || !selectedAlternativeToken) {
+                alert('Please select a token first');
+                return;
+            }
+            
+            const tokenIndex = parseInt(selectedTokenElement.dataset.tokenIndex);
+            
+            // Get the last assistant message
+            const lastAssistantIndex = conversationHistory.length - 1;
+            if (lastAssistantIndex < 0 || conversationHistory[lastAssistantIndex].role !== 'assistant') {
+                alert('Cannot inject: no assistant message found');
+                return;
+            }
+            
+            const lastMessage = conversationHistory[lastAssistantIndex];
+            
+            // Truncate the response up to the selected token and inject the alternative
+            const tokensBeforeInjection = lastMessage.tokens.slice(0, tokenIndex);
+            const textBeforeInjection = tokensBeforeInjection.map(t => t.token).join('');
+            const prefillText = textBeforeInjection + selectedAlternativeToken;
+            
+            // Remove the last assistant message
+            conversationHistory.pop();
+            
+            // Clear the visual message
+            const messagesContainer = document.getElementById('messages-container');
+            const lastMsgElement = messagesContainer.querySelector('.message.assistant-message:last-child');
+            if (lastMsgElement) {
+                lastMsgElement.remove();
+            }
+            
+            // Regenerate with the prefilled text
+            await generateResponse(prefillText);
+            
+            hideContextMenu();
+        }
+        
+        async function branchConversation() {
+            if (!selectedTokenElement || !selectedAlternativeToken) {
+                alert('Please select a token first');
+                return;
+            }
+            
+            // Create a new conversation as a branch
+            createNewChat();
+            
+            // TODO: Copy conversation up to this point and inject the alternative token
+            console.log('Branch conversation with token', selectedAlternativeToken);
+            
+            hideContextMenu();
+        }
+
+        // ===== CONVERSATION MANAGEMENT =====
+        
+        async function initializeConversations() {
+            // Load conversations from server
+            try {
+                const response = await fetch('/api/conversations');
+                const serverConvs = JSON.parse(await response.text());
+                conversations = serverConvs;
+            } catch (error) {
+                console.error('Failed to load conversations from server:', error);
+                // Fallback to localStorage
+                const saved = localStorage.getItem('tokenlens_conversations');
+                if (saved) {
+                    conversations = JSON.parse(saved);
+                }
+            }
+            
+            // Priority 1: Load conversation from URL if provided
+            if (urlConversationId && conversations[urlConversationId]) {
+                loadConversation(urlConversationId, false); // false = don't update URL
+                updateSidebar();
+                return;
+            }
+            
+            // Priority 2: Load active conversation from localStorage
+            currentConversationId = localStorage.getItem('tokenlens_active_conversation');
+            
+            // If no conversations exist, create a new one
+            if (Object.keys(conversations).length === 0) {
+                createNewChat();
+            } else {
+                // Load the active conversation or the most recent one
+                if (!currentConversationId || !conversations[currentConversationId]) {
+                    const conversationIds = Object.keys(conversations).sort((a, b) => 
+                        conversations[b].timestamp - conversations[a].timestamp
+                    );
+                    currentConversationId = conversationIds[0];
+                }
+                loadConversation(currentConversationId);
+            }
+            
+            updateSidebar();
+        }
+        
+        function createNewChat() {
+            // Save current conversation before creating new one
+            if (currentConversationId) {
+                saveCurrentConversation();
+            }
+            
+            // Create new conversation
+            const id = 'conv_' + Date.now();
+            conversations[id] = {
+                id: id,
+                title: 'New Chat',
+                timestamp: Date.now(),
+                messages: [],
+                model: document.getElementById('model-select').value
+            };
+            
+            currentConversationId = id;
+            conversationHistory = [];
+            
+            // Clear UI
+            clearChat();
+            
+            // Update URL
+            updateUrl(id);
+            
+            // Save and update sidebar
+            saveConversations();
+            updateSidebar();
+        }
+        
+        function saveCurrentConversation() {
+            if (!currentConversationId) return;
+            
+            const conversation = conversations[currentConversationId];
+            if (!conversation) return;
+            
+            conversation.messages = conversationHistory;
+            conversation.model = document.getElementById('model-select').value;
+            conversation.timestamp = Date.now();
+            
+            // Generate title from first user message
+            if (conversationHistory.length > 0 && conversation.title === 'New Chat') {
+                const firstUserMsg = conversationHistory.find(msg => msg.role === 'user');
+                if (firstUserMsg) {
+                    conversation.title = firstUserMsg.content.substring(0, 50);
+                    if (firstUserMsg.content.length > 50) {
+                        conversation.title += '...';
+                    }
+                }
+            }
+            
+            saveConversations();
+            updateSidebar();
+        }
+        
+        async function saveConversations() {
+            // Save to server
+            if (currentConversationId && conversations[currentConversationId]) {
+                try {
+                    await fetch(`/api/conversations/${currentConversationId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(conversations[currentConversationId])
+                    });
+                } catch (error) {
+                    console.error('Failed to save conversation to server:', error);
+                }
+            }
+            
+            // Also save to localStorage as backup
+            localStorage.setItem('tokenlens_conversations', JSON.stringify(conversations));
+            localStorage.setItem('tokenlens_active_conversation', currentConversationId);
+        }
+        
+        function loadConversation(id, updateUrlFlag = true) {
+            // Save current conversation first
+            if (currentConversationId && currentConversationId !== id) {
+                saveCurrentConversation();
+            }
+            
+            const conversation = conversations[id];
+            if (!conversation) return;
+            
+            currentConversationId = id;
+            conversationHistory = conversation.messages || [];
+            
+            // Set model
+            document.getElementById('model-select').value = conversation.model || 'meta-llama/Llama-3.1-8B-Instruct';
+            
+            // Render messages
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.innerHTML = '';
+            
+            if (conversationHistory.length === 0) {
+                messagesContainer.innerHTML = `
+                    <div class="welcome-message">
+                        <h2>Welcome to TokenLens</h2>
+                        <p>Chat with AI and see token probabilities in real-time</p>
+                    </div>
+                `;
+            } else {
+                conversationHistory.forEach(msg => {
+                    if (msg.role === 'user') {
+                        addUserMessage(msg.content, false);
+                    } else if (msg.role === 'assistant') {
+                        addAssistantMessage(msg.content, msg.tokens || []);
+                    }
+                });
+            }
+            
+            // Update URL if requested
+            if (updateUrlFlag) {
+                updateUrl(id);
+            }
+            
+            saveConversations();
+            updateSidebar();
+        }
+        
+        async function deleteCurrentChat() {
+            if (!currentConversationId) return;
+            
+            if (!confirm('Delete this conversation?')) return;
+            
+            const idToDelete = currentConversationId;
+            
+            // Delete from conversations object
+            delete conversations[idToDelete];
+            
+            // Delete from server
+            try {
+                await fetch(`/api/conversations/${idToDelete}`, {
+                    method: 'DELETE'
+                });
+            } catch (error) {
+                console.error('Failed to delete conversation from server:', error);
+            }
+            
+            // Load another conversation or create new one
+            const remainingIds = Object.keys(conversations);
+            if (remainingIds.length > 0) {
+                loadConversation(remainingIds[0]);
+            } else {
+                createNewChat();
+            }
+            
+            // Save remaining conversations
+            localStorage.setItem('tokenlens_conversations', JSON.stringify(conversations));
+            updateSidebar();
+        }
+        
+        function updateSidebar() {
+            const list = document.getElementById('conversations-list');
+            list.innerHTML = '';
+            
+            // Sort conversations by timestamp (newest first)
+            const sortedIds = Object.keys(conversations).sort((a, b) => 
+                conversations[b].timestamp - conversations[a].timestamp
+            );
+            
+            sortedIds.forEach(id => {
+                const conv = conversations[id];
+                const item = document.createElement('div');
+                item.className = 'conversation-item' + (id === currentConversationId ? ' active' : '');
+                item.onclick = () => loadConversation(id);
+                
+                const date = new Date(conv.timestamp);
+                const timeStr = formatDate(date);
+                
+                item.innerHTML = `
+                    <div class="conversation-content">
+                        <div class="conversation-title">${escapeHtml(conv.title)}</div>
+                        <div class="conversation-meta">${timeStr}</div>
+                    </div>
+                    <button class="copy-link-btn" onclick="copyConversationLink('${id}', event)" title="Copy link">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                            <path d="M5 7L7 5M4 3H3C2.44772 3 2 3.44772 2 4V9C2 9.55228 2.44772 10 3 10H8C8.55228 10 9 9.55228 9 9V8M7 2H10V5M10 2L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                `;
+                
+                list.appendChild(item);
+            });
+        }
+        
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+        
+        function updateUrl(conversationId) {
+            const newUrl = `/chat/${conversationId}`;
+            window.history.pushState({ conversationId: conversationId }, '', newUrl);
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            
+            // Save sidebar state
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('tokenlens_sidebar_collapsed', isCollapsed);
+        }
+        
+        function initializeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const savedState = localStorage.getItem('tokenlens_sidebar_collapsed');
+            
+            // If saved state exists and is 'true', collapse the sidebar
+            if (savedState === 'true') {
+                sidebar.classList.add('collapsed');
+            }
+        }
+        
+        function copyConversationLink(conversationId, event) {
+            event.stopPropagation(); // Prevent loading the conversation
+            
+            const url = `${window.location.origin}/chat/${conversationId}`;
+            navigator.clipboard.writeText(url).then(() => {
+                // Show temporary success message
+                const button = event.target.closest('button');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                button.style.color = 'var(--success)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.color = '';
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy link:', err);
+                alert('Failed to copy link');
+            });
+        }
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.conversationId) {
+                // Load the conversation without updating the URL (it's already updated by popstate)
+                loadConversation(event.state.conversationId, false);
+            } else {
+                // No state, redirect to home which will load default conversation
+                window.location.href = '/';
+            }
+        });
+        
+        function addAssistantMessage(content, tokens) {
+            const messagesContainer = document.getElementById('messages-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant-message';
+            
+            if (tokens && tokens.length > 0) {
+                // Render with token data
+                let tokensHTML = '';
+                tokens.forEach(tokenData => {
+                    const color = getColorForProb(tokenData.probability);
+                    let displayToken = tokenData.token;
+                    let tokenClass = 'token';
+                    
+                    // Check for special tokens
+                    if (tokenData.token.startsWith('<') && tokenData.token.endsWith('>')) {
+                        tokenClass += ' special-token';
+                    }
+                    // Check for whitespace
+                    else if (tokenData.token.includes('\n')) {
+                        const count = (tokenData.token.match(/\n/g) || []).length;
+                        displayToken = count === 1 ? '↵' : `↵×${count}`;
+                        tokenClass += ' newline-token';
+                    } else if (tokenData.token === ' ' || /^\s+$/.test(tokenData.token)) {
+                        const count = tokenData.token.length;
+                        displayToken = count === 1 ? '·' : `·×${count}`;
+                        tokenClass += ' space-token';
+                    }
+                    
+                    tokensHTML += `<span class="${tokenClass}" style="background-color: ${color};">${escapeHtml(displayToken)}</span>`;
+                    
+                    if (tokenData.token.includes('\n')) {
+                        tokensHTML += '<br>';
+                    }
+                });
+                
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-tokens">${tokensHTML}</div>
+                    </div>
+                `;
+            } else {
+                // Plain text rendering
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-tokens">${escapeHtml(content)}</div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
         // Auto-resize textarea
         const textarea = document.getElementById('user-input');
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 200) + 'px';
         });
+        
+        // Initialize on page load
+        initializeSidebar();
+        initializeConversations();
+        
+        // Set initial history state if we have a current conversation
+        if (currentConversationId) {
+            window.history.replaceState({ conversationId: currentConversationId }, '', window.location.pathname);
+        }
     </script>
 </body>
 </html>

@@ -54,7 +54,9 @@ Navigate to `http://localhost:5001` to:
   - Rank in the vocabulary
   - Top 3 alternative tokens the model considered
 - **Model selection**: Switch between different models in the header
-- **Clear chat**: Start fresh conversations anytime
+- **Conversation history**: All chats saved to `conversations/` directory
+- **Shareable links**: Each conversation has its own URL
+- **Clear chat**: Delete conversations anytime
 
 ### Legacy Interface
 
@@ -62,6 +64,29 @@ The original analysis interface is still available at `http://localhost:5001/old
 - **Load File**: View existing probability analyses
 - **New Analysis**: Run direct analysis on prompt/output pairs
 - **Adjust thresholds**: Configure probability/rank thresholds for flagging tokens
+
+### Conversation Storage
+
+Conversations are automatically saved to the `conversations/` directory as JSON files:
+
+```
+conversations/
+├── conv_1699999999.json
+├── conv_1700000000.json
+└── conv_1700000001.json
+```
+
+Each file contains:
+- Full message history (user and assistant)
+- Token probability data for each response
+- Model name and timestamp
+- Conversation title
+
+**Benefits:**
+- Survives browser cache clearing
+- Accessible from any browser/device
+- Easy to backup, share, or analyze
+- Each conversation has a unique URL: `http://localhost:5001/chat/conv_1699999999`
 
 ### Output Format
 
