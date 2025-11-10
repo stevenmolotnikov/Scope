@@ -207,7 +207,8 @@ body {
     position: relative;
     vertical-align: baseline;
     line-height: 1.5;
-    white-space: nowrap;
+    white-space: pre;
+    min-width: 4px;
 }
 
 .token:hover {
@@ -276,6 +277,8 @@ body {
     line-height: 1.5;
     display: inline-block;
     vertical-align: baseline;
+    min-width: 8px;
+    min-height: 20px;
 }
 
 .alternatives-list {

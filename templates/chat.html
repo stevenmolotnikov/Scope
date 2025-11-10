@@ -211,17 +211,35 @@
             const color = getColorForProb(probability);
             tokenSpan.style.backgroundColor = color;
             
-            // Add classes for whitespace tokens (for styling) but display them as-is
+            // Handle display - use actual token but make whitespace visible
+            let displayToken = token;
+            let needsLineBreak = false;
+            
+            // For pure whitespace, we need to make it visible or it won't render
             if (token.includes('\n')) {
+                // Keep the token as-is but add a line break after
                 tokenSpan.classList.add('newline-token');
-            } else if (token === ' ' || /^\s+$/.test(token)) {
+                needsLineBreak = true;
+                // For display, just show the non-newline parts or use a placeholder
+                if (token.trim().length === 0) {
+                    // Pure whitespace with newlines - use empty span with line break after
+                    displayToken = '';
+                }
+            } else if (token === ' ') {
+                // Single space - use non-breaking space to make it visible
+                displayToken = '\u00A0'; // Non-breaking space
+                tokenSpan.classList.add('space-token');
+            } else if (/^\s+$/.test(token)) {
+                // Multiple spaces or other whitespace - use non-breaking spaces
+                displayToken = '\u00A0'.repeat(token.length);
                 tokenSpan.classList.add('space-token');
             } else if (token.includes('\t')) {
+                displayToken = '\u00A0\u00A0\u00A0\u00A0'; // 4 non-breaking spaces for tab
                 tokenSpan.classList.add('tab-token');
             }
             
-            // Display the actual token as-is
-            tokenSpan.textContent = token;
+            // Set the display token
+            tokenSpan.textContent = displayToken;
             
             // Create tooltip with escaped/readable whitespace
             const tooltip = document.createElement('span');
@@ -260,8 +278,7 @@
             container.appendChild(tokenSpan);
             
             // Add line break elements for tokens containing newlines
-            // (since tokens have white-space: nowrap, newlines won't render without this)
-            if (token.includes('\n')) {
+            if (needsLineBreak) {
                 container.appendChild(document.createElement('br'));
             }
         }
