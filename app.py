@@ -352,13 +352,14 @@ def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_
     return token_data, vocab_size
 
 
-def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=3, prefill=None):
+def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=3, prefill=None, show_prompt_tokens=False):
     """Generate tokens one at a time with probabilities using streaming.
     
     Args:
         messages: List of message dicts with 'role' and 'content' keys
                   e.g., [{"role": "user", "content": "Hello!"}]
         prefill: Optional text to prepend to assistant's response
+        show_prompt_tokens: If True, yield prompt tokens (including special tokens) before generation
     """
     import torch
     
@@ -380,6 +381,9 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         formatted_prompt = prompt_text
         input_ids = tokenizer.encode(prompt_text, return_tensors="pt").to(device)
     
+    # Store original prompt length before prefill
+    original_prompt_length = input_ids.size(1)
+    
     # If prefill is provided, add it to the input
     if prefill:
         print(f"Prefilling with: {prefill[:100]}...")
@@ -388,12 +392,19 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
     
     vocab_size = tokenizer.vocab_size
     
-    # Return formatted prompt info along with metadata
-    yield {
-        'type': 'metadata',
-        'formatted_prompt': formatted_prompt,
-        'prompt_length': input_ids.size(1)
-    }
+    # If requested, yield prompt tokens (to show special tokens like <start_of_turn>)
+    if show_prompt_tokens:
+        prompt_ids_to_show = input_ids[0][:original_prompt_length]
+        for i, token_id in enumerate(prompt_ids_to_show):
+            token_str = tokenizer.decode([token_id.item()])
+            yield {
+                'token': token_str,
+                'probability': None,
+                'rank': None,
+                'vocab_size': vocab_size,
+                'top_alternatives': [],
+                'is_prompt_token': True
+            }
     
     # Get EOS token IDs directly from tokenizer configuration
     eos_token_ids = set()
@@ -553,6 +564,8 @@ def search_tokens():
         query = data.get('query', '').strip()
         model_name = data.get('model', DEFAULT_MODEL)
         
+        print(f"Token search request: query='{query}', model={model_name}")
+        
         if not query:
             return json.dumps([])
         
@@ -560,35 +573,146 @@ def search_tokens():
         model, tokenizer, device = load_model_and_tokenizer(model_name)
         
         # Search for matching tokens
-        results = []
         query_lower = query.lower()
         
         # Get vocabulary
         vocab = tokenizer.get_vocab()
+        print(f"Vocabulary size: {len(vocab)}")
         
         # Find tokens that contain the query (case-insensitive)
         matches = []
+        seen_tokens = set()  # Avoid duplicates
+        
         for token_str, token_id in vocab.items():
-            if query_lower in token_str.lower():
-                # Decode the token properly
-                decoded = tokenizer.decode([token_id])
+            # Decode the token properly
+            decoded = tokenizer.decode([token_id])
+            
+            # Skip if we've seen this decoded token already
+            if decoded in seen_tokens:
+                continue
+            
+            # Search in both raw and decoded token
+            if query_lower in token_str.lower() or query_lower in decoded.lower():
                 matches.append({
                     'token': decoded,
                     'token_id': token_id,
                     'raw': token_str
                 })
+                seen_tokens.add(decoded)
                 
-                if len(matches) >= 20:  # Limit results
+                if len(matches) >= 30:  # Get more results initially
                     break
         
-        # Sort by length (shorter matches first, likely more relevant)
-        matches.sort(key=lambda x: len(x['token']))
+        # Sort by relevance:
+        # 1. Exact matches first
+        # 2. Starts with query
+        # 3. Then by length (shorter = more relevant)
+        def sort_key(x):
+            token_lower = x['token'].lower()
+            if token_lower == query_lower:
+                return (0, len(x['token']))
+            elif token_lower.startswith(query_lower):
+                return (1, len(x['token']))
+            else:
+                return (2, len(x['token']))
         
-        return json.dumps(matches[:10])  # Return top 10
+        matches.sort(key=sort_key)
+        
+        print(f"Found {len(matches)} matches for '{query}', returning top 15")
+        
+        response_data = matches[:15]  # Return top 15
+        return Response(json.dumps(response_data), mimetype='application/json')
         
     except Exception as e:
         print(f"Error searching tokens: {e}")
-        return json.dumps([]), 500
+        import traceback
+        traceback.print_exc()
+        return Response(json.dumps([]), mimetype='application/json', status=500)
+
+
+@app.route('/api/calculate-logprobs', methods=['POST'])
+def calculate_logprobs():
+    """Calculate logprobs for user input text."""
+    import torch
+    
+    try:
+        data = request.get_json()
+        text = data.get('text', '')
+        model_name = data.get('model', DEFAULT_MODEL)
+        context = data.get('context', [])  # Previous messages for context
+        
+        if not text:
+            return json.dumps({'tokens': []})
+        
+        # Load model
+        model, tokenizer, device = load_model_and_tokenizer(model_name)
+        
+        # Build context (previous messages)
+        if context and hasattr(tokenizer, 'apply_chat_template') and tokenizer.chat_template:
+            formatted_context = tokenizer.apply_chat_template(
+                context,
+                tokenize=False,
+                add_generation_prompt=False
+            )
+            context_ids = tokenizer.encode(formatted_context, return_tensors="pt").to(device)
+        else:
+            context_ids = torch.tensor([[]], dtype=torch.long).to(device)
+        
+        # Tokenize the user's text
+        text_ids = tokenizer.encode(text, return_tensors="pt", add_special_tokens=False).to(device)
+        
+        # Combine context and text
+        all_ids = torch.cat([context_ids, text_ids], dim=1) if context_ids.size(1) > 0 else text_ids
+        
+        # Get logits
+        with torch.no_grad():
+            logits = model(all_ids).logits
+        
+        # Calculate probabilities for each token in the text
+        token_data = []
+        context_len = context_ids.size(1)
+        
+        for i, token_id in enumerate(text_ids[0]):
+            token_id = token_id.item()
+            
+            # Get logits for position that predicts this token
+            if context_len + i > 0:
+                current_logits = logits[0, context_len + i - 1]
+                probabilities = torch.softmax(current_logits, dim=-1)
+                
+                prob = probabilities[token_id].item()
+                
+                # Calculate rank
+                sorted_indices = torch.argsort(probabilities, descending=True)
+                rank = (sorted_indices == token_id).nonzero(as_tuple=True)[0].item() + 1
+                
+                # Get top 3 alternatives
+                top_k_probs, top_k_indices = torch.topk(probabilities, 3)
+                top_alternatives = [
+                    {"token": tokenizer.decode([idx.item()]), "probability": p.item()}
+                    for idx, p in zip(top_k_indices, top_k_probs)
+                ]
+            else:
+                # First token has no previous context
+                prob = None
+                rank = None
+                top_alternatives = []
+            
+            token_data.append({
+                'token': tokenizer.decode([token_id]),
+                'probability': prob,
+                'rank': rank,
+                'vocab_size': tokenizer.vocab_size,
+                'top_alternatives': top_alternatives
+            })
+        
+        return json.dumps({'tokens': token_data})
+        
+    except Exception as e:
+        print(f"Error calculating logprobs: {e}")
+        import traceback
+        traceback.print_exc()
+        return json.dumps({'tokens': []}), 500
 
 
 @app.route('/stream', methods=['POST'])
@@ -599,6 +723,7 @@ def stream():
         messages = data.get('messages', [])
         model_name = data.get('model', DEFAULT_MODEL)
         prefill = data.get('prefill', None)
+        show_prompt_tokens = data.get('show_prompt_tokens', False)
         
         if not messages:
             return Response("data: " + json.dumps({"type": "error", "message": "No messages provided"}) + "\n\n", mimetype='text/event-stream')
@@ -610,9 +735,9 @@ def stream():
                 
                 # Generate tokens with streaming
                 first_token = True
-                for token_data in generate_streaming_tokens(model, tokenizer, device, messages, prefill=prefill):
+                for token_data in generate_streaming_tokens(model, tokenizer, device, messages, prefill=prefill, show_prompt_tokens=show_prompt_tokens):
                     # Mark first token so frontend can show special context
-                    if first_token:
+                    if first_token and token_data.get('type') != 'prompt_token':
                         token_data['is_first_token'] = True
                         first_token = False
                     

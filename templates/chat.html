@@ -72,33 +72,32 @@
             
             <!-- Comparison Mode Container (hidden by default) -->
             <div class="comparison-container hidden" id="comparison-container">
-                <div class="comparison-panel">
-                    <div class="comparison-panel-header">
+                <div class="comparison-header">
+                    <div class="model-select-group">
+                        <label>Model 1:</label>
                         <select id="model-select-1" class="comparison-model-select">
                             <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
                             <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
                             <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
                         </select>
                     </div>
-                    <div class="comparison-messages" id="comparison-messages-1">
-                        <div class="welcome-message">
-                            <p>Model 1</p>
-                        </div>
+                    <div class="diff-indicator">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M4 10H16M10 4L16 10L10 16" stroke="currentColor" stroke-width="2"/>
+                        </svg>
                     </div>
-                </div>
-                <div class="comparison-divider"></div>
-                <div class="comparison-panel">
-                    <div class="comparison-panel-header">
+                    <div class="model-select-group">
+                        <label>Model 2:</label>
                         <select id="model-select-2" class="comparison-model-select">
-                            <option value="meta-llama/Llama-3.1-8B-Instruct" selected>Llama-3.1-8B-Instruct</option>
-                            <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
+                            <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
+                            <option value="google/gemma-2-2b-it" selected>Gemma-2-2B-IT</option>
                             <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
                         </select>
                     </div>
-                    <div class="comparison-messages" id="comparison-messages-2">
-                        <div class="welcome-message">
-                            <p>Model 2</p>
-                        </div>
+                </div>
+                <div class="diff-messages" id="diff-messages">
+                    <div class="welcome-message">
+                        <p>Send a message to see model differences</p>
                     </div>
                 </div>
             </div>
@@ -175,8 +174,16 @@
         let selectedAlternativeToken = null;
         let currentMode = 'default';
         
-        // Get conversation ID from URL if provided by backend
-        const urlConversationId = {{ ('"%s"' % conversation_id) if conversation_id else 'null' }};
+        // Get conversation ID from URL path
+        function getConversationIdFromUrl() {
+            const path = window.location.pathname;
+            const match = path.match(/\/chat\/([^\/]+)/);
+            const id = match ? match[1] : null;
+            console.log('Parsed conversation ID from URL:', path, '=>', id);
+            return id;
+        }
+        
+        const urlConversationId = getConversationIdFromUrl();
 
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -260,19 +267,16 @@
         }
         
         function addUserMessageToComparison(content) {
-            // Add user message to both comparison panels
-            for (let i = 1; i <= 2; i++) {
-                const messagesContainer = document.getElementById(`comparison-messages-${i}`);
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message user-message';
-                messageDiv.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-text">${escapeHtml(content)}</div>
-                    </div>
-                `;
-                messagesContainer.appendChild(messageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
+            const diffMessages = document.getElementById('diff-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-text">${escapeHtml(content)}</div>
+                </div>
+            `;
+            diffMessages.appendChild(messageDiv);
+            diffMessages.scrollTop = diffMessages.scrollHeight;
         }
 
         async function generateResponse(prefillText = null) {
@@ -293,15 +297,16 @@
             const tokensContainer = document.getElementById('streaming-tokens');
             const modelName = document.getElementById('model-select').value;
             
-            let assistantResponse = prefillText || '';
+            let assistantResponse = '';
             let responseTokens = [];
             
-            // If we have prefill text, display it first with special styling
-            if (prefillText) {
+            // Show prefill text with yellow styling ONLY in prefill mode
+            if (prefillText && currentMode === 'prefill') {
                 const prefillSpan = document.createElement('span');
                 prefillSpan.className = 'prefilled-text';
                 prefillSpan.textContent = prefillText;
                 tokensContainer.appendChild(prefillSpan);
+                assistantResponse = prefillText;
             }
             
             try {
@@ -341,18 +346,14 @@
                             try {
                                 const data = JSON.parse(jsonStr);
                                 
-                                if (data.type === 'metadata') {
-                                    // Show formatted prompt preview (collapsible)
-                                    const promptPreview = document.createElement('div');
-                                    promptPreview.className = 'prompt-preview';
-                                    promptPreview.innerHTML = `
-                                        <details>
-                                            <summary>Show formatted prompt (${data.prompt_length} tokens)</summary>
-                                            <pre>${escapeHtml(data.formatted_prompt)}</pre>
-                                        </details>
-                                    `;
-                                    tokensContainer.appendChild(promptPreview);
-                                } else if (data.type === 'token') {
+                                if (data.type === 'token') {
+                                    const isPromptToken = data.is_prompt_token || false;
+                                    
+                                    // Skip prompt tokens entirely
+                                    if (isPromptToken) {
+                                        continue;
+                                    }
+                                    
                                     assistantResponse += data.token;
                                     const tokenIdx = responseTokens.length;
                                     responseTokens.push({
@@ -371,7 +372,7 @@
                                         content: assistantResponse,
                                         tokens: responseTokens
                                     });
-                                    saveCurrentConversation();
+                                    saveCurrentConversation(true); // Update timestamp for new message
                                     isGenerating = false;
                                     sendBtn.disabled = false;
                                 } else if (data.type === 'error') {
@@ -403,11 +404,11 @@
             tokenSpan.dataset.probability = probability;
             tokenSpan.dataset.rank = rank;
             tokenSpan.dataset.vocabSize = vocabSize;
-            tokenSpan.dataset.topAlternatives = JSON.stringify(topAlternatives);
+            tokenSpan.dataset.topAlternatives = JSON.stringify(topAlternatives || []);
             tokenSpan.dataset.tokenIndex = tokenIndex;
             
             // Color based on probability
-            const color = getColorForProb(probability);
+            const color = getColorForProb(probability || 0);
             tokenSpan.style.backgroundColor = color;
             
             // Handle special tokens - check for any whitespace, not just exact matches
@@ -415,8 +416,13 @@
             let isWhitespace = false;
             let isSpecialToken = false;
             
-            // Check for special tokens (like <end_of_turn>, <|eot_id|>, etc.)
+            // Check for special tokens (like <end_of_turn>, <start_of_turn>, <|eot_id|>, etc.)
             if (token.startsWith('<') && token.endsWith('>')) {
+                tokenSpan.classList.add('special-token');
+                isSpecialToken = true;
+            }
+            // Also check for pipe-delimited special tokens like <|eot_id|>
+            else if (token.includes('<|') || token.includes('|>')) {
                 tokenSpan.classList.add('special-token');
                 isSpecialToken = true;
             }
@@ -463,13 +469,21 @@
                 .replace(/\t/g, '\\t')
                 .replace(/ /g, '·');
             
-            let tooltipHTML = `
-                <strong>Token:</strong> "${escapeHtml(displayTokenForTooltip)}"<br>
-                <strong>Probability:</strong> ${probability.toFixed(6)}<br>
-                <strong>Rank:</strong> ${rank} / ${vocabSize}
-            `;
+            let tooltipHTML = `<strong>Token:</strong> "${escapeHtml(displayTokenForTooltip)}"<br>`;
             
-            if (topAlternatives && topAlternatives.length > 0) {
+            if (probability !== null && probability !== undefined && !isNaN(probability)) {
+                tooltipHTML += `<strong>Probability:</strong> ${probability.toFixed(6)}<br>`;
+            } else {
+                tooltipHTML += `<strong>Probability:</strong> N/A<br>`;
+            }
+            
+            if (rank !== null && rank !== undefined && vocabSize) {
+                tooltipHTML += `<strong>Rank:</strong> ${rank} / ${vocabSize}`;
+            } else {
+                tooltipHTML += `<strong>Rank:</strong> N/A`;
+            }
+            
+            if (topAlternatives && topAlternatives.length > 0 && topAlternatives[0].probability !== null) {
                 tooltipHTML += '<br><br><strong>Top 3 Alternatives:</strong><ol class="alternatives-list">';
                 topAlternatives.forEach(alt => {
                     // Also escape whitespace in alternatives
@@ -478,7 +492,7 @@
                         .replace(/\r/g, '\\r')
                         .replace(/\t/g, '\\t')
                         .replace(/ /g, '·');
-                    tooltipHTML += `<li>${escapeHtml(altDisplay)}: ${alt.probability.toFixed(4)}</li>`;
+                    tooltipHTML += `<li>${escapeHtml(altDisplay)}: ${(alt.probability * 100).toFixed(2)}%</li>`;
                 });
                 tooltipHTML += '</ol>';
             }
@@ -512,15 +526,23 @@
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
+            // Account for header and sidebar
+            const header = document.querySelector('.chat-header');
+            const sidebar = document.getElementById('sidebar');
+            const headerHeight = header ? header.getBoundingClientRect().height : 0;
+            const sidebarWidth = (sidebar && !sidebar.classList.contains('collapsed')) ? sidebar.getBoundingClientRect().width : 0;
+            
             const margin = 10;
+            const topBoundary = headerHeight + margin;
+            const leftBoundary = sidebarWidth + margin;
             
             // Check vertical positioning
             // Default is above (bottom: calc(100% + 8px) in CSS)
             // Calculate where tooltip would be if positioned above
             const tooltipAboveTop = tokenRect.top - tooltipRect.height - 8;
             
-            // If tooltip would go above viewport, position below instead
-            if (tooltipAboveTop < margin) {
+            // If tooltip would go above header, position below instead
+            if (tooltipAboveTop < topBoundary) {
                 tooltip.classList.add('tooltip-below');
             }
             
@@ -530,8 +552,8 @@
             const tooltipCenterLeft = tokenRect.left + (tokenRect.width / 2) - (tooltipRect.width / 2);
             const tooltipCenterRight = tooltipCenterLeft + tooltipRect.width;
             
-            // If tooltip would go off left edge, align to left of token
-            if (tooltipCenterLeft < margin) {
+            // If tooltip would go behind sidebar or off left edge
+            if (tooltipCenterLeft < leftBoundary) {
                 tooltip.classList.add('tooltip-left');
             }
             // If tooltip would go off right edge, align to right of token
@@ -625,40 +647,37 @@
             const model1Name = document.getElementById('model-select-1').value;
             const model2Name = document.getElementById('model-select-2').value;
             
-            // Create message containers for both models
-            const model1Container = document.getElementById('comparison-messages-1');
-            const model2Container = document.getElementById('comparison-messages-2');
+            const diffMessages = document.getElementById('diff-messages');
             
-            // Add assistant message placeholders
-            const messageDiv1 = document.createElement('div');
-            messageDiv1.className = 'message assistant-message';
-            messageDiv1.innerHTML = `
+            // Add assistant message placeholder for diff view
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant-message diff-message';
+            messageDiv.innerHTML = `
                 <div class="message-content">
-                    <div class="message-tokens" id="streaming-tokens-1"></div>
+                    <div class="diff-header">
+                        <span class="model-label model-1-label">${model1Name.split('/').pop()}</span>
+                        <span class="diff-separator">↔</span>
+                        <span class="model-label model-2-label">${model2Name.split('/').pop()}</span>
+                    </div>
+                    <div class="message-tokens" id="diff-tokens">
+                        <div class="generating-indicator">Generating from both models...</div>
+                    </div>
                 </div>
             `;
-            model1Container.appendChild(messageDiv1);
+            diffMessages.appendChild(messageDiv);
+            diffMessages.scrollTop = diffMessages.scrollHeight;
             
-            const messageDiv2 = document.createElement('div');
-            messageDiv2.className = 'message assistant-message';
-            messageDiv2.innerHTML = `
-                <div class="message-content">
-                    <div class="message-tokens" id="streaming-tokens-2"></div>
-                </div>
-            `;
-            model2Container.appendChild(messageDiv2);
-            
-            // Generate from both models simultaneously
-            const response1Promise = generateForModel(model1Name, 'streaming-tokens-1', prefillText);
-            const response2Promise = generateForModel(model2Name, 'streaming-tokens-2', prefillText);
+            // Generate from both models simultaneously (but don't display yet)
+            const response1Promise = generateForModelSilent(model1Name, prefillText);
+            const response2Promise = generateForModelSilent(model2Name, prefillText);
             
             // Wait for both to complete
             const [response1, response2] = await Promise.all([response1Promise, response2Promise]);
             
-            // Highlight divergences
-            highlightDivergences('streaming-tokens-1', 'streaming-tokens-2', response1.tokens, response2.tokens);
+            // Build and display the diff
+            buildDiffView('diff-tokens', response1, response2);
             
-            // Save to conversation history (combine both responses)
+            // Save to conversation history
             conversationHistory.push({
                 role: 'assistant',
                 content: response1.text,
@@ -671,65 +690,155 @@
                 }
             });
             
-            saveCurrentConversation();
+            saveCurrentConversation(true); // Update timestamp for new message
             isGenerating = false;
             sendBtn.disabled = false;
         }
         
-        function highlightDivergences(container1Id, container2Id, tokens1, tokens2) {
-            const container1 = document.getElementById(container1Id);
-            const container2 = document.getElementById(container2Id);
+        function buildDiffView(containerId, response1, response2) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
             
-            const tokenElements1 = container1.querySelectorAll('.token');
-            const tokenElements2 = container2.querySelectorAll('.token');
+            // Filter out prompt tokens
+            const tokens1 = response1.tokens.filter(t => !t.is_prompt_token);
+            const tokens2 = response2.tokens.filter(t => !t.is_prompt_token);
             
-            const minLength = Math.min(tokens1.length, tokens2.length);
+            let i = 0;
+            let j = 0;
             
-            // Find first divergence point
-            let firstDivergence = -1;
-            for (let i = 0; i < minLength; i++) {
-                if (tokens1[i].token !== tokens2[i].token) {
-                    firstDivergence = i;
-                    break;
-                }
-            }
-            
-            // Highlight divergent tokens
-            if (firstDivergence >= 0) {
-                // Mark all tokens from divergence point onward
-                for (let i = firstDivergence; i < tokenElements1.length; i++) {
-                    if (tokenElements1[i]) {
-                        tokenElements1[i].classList.add('divergent-token');
+            while (i < tokens1.length || j < tokens2.length) {
+                // Check if tokens match
+                if (i < tokens1.length && j < tokens2.length && tokens1[i].token === tokens2[j].token) {
+                    // Tokens match - show as normal (use model 1's token data)
+                    addToken(container, tokens1[i].token, tokens1[i].probability, tokens1[i].rank, tokens1[i].vocab_size, tokens1[i].top_alternatives, i);
+                    
+                    // Add newline if token contains newline
+                    if (tokens1[i].token.includes('\n')) {
+                        container.appendChild(document.createElement('br'));
                     }
-                }
-                for (let i = firstDivergence; i < tokenElements2.length; i++) {
-                    if (tokenElements2[i]) {
-                        tokenElements2[i].classList.add('divergent-token');
+                    
+                    i++;
+                    j++;
+                } else {
+                    // Tokens diverge - show diff
+                    const diffGroup = document.createElement('span');
+                    diffGroup.className = 'diff-group';
+                    
+                    // Add model 1 version
+                    if (i < tokens1.length) {
+                        const token1Span = document.createElement('span');
+                        token1Span.className = 'diff-token model-1-token';
+                        const color = getColorForProb(tokens1[i].probability);
+                        token1Span.style.backgroundColor = color;
+                        
+                        let displayToken1 = tokens1[i].token;
+                        if (tokens1[i].token.includes('\n')) {
+                            displayToken1 = '↵';
+                        } else if (tokens1[i].token === ' ') {
+                            displayToken1 = '·';
+                        }
+                        token1Span.textContent = displayToken1;
+                        
+                        // Add tooltip
+                        const tooltip1 = createTooltip(tokens1[i], i);
+                        token1Span.appendChild(tooltip1);
+                        token1Span.addEventListener('mouseenter', function() {
+                            positionTooltip(token1Span, tooltip1);
+                        });
+                        
+                        diffGroup.appendChild(token1Span);
                     }
-                }
-                
-                // Mark the first divergent token specially
-                if (tokenElements1[firstDivergence]) {
-                    tokenElements1[firstDivergence].classList.add('first-divergence');
-                }
-                if (tokenElements2[firstDivergence]) {
-                    tokenElements2[firstDivergence].classList.add('first-divergence');
+                    
+                    // Add separator
+                    const separator = document.createElement('span');
+                    separator.className = 'diff-separator-inline';
+                    separator.textContent = ' | ';
+                    diffGroup.appendChild(separator);
+                    
+                    // Add model 2 version
+                    if (j < tokens2.length) {
+                        const token2Span = document.createElement('span');
+                        token2Span.className = 'diff-token model-2-token';
+                        const color = getColorForProb(tokens2[j].probability);
+                        token2Span.style.backgroundColor = color;
+                        
+                        let displayToken2 = tokens2[j].token;
+                        if (tokens2[j].token.includes('\n')) {
+                            displayToken2 = '↵';
+                        } else if (tokens2[j].token === ' ') {
+                            displayToken2 = '·';
+                        }
+                        token2Span.textContent = displayToken2;
+                        
+                        // Add tooltip
+                        const tooltip2 = createTooltip(tokens2[j], j);
+                        token2Span.appendChild(tooltip2);
+                        token2Span.addEventListener('mouseenter', function() {
+                            positionTooltip(token2Span, tooltip2);
+                        });
+                        
+                        diffGroup.appendChild(token2Span);
+                    }
+                    
+                    container.appendChild(diffGroup);
+                    
+                    // Add newline if either token contains newline
+                    if ((i < tokens1.length && tokens1[i-1]?.token.includes('\n')) || 
+                        (j < tokens2.length && tokens2[j-1]?.token.includes('\n'))) {
+                        container.appendChild(document.createElement('br'));
+                    }
+                    
+                    i++;
+                    j++;
                 }
             }
         }
         
-        async function generateForModel(modelName, containerId, prefillText = null) {
-            const tokensContainer = document.getElementById(containerId);
+        function createTooltip(tokenData, idx) {
+            const tooltip = document.createElement('span');
+            tooltip.className = 'custom-tooltip';
+            
+            let displayTokenForTooltip = tokenData.token
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r')
+                .replace(/\t/g, '\\t')
+                .replace(/ /g, '·');
+            
+            let tooltipHTML = `<strong>Token:</strong> "${escapeHtml(displayTokenForTooltip)}"<br>`;
+            
+            if (tokenData.probability !== null && tokenData.probability !== undefined && !isNaN(tokenData.probability)) {
+                tooltipHTML += `<strong>Probability:</strong> ${tokenData.probability.toFixed(6)}<br>`;
+            } else {
+                tooltipHTML += `<strong>Probability:</strong> N/A<br>`;
+            }
+            
+            if (tokenData.rank !== null && tokenData.rank !== undefined && tokenData.vocab_size) {
+                tooltipHTML += `<strong>Rank:</strong> ${tokenData.rank} / ${tokenData.vocab_size}`;
+            } else {
+                tooltipHTML += `<strong>Rank:</strong> N/A`;
+            }
+            
+            if (tokenData.top_alternatives && tokenData.top_alternatives.length > 0 && tokenData.top_alternatives[0].probability !== null) {
+                tooltipHTML += '<br><br><strong>Top 3 Alternatives:</strong><ol class="alternatives-list">';
+                tokenData.top_alternatives.forEach(alt => {
+                    let altDisplay = alt.token
+                        .replace(/\n/g, '\\n')
+                        .replace(/\r/g, '\\r')
+                        .replace(/\t/g, '\\t')
+                        .replace(/ /g, '·');
+                    tooltipHTML += `<li>${escapeHtml(altDisplay)}: ${(alt.probability * 100).toFixed(2)}%</li>`;
+                });
+                tooltipHTML += '</ol>';
+            }
+            
+            tooltip.innerHTML = tooltipHTML;
+            return tooltip;
+        }
+        
+        async function generateForModelSilent(modelName, prefillText = null) {
+            // Generate without displaying - used for comparison mode
             let assistantResponse = prefillText || '';
             let responseTokens = [];
-            
-            // Show prefilled text if provided
-            if (prefillText) {
-                const prefillSpan = document.createElement('span');
-                prefillSpan.className = 'prefilled-text';
-                prefillSpan.textContent = prefillText;
-                tokensContainer.appendChild(prefillSpan);
-            }
             
             try {
                 const requestBody = {
@@ -765,7 +874,6 @@
                                 
                                 if (data.type === 'token') {
                                     assistantResponse += data.token;
-                                    const tokenIdx = responseTokens.length;
                                     responseTokens.push({
                                         token: data.token,
                                         probability: data.probability,
@@ -773,7 +881,6 @@
                                         vocab_size: data.vocab_size,
                                         top_alternatives: data.top_alternatives
                                     });
-                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx);
                                 } else if (data.type === 'done') {
                                     break;
                                 }
@@ -792,7 +899,6 @@
                 
             } catch (error) {
                 console.error('Generation failed:', error);
-                tokensContainer.innerHTML += `<div class="error-message">Error: ${error.message}</div>`;
                 return {
                     text: '',
                     tokens: [],
@@ -800,6 +906,7 @@
                 };
             }
         }
+        
 
         // ===== TOKEN CONTEXT MENU =====
         
@@ -850,7 +957,37 @@
             menu.classList.remove('hidden');
             
             // Focus search input
-            searchInput.focus();
+            setTimeout(() => searchInput.focus(), 0);
+        }
+        
+        let searchListenerSetup = false;
+        function setupTokenSearchListener() {
+            if (searchListenerSetup) return;
+            
+            const searchInput = document.getElementById('token-search-input');
+            if (!searchInput) return;
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                console.log('Search input changed:', query);
+                
+                const resultsDiv = document.getElementById('token-search-results');
+                
+                if (query.length < 1) {
+                    resultsDiv.innerHTML = '';
+                    return;
+                }
+                
+                // Show searching indicator
+                resultsDiv.innerHTML = '<div class="search-no-results">Searching...</div>';
+                
+                searchTimeout = setTimeout(() => searchTokens(query), 300);
+            });
+            
+            searchListenerSetup = true;
+            console.log('Token search listener set up');
         }
         
         function selectAlternativeToken(token, element) {
@@ -873,31 +1010,33 @@
             selectedAlternativeToken = null;
         }
         
-        // Close context menu when clicking outside
-        document.addEventListener('click', function(e) {
+        // Close context menu when clicking outside (setup after DOM loads)
+        function setupContextMenuHandlers() {
+            document.addEventListener('click', function(e) {
+                const menu = document.getElementById('token-context-menu');
+                if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && !e.target.classList.contains('token')) {
+                    hideContextMenu();
+                }
+            });
+            
+            // Prevent context menu from closing when clicking inside it
             const menu = document.getElementById('token-context-menu');
-            if (!menu.contains(e.target) && !e.target.classList.contains('token')) {
-                hideContextMenu();
+            if (menu) {
+                menu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
             }
-        });
+        }
         
         // Token search with debouncing
         let searchTimeout = null;
+        
         document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('token-search-input');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(searchTimeout);
-                    const query = this.value.trim();
-                    
-                    if (query.length < 1) {
-                        document.getElementById('token-search-results').innerHTML = '';
-                        return;
-                    }
-                    
-                    searchTimeout = setTimeout(() => searchTokens(query), 300);
-                });
-            }
+            // Setup context menu handlers
+            setupContextMenuHandlers();
+            
+            // Setup token search
+            setupTokenSearchListener();
             
             // Setup button handlers
             const injectBtn = document.getElementById('inject-regenerate-btn');
@@ -915,6 +1054,8 @@
             const modelName = document.getElementById('model-select').value;
             const resultsDiv = document.getElementById('token-search-results');
             
+            console.log('Searching tokens for:', query, 'with model:', modelName);
+            
             try {
                 const response = await fetch('/api/search-tokens', {
                     method: 'POST',
@@ -922,10 +1063,23 @@
                     body: JSON.stringify({query: query, model: modelName})
                 });
                 
+                if (!response.ok) {
+                    console.error('Search request failed:', response.status);
+                    resultsDiv.innerHTML = '<div class="search-error">Search failed</div>';
+                    return;
+                }
+                
                 const results = await response.json();
+                console.log('Search results:', results.length, 'tokens found');
                 
                 resultsDiv.innerHTML = '';
-                results.forEach(result => {
+                
+                if (results.length === 0) {
+                    resultsDiv.innerHTML = '<div class="search-no-results">No matches found</div>';
+                    return;
+                }
+                
+                results.forEach((result, idx) => {
                     const item = document.createElement('div');
                     item.className = 'search-result-item';
                     item.onclick = () => selectAlternativeToken(result.token, item);
@@ -935,13 +1089,24 @@
                         displayToken = '↵';
                     } else if (result.token === ' ') {
                         displayToken = '·';
+                    } else if (result.token.includes('\t')) {
+                        displayToken = '→';
                     }
                     
-                    item.innerHTML = `<span class="alt-token">${escapeHtml(displayToken)}</span>`;
+                    // Show raw token string if different from decoded
+                    let rawInfo = '';
+                    if (result.raw && result.raw !== result.token) {
+                        rawInfo = ` <span class="token-raw">(${escapeHtml(result.raw)})</span>`;
+                    }
+                    
+                    item.innerHTML = `<span class="alt-token">${escapeHtml(displayToken)}</span>${rawInfo}`;
                     resultsDiv.appendChild(item);
+                    
+                    console.log(`Search result ${idx}:`, result.token);
                 });
             } catch (error) {
                 console.error('Token search failed:', error);
+                resultsDiv.innerHTML = '<div class="search-error">Search error: ' + error.message + '</div>';
             }
         }
         
@@ -962,10 +1127,18 @@
             
             const lastMessage = conversationHistory[lastAssistantIndex];
             
+            // Get the original token's alternatives to find the probability of the injected token
+            const originalToken = lastMessage.tokens[tokenIndex];
+            const topAlternatives = originalToken.top_alternatives || [];
+            
+            // Find the probability of the selected alternative
+            const altData = topAlternatives.find(alt => alt.token === selectedAlternativeToken);
+            const injectedTokenProb = altData ? altData.probability : null;
+            
             // Truncate the response up to the selected token and inject the alternative
             const tokensBeforeInjection = lastMessage.tokens.slice(0, tokenIndex);
             const textBeforeInjection = tokensBeforeInjection.map(t => t.token).join('');
-            const prefillText = textBeforeInjection + selectedAlternativeToken;
+            const injectedText = textBeforeInjection + selectedAlternativeToken;
             
             // Remove the last assistant message
             conversationHistory.pop();
@@ -977,10 +1150,127 @@
                 lastMsgElement.remove();
             }
             
-            // Regenerate with the prefilled text
-            await generateResponse(prefillText);
+            // Create new message with the injected tokens displayed normally
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant-message';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-tokens" id="streaming-tokens"></div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            
+            const tokensContainer = document.getElementById('streaming-tokens');
+            
+            // Display the tokens before injection normally (not as prefill)
+            tokensBeforeInjection.forEach((tokenData, idx) => {
+                addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx);
+            });
+            
+            // Display the injected token with its probability data and special styling
+            const injectedTokenData = {
+                token: selectedAlternativeToken,
+                probability: injectedTokenProb,
+                rank: altData ? topAlternatives.indexOf(altData) + 1 : null,
+                vocab_size: originalToken.vocab_size,
+                top_alternatives: topAlternatives
+            };
+            
+            const injectedIdx = tokensBeforeInjection.length;
+            addToken(tokensContainer, injectedTokenData.token, injectedTokenData.probability, injectedTokenData.rank, injectedTokenData.vocab_size, injectedTokenData.top_alternatives, injectedIdx);
+            
+            // Add injected styling to the token we just created
+            const lastToken = tokensContainer.lastElementChild;
+            if (lastToken && lastToken.classList.contains('token')) {
+                lastToken.classList.add('injected-token');
+            }
+            
+            // Now continue generation from this point
+            const startingTokenIndex = tokensBeforeInjection.length + 1;
+            await continueGenerationFromPoint(tokensContainer, injectedText, tokensBeforeInjection, injectedTokenData, startingTokenIndex);
             
             hideContextMenu();
+        }
+        
+        async function continueGenerationFromPoint(tokensContainer, prefillText, tokensBeforeInjection, injectedTokenData, startingIndex) {
+            isGenerating = true;
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = true;
+            const modelName = document.getElementById('model-select').value;
+            const messagesContainer = document.getElementById('messages-container');
+            
+            let assistantResponse = prefillText;
+            let allTokens = [...tokensBeforeInjection];  // Include pre-injection tokens
+            
+            // Add the injected token to the list with its probability data
+            allTokens.push(injectedTokenData);
+            
+            try {
+                const response = await fetch('/stream', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        messages: conversationHistory,
+                        model: modelName,
+                        prefill: prefillText
+                    })
+                });
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                while (true) {
+                    const {done, value} = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, {stream: true});
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const jsonStr = line.substring(6);
+                            try {
+                                const data = JSON.parse(jsonStr);
+                                
+                                if (data.type === 'token') {
+                                    const isPromptToken = data.is_prompt_token || false;
+                                    if (isPromptToken) continue;
+                                    
+                                    assistantResponse += data.token;
+                                    const tokenIdx = allTokens.length;
+                                    allTokens.push({
+                                        token: data.token,
+                                        probability: data.probability,
+                                        rank: data.rank,
+                                        vocab_size: data.vocab_size,
+                                        top_alternatives: data.top_alternatives
+                                    });
+                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx);
+                                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                } else if (data.type === 'done') {
+                                    // Save complete message to conversation
+                                    conversationHistory.push({
+                                        role: 'assistant',
+                                        content: assistantResponse,
+                                        tokens: allTokens
+                                    });
+                                    saveCurrentConversation(true);
+                                    isGenerating = false;
+                                    sendBtn.disabled = false;
+                                    break;
+                                }
+                            } catch (e) {
+                                // Skip invalid JSON
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Continuation failed:', error);
+                tokensContainer.innerHTML += `<div class="error-message">Error: ${error.message}</div>`;
+                isGenerating = false;
+                sendBtn.disabled = false;
+            }
         }
         
         async function branchConversation() {
@@ -1001,25 +1291,42 @@
         // ===== CONVERSATION MANAGEMENT =====
         
         async function initializeConversations() {
+            console.log('Initializing conversations...');
+            console.log('URL conversation ID:', urlConversationId);
+            
             // Load conversations from server
             try {
                 const response = await fetch('/api/conversations');
                 const serverConvs = JSON.parse(await response.text());
                 conversations = serverConvs;
+                console.log('Loaded conversations from server:', Object.keys(conversations));
             } catch (error) {
                 console.error('Failed to load conversations from server:', error);
                 // Fallback to localStorage
                 const saved = localStorage.getItem('tokenlens_conversations');
                 if (saved) {
                     conversations = JSON.parse(saved);
+                    console.log('Loaded conversations from localStorage:', Object.keys(conversations));
                 }
             }
             
             // Priority 1: Load conversation from URL if provided
-            if (urlConversationId && conversations[urlConversationId]) {
-                loadConversation(urlConversationId, false); // false = don't update URL
-                updateSidebar();
-                return;
+            if (urlConversationId) {
+                console.log('Attempting to load conversation from URL:', urlConversationId);
+                if (conversations[urlConversationId]) {
+                    console.log('Found conversation in loaded data, loading...');
+                    loadConversation(urlConversationId, false); // false = don't update URL
+                    updateSidebar();
+                    return;
+                } else {
+                    console.warn('Conversation', urlConversationId, 'not found in loaded conversations');
+                    console.log('Available conversations:', Object.keys(conversations));
+                    // Show error message to user
+                    alert(`Conversation not found. It may have been deleted or doesn't exist.`);
+                    // Redirect to home
+                    window.location.href = '/';
+                    return;
+                }
             }
             
             // Priority 2: Load active conversation from localStorage
@@ -1027,6 +1334,7 @@
             
             // If no conversations exist, create a new one
             if (Object.keys(conversations).length === 0) {
+                console.log('No conversations found, creating new one');
                 createNewChat();
             } else {
                 // Load the active conversation or the most recent one
@@ -1035,6 +1343,9 @@
                         conversations[b].timestamp - conversations[a].timestamp
                     );
                     currentConversationId = conversationIds[0];
+                    console.log('Loading most recent conversation:', currentConversationId);
+                } else {
+                    console.log('Loading active conversation:', currentConversationId);
                 }
                 loadConversation(currentConversationId);
             }
@@ -1072,7 +1383,7 @@
             updateSidebar();
         }
         
-        function saveCurrentConversation() {
+        function saveCurrentConversation(updateTimestamp = false) {
             if (!currentConversationId) return;
             
             const conversation = conversations[currentConversationId];
@@ -1080,7 +1391,11 @@
             
             conversation.messages = conversationHistory;
             conversation.model = document.getElementById('model-select').value;
-            conversation.timestamp = Date.now();
+            
+            // Only update timestamp when new content is added, not when just switching
+            if (updateTimestamp) {
+                conversation.timestamp = Date.now();
+            }
             
             // Generate title from first user message
             if (conversationHistory.length > 0 && conversation.title === 'New Chat') {
@@ -1305,49 +1620,27 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message assistant-message';
             
+            const tokensContainer = document.createElement('div');
+            tokensContainer.className = 'message-tokens';
+            
             if (tokens && tokens.length > 0) {
-                // Render with token data
-                let tokensHTML = '';
-                tokens.forEach(tokenData => {
-                    const color = getColorForProb(tokenData.probability);
-                    let displayToken = tokenData.token;
-                    let tokenClass = 'token';
-                    
-                    // Check for special tokens
-                    if (tokenData.token.startsWith('<') && tokenData.token.endsWith('>')) {
-                        tokenClass += ' special-token';
+                // Render with token data using the same addToken function for consistency
+                tokens.forEach((tokenData, idx) => {
+                    // Skip prompt tokens
+                    if (tokenData.is_prompt_token) {
+                        return;
                     }
-                    // Check for whitespace
-                    else if (tokenData.token.includes('\n')) {
-                        const count = (tokenData.token.match(/\n/g) || []).length;
-                        displayToken = count === 1 ? '↵' : `↵×${count}`;
-                        tokenClass += ' newline-token';
-                    } else if (tokenData.token === ' ' || /^\s+$/.test(tokenData.token)) {
-                        const count = tokenData.token.length;
-                        displayToken = count === 1 ? '·' : `·×${count}`;
-                        tokenClass += ' space-token';
-                    }
-                    
-                    tokensHTML += `<span class="${tokenClass}" style="background-color: ${color};">${escapeHtml(displayToken)}</span>`;
-                    
-                    if (tokenData.token.includes('\n')) {
-                        tokensHTML += '<br>';
-                    }
+                    addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx);
                 });
-                
-                messageDiv.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-tokens">${tokensHTML}</div>
-                    </div>
-                `;
             } else {
                 // Plain text rendering
-                messageDiv.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-tokens">${escapeHtml(content)}</div>
-                    </div>
-                `;
+                tokensContainer.textContent = content;
             }
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.appendChild(tokensContainer);
+            messageDiv.appendChild(contentDiv);
             
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -1362,12 +1655,30 @@
         
         // Initialize on page load
         initializeSidebar();
-        initializeConversations();
-        
-        // Set initial history state if we have a current conversation
-        if (currentConversationId) {
-            window.history.replaceState({ conversationId: currentConversationId }, '', window.location.pathname);
-        }
+        initializeConversations().then(() => {
+            // Set initial history state after conversations are loaded
+            if (currentConversationId) {
+                const currentPath = window.location.pathname;
+                const expectedPath = `/chat/${currentConversationId}`;
+                
+                // Only update if paths don't match
+                if (currentPath !== expectedPath) {
+                    window.history.replaceState(
+                        { conversationId: currentConversationId }, 
+                        '', 
+                        expectedPath
+                    );
+                    console.log('Updated URL to match loaded conversation:', expectedPath);
+                } else {
+                    // Just set the state without changing URL
+                    window.history.replaceState(
+                        { conversationId: currentConversationId }, 
+                        '', 
+                        currentPath
+                    );
+                }
+            }
+        });
     </script>
 </body>
 </html>
