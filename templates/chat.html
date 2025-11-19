@@ -3,121 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokenLens - Chat Interface</title>
+    <title>Scope - Chat Interface</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
+            <div class="sidebar-content">
             <div class="sidebar-header">
-                <button class="new-chat-btn" onclick="createNewChat()">
+                    <button class="sidebar-close-btn" onclick="toggleSidebar()" title="Close sidebar">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12 5L7 10L12 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <span class="sidebar-title">Scope</span>
+                </div>
+                
+                <button class="new-chat-btn-sidebar" onclick="createNewChat()">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    New Chat
+                    <span>New chat</span>
                 </button>
-            </div>
             
             <div class="conversations-list" id="conversations-list">
                 <!-- Conversations will be dynamically added here -->
             </div>
+            </div>
+            
+            <button class="sidebar-toggle-collapsed" onclick="toggleSidebar()" title="Open sidebar">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 10H17M3 5H17M3 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+            
+            <button class="new-chat-btn-collapsed" onclick="createNewChat()" title="New chat">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
         </aside>
 
         <!-- Main Chat Area -->
         <div class="chat-container">
             <!-- Header -->
-            <header class="chat-header">
-                <div class="header-content">
-                    <button class="sidebar-toggle-main" onclick="toggleSidebar()">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M3 10H17M3 5H17M3 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                    <div class="logo">
-                        <span class="logo-text">TokenLens</span>
-                    </div>
-                    <div class="mode-selector">
-                        <select id="mode-select" onchange="switchMode()">
-                            <option value="default">Default</option>
-                            <option value="comparison">Model Comparison</option>
-                            <option value="prefill">Prefilling</option>
-                        </select>
-                    </div>
-                    <div class="model-selector">
-                        <select id="model-select" onchange="saveCurrentConversation()">
-                            <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
-                            <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
-                            <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
-                        </select>
-                    </div>
-                    <button class="clear-btn" onclick="deleteCurrentChat()">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M2 4H14M6 4V2H10V4M3 4V14H13V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                </div>
+            <header class="main-header">
             </header>
 
             <!-- Messages Area -->
             <div class="messages-container" id="messages-container">
                 <div class="welcome-message">
-                    <h2>Welcome to TokenLens</h2>
+                    <h2>Welcome to Scope</h2>
                     <p>Chat with AI and see token probabilities in real-time</p>
                 </div>
             </div>
             
-            <!-- Comparison Mode Container (hidden by default) -->
-            <div class="comparison-container hidden" id="comparison-container">
-                <div class="comparison-header">
-                    <div class="model-select-group">
-                        <label>Model 1:</label>
-                        <select id="model-select-1" class="comparison-model-select">
-                            <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
-                            <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
-                            <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
-                        </select>
-                    </div>
-                    <div class="diff-indicator">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M4 10H16M10 4L16 10L10 16" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <div class="model-select-group">
-                        <label>Model 2:</label>
-                        <select id="model-select-2" class="comparison-model-select">
-                            <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
-                            <option value="google/gemma-2-2b-it" selected>Gemma-2-2B-IT</option>
-                            <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="diff-messages" id="diff-messages">
-                    <div class="welcome-message">
-                        <p>Send a message to see model differences</p>
-                    </div>
-                </div>
-            </div>
-
         <!-- Input Area -->
         <div class="input-container">
-            <div class="prefill-input-wrapper hidden" id="prefill-wrapper">
-                <label for="prefill-input" class="prefill-label">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M7 2V12M2 7H12" stroke="currentColor" stroke-width="1.5"/>
-                    </svg>
-                    Prefill assistant response
-                </label>
-                <input 
-                    type="text" 
-                    id="prefill-input" 
-                    placeholder='e.g., "Sure, " or "I cannot..."'
-                    class="prefill-input"
-                />
-            </div>
             <div class="input-wrapper">
                 <textarea 
                     id="user-input" 
@@ -125,54 +72,232 @@
                     rows="1"
                     onkeydown="handleKeyDown(event)"
                 ></textarea>
-                <button id="send-btn" onclick="sendMessage()">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <button id="send-btn" onclick="handleSendButton()">
+                    <svg id="send-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M2 10L18 2L10 18L8 11L2 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
+                    <svg id="stop-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" style="display: none;">
+                        <rect x="5" y="5" width="10" height="10" fill="currentColor" stroke="none"/>
+                    </svg>
                 </button>
+                <div class="model-selector-inline">
+                    <select id="model-select" onchange="saveCurrentConversation()">
+                            <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
+                            <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
+                            <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
+                        </select>
+                    <input type="number" id="temperature-input" min="0" max="2" step="0.1" value="1.0" title="Temperature">
+                    </div>
+                    </div>
+                    </div>
+                </div>
+
+        <!-- Right Sidebar (Tools) -->
+        <aside class="tools-sidebar" id="tools-sidebar">
+            <div class="tools-header">
+                <h3>Lens Tools</h3>
+                    </div>
+            
+            <div class="tools-content">
+                <details class="tool-section" open>
+                    <summary>Views</summary>
+                    <div class="tool-section-content">
+                        <div class="tool-group">
+                            <label class="tool-label">Active View</label>
+                            <select id="view-select" onchange="switchView()" class="tool-select">
+                                <option value="token">Token View</option>
+                                <option value="diff">Diff View</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="tool-section" open>
+                    <summary>Analysis Tools</summary>
+                    <div class="tool-section-content">
+                        <div class="tool-group" id="difflens-tools">
+                            <label class="tool-label">Analysis Model</label>
+                            <select id="analysis-model-select" class="tool-select">
+                                <option value="">Select model...</option>
+                                <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
+                                <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
+                                <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
+                            </select>
+                            <button class="apply-btn" id="apply-difflens-btn" onclick="triggerDiffLensAnalysis()">
+                                Apply Analysis
+                            </button>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="tool-section" open>
+                    <summary>Generation Tools</summary>
+                    <div class="tool-section-content">
+                        <div class="tool-group" id="force-start-tools">
+                            <label class="tool-label">Force Assistant Start</label>
+                            <input 
+                                type="text" 
+                                id="prefill-input" 
+                                placeholder='e.g., "Sure, " or "I cannot..."'
+                                class="tool-input"
+                            />
+                            <p class="tool-help">The assistant will start its response with this text</p>
+                        </div>
+                    </div>
+                </details>
             </div>
-        </div>
-        </div>
+        </aside>
     </div>
 
-    <!-- Token Context Menu -->
-    <div id="token-context-menu" class="context-menu hidden">
-        <div class="context-menu-section">
-            <div class="context-menu-header">Choose Alternative Token</div>
-            <div id="top-alternatives-list" class="alternatives-menu-list">
+    <!-- Unified Token Tooltip -->
+    <div id="token-tooltip" class="token-tooltip hidden">
+        <!-- Token Info (always visible) -->
+        <div class="tooltip-info-section">
+            <div id="tooltip-current-token"></div>
+            <div class="tooltip-alternatives" id="tooltip-alternatives">
                 <!-- Top 3 alternatives will be inserted here -->
             </div>
         </div>
-        <div class="context-menu-section">
-            <input type="text" id="token-search-input" placeholder="Search or type token..." class="token-search-input">
+        
+        <!-- Interactive Section (only in click mode) -->
+        <div class="tooltip-interactive-section">
+            <input type="text" id="token-search-input" placeholder="Search tokens..." class="token-search-input">
             <div id="token-search-results" class="token-search-results">
                 <!-- Search results will appear here -->
             </div>
-        </div>
-        <div class="context-menu-section">
-            <button class="context-menu-btn primary" id="inject-regenerate-btn">
+            <div class="tooltip-actions">
+                <button class="tooltip-btn primary" id="inject-regenerate-btn">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M7 1V7M7 7H13M7 7L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
                 Inject and Regenerate
             </button>
-            <button class="context-menu-btn" id="branch-conversation-btn">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M7 3V11M7 3L4 6M7 3L10 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-                Branch to New Chat
-            </button>
+                <button class="tooltip-btn secondary" id="open-logit-lens-btn">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 14L2 2L14 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M4 10L6.5 7L9 9.5L12 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="5" r="1.2" fill="currentColor"/>
+                    </svg>
+                    Open Logit Lens
+                </button>
+            </div>
         </div>
+    </div>
+
+    <!-- Logit Lens Modal -->
+    <div id="logit-lens-modal" class="logit-lens-modal hidden">
+        <div class="logit-lens-overlay" onclick="closeLogitLensModal()"></div>
+        <div class="logit-lens-content">
+            <div class="logit-lens-header">
+                <h2>Logit Lens Analysis: <span id="logit-lens-token"></span></h2>
+                <div class="logit-lens-controls">
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" data-view="heatmap" onclick="switchLogitLensView('heatmap')">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <rect x="2" y="2" width="3" height="3" fill="currentColor"/>
+                                <rect x="6" y="2" width="3" height="3" fill="currentColor"/>
+                                <rect x="10" y="2" width="3" height="3" fill="currentColor"/>
+                                <rect x="2" y="6" width="3" height="3" fill="currentColor"/>
+                                <rect x="6" y="6" width="3" height="3" fill="currentColor"/>
+                                <rect x="10" y="6" width="3" height="3" fill="currentColor"/>
+                                <rect x="2" y="10" width="3" height="3" fill="currentColor"/>
+                                <rect x="6" y="10" width="3" height="3" fill="currentColor"/>
+                                <rect x="10" y="10" width="3" height="3" fill="currentColor"/>
+                            </svg>
+                            Heatmap
+                        </button>
+                        <button class="toggle-btn" data-view="chart" onclick="switchLogitLensView('chart')">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M2 12L5 8L8 10L14 2" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                            Chart
+                        </button>
+                    </div>
+                    <button class="close-btn" onclick="closeLogitLensModal()">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M5 5L15 15M5 15L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="logit-lens-body">
+                <div class="logit-lens-loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing layers...</p>
+                </div>
+                <div class="logit-lens-viz hidden">
+                    <!-- Heatmap View -->
+                    <div id="logit-lens-heatmap" class="viz-container active">
+                        <div class="heatmap-scroll">
+                            <div id="heatmap-canvas-container"></div>
+                        </div>
+                    </div>
+                    <!-- Chart View -->
+                    <div id="logit-lens-chart" class="viz-container">
+                        <div class="chart-content-scroll">
+                            <div class="chart-controls">
+                                <div class="token-search-container">
+                                    <input type="text" 
+                                           id="chart-token-search" 
+                                           class="token-search-input-chart" 
+                                           placeholder="Search for tokens to add..."
+                                           autocomplete="off">
+                                    <div id="chart-search-results" class="token-search-results-chart"></div>
+                                </div>
+                                <div class="active-tokens" id="active-chart-tokens">
+                                    <!-- Active token chips will be added here -->
+                                </div>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="probability-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Tooltip for Logit Lens -->
+    <div id="logit-lens-tooltip" class="logit-lens-tooltip">
+        <div class="tooltip-header" id="tooltip-header"></div>
+        <div id="tooltip-body"></div>
     </div>
 
     <script>
         let isGenerating = false;
-        let conversationHistory = [];
+        let currentAbortController = null;
+        // conversationHistory is now derived from messageTree
+        let messageTree = {}; 
+        let currentLeafId = null;
         let currentConversationId = null;
         let conversations = {};
         let selectedTokenElement = null;
         let selectedAlternativeToken = null;
-        let currentMode = 'default';
+        let currentView = 'token';
+        
+        // Helper to generate UUIDs
+        function uuidv4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Get linear thread from root to current leaf
+        function getActiveThread() {
+            if (!currentLeafId || !messageTree[currentLeafId]) return [];
+            
+            const thread = [];
+            let currentNodeId = currentLeafId;
+            
+            while (currentNodeId && messageTree[currentNodeId]) {
+                thread.unshift(messageTree[currentNodeId]);
+                currentNodeId = messageTree[currentNodeId].parentId;
+            }
+            
+            return thread;
+        }
         
         // Get conversation ID from URL path
         function getConversationIdFromUrl() {
@@ -188,19 +313,54 @@
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
+                if (!isGenerating) {
+                sendMessage();
+                }
+            }
+        }
+        
+        function handleSendButton() {
+            if (isGenerating) {
+                stopGeneration();
+            } else {
                 sendMessage();
             }
+        }
+        
+        function updateSendButton() {
+            const sendIcon = document.getElementById('send-icon');
+            const stopIcon = document.getElementById('stop-icon');
+            
+            if (isGenerating) {
+                sendIcon.style.display = 'none';
+                stopIcon.style.display = 'block';
+            } else {
+                sendIcon.style.display = 'block';
+                stopIcon.style.display = 'none';
+            }
+        }
+        
+        function stopGeneration() {
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
+            isGenerating = false;
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = false;
+            updateSendButton();
         }
 
         function clearChat() {
             const messagesContainer = document.getElementById('messages-container');
             messagesContainer.innerHTML = `
                 <div class="welcome-message">
-                    <h2>Welcome to TokenLens</h2>
+                    <h2>Welcome to Scope</h2>
                     <p>Chat with AI and see token probabilities in real-time</p>
                 </div>
             `;
-            conversationHistory = [];
+            messageTree = {};
+            currentLeafId = null;
             saveCurrentConversation();
         }
 
@@ -212,16 +372,18 @@
             
             if (!message) return;
             
-            // Get prefill text if in prefill mode
-            let prefillText = null;
-            if (currentMode === 'prefill') {
-                const prefillInput = document.getElementById('prefill-input');
-                prefillText = prefillInput.value.trim() || null;
-            }
+            // Get force-start text if provided
+            const prefillInput = document.getElementById('prefill-input');
+            const prefillText = prefillInput ? (prefillInput.value.trim() || null) : null;
             
             // Clear inputs
             input.value = '';
             input.style.height = 'auto';
+            
+            // Clear force-start input after sending
+            if (prefillInput) {
+                prefillInput.value = '';
+            }
             
             // Remove welcome message if present
             const welcomeMsg = document.querySelector('.welcome-message');
@@ -229,35 +391,90 @@
                 welcomeMsg.remove();
             }
             
-            // Add user message to history
-            conversationHistory.push({
+            // Create User Node
+            const nodeId = uuidv4();
+            const newNode = {
+                id: nodeId,
+                parentId: currentLeafId,
+                childrenIds: [],
                 role: 'user',
-                content: message
-            });
+                content: message,
+                timestamp: Date.now()
+            };
             
-            // Handle based on current mode
-            if (currentMode === 'comparison') {
-                // Display user message in both panels
-                addUserMessageToComparison(message);
-                
-                // Generate responses for both models
-                generateComparisonResponses(message, prefillText);
-            } else {
+            // Update parent's children
+            if (currentLeafId && messageTree[currentLeafId]) {
+                messageTree[currentLeafId].childrenIds.push(nodeId);
+            }
+            
+            // Add to tree and update leaf
+            messageTree[nodeId] = newNode;
+            currentLeafId = nodeId;
+            
                 // Display user message
-                addUserMessage(message);
+            // We need to pass the node to enable navigation UI later
+            addUserMessage(newNode);
                 
                 // Start generating assistant response (with prefill if provided)
                 generateResponse(prefillText);
-            }
         }
 
-        function addUserMessage(content, scroll = true) {
+        function addUserMessage(nodeOrContent, scroll = true) {
+            const content = typeof nodeOrContent === 'object' ? nodeOrContent.content : nodeOrContent;
+            const node = typeof nodeOrContent === 'object' ? nodeOrContent : null;
+            
             const messagesContainer = document.getElementById('messages-container');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message user-message';
+            if (node) {
+                messageDiv.dataset.nodeId = node.id;
+            }
+            
+            // Add navigation and edit controls if node exists
+            let controlsHtml = '';
+            if (node) {
+                // Check if parent has multiple children (siblings of this node)
+                const parent = node.parentId ? messageTree[node.parentId] : null;
+                // If it's a root node (no parent), we check roots (we need to track roots or iterate)
+                // For simplicity, let's assume we can find siblings via parent. 
+                // If no parent, find all nodes with no parent.
+                
+                let siblings = [];
+                if (parent) {
+                    siblings = parent.childrenIds;
+                } else {
+                    // Find all root nodes
+                    siblings = Object.values(messageTree).filter(n => !n.parentId).map(n => n.id);
+                }
+                
+                const currentIndex = siblings.indexOf(node.id);
+                const siblingsCount = siblings.length;
+                
+                // Edit button first
+                controlsHtml += `
+                    <button class="edit-msg-btn" onclick="enableEditMode('${node.id}')" title="Edit message">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                `;
+                
+                if (siblingsCount > 1) {
+                    controlsHtml += `
+                        <div class="message-nav">
+                            <button class="nav-btn prev" ${currentIndex === 0 ? 'disabled' : ''} onclick="navigateSibling('${node.id}', -1)">❮</button>
+                            <span class="nav-count">${currentIndex + 1}/${siblingsCount}</span>
+                            <button class="nav-btn next" ${currentIndex === siblingsCount - 1 ? 'disabled' : ''} onclick="navigateSibling('${node.id}', 1)">❯</button>
+                </div>
+            `;
+            }
+        }
+        
             messageDiv.innerHTML = `
                 <div class="message-content">
                     <div class="message-text">${escapeHtml(content)}</div>
+                    ${controlsHtml ? `<div class="message-controls">${controlsHtml}</div>` : ''}
                 </div>
             `;
             messagesContainer.appendChild(messageDiv);
@@ -265,68 +482,127 @@
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
         }
-        
-        function addUserMessageToComparison(content) {
-            const diffMessages = document.getElementById('diff-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message user-message';
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="message-text">${escapeHtml(content)}</div>
-                </div>
-            `;
-            diffMessages.appendChild(messageDiv);
-            diffMessages.scrollTop = diffMessages.scrollHeight;
-        }
 
         async function generateResponse(prefillText = null) {
+            console.log('generateResponse started', {prefillText, currentLeafId});
             isGenerating = true;
-            const sendBtn = document.getElementById('send-btn');
-            sendBtn.disabled = true;
+            updateSendButton();
             
             const messagesContainer = document.getElementById('messages-container');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message assistant-message';
+            
+            // Create Assistant Node
+            const nodeId = uuidv4();
+            messageDiv.dataset.nodeId = nodeId;
+            console.log('Created new node ID:', nodeId);
+            
+            const newNode = {
+                id: nodeId,
+                parentId: currentLeafId,
+                childrenIds: [],
+                role: 'assistant',
+                content: '',
+                tokens: [],
+                model: document.getElementById('model-select').value,
+                temperature: parseFloat(document.getElementById('temperature-input')?.value) || 1.0,
+                timestamp: Date.now()
+            };
+            
+            // Update parent
+            if (currentLeafId && messageTree[currentLeafId]) {
+                messageTree[currentLeafId].childrenIds.push(nodeId);
+                messageTree[currentLeafId].lastSelectedChildId = nodeId; // Make this the active path
+            }
+            
+            // Add to tree and update leaf
+            messageTree[nodeId] = newNode;
+            currentLeafId = nodeId;
+            
+            // Add navigation controls
+            const controlsHtml = `
+                <div class="message-controls">
+                    <button class="regenerate-btn" onclick="regenerateFromNode('${newNode.parentId}')" title="Regenerate response">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                        </svg>
+                    </button>
+                    <div class="message-nav" style="display:none">
+                        <button class="nav-btn prev">❮</button>
+                        <span class="nav-count">1/1</span>
+                        <button class="nav-btn next">❯</button>
+                    </div>
+                </div>
+            `;
+
             messageDiv.innerHTML = `
                 <div class="message-content">
-                    <div class="message-tokens" id="streaming-tokens"></div>
+                    <div class="message-tokens"></div>
+                    ${controlsHtml}
                 </div>
             `;
             messagesContainer.appendChild(messageDiv);
             
-            const tokensContainer = document.getElementById('streaming-tokens');
-            const modelName = document.getElementById('model-select').value;
+            const tokensContainer = messageDiv.querySelector('.message-tokens');
+            const modelName = newNode.model;
             
             let assistantResponse = '';
             let responseTokens = [];
+            let prefillTokenCount = 0;
             
-            // Show prefill text with yellow styling ONLY in prefill mode
-            if (prefillText && currentMode === 'prefill') {
-                const prefillSpan = document.createElement('span');
-                prefillSpan.className = 'prefilled-text';
-                prefillSpan.textContent = prefillText;
-                tokensContainer.appendChild(prefillSpan);
+            // If prefill text provided, immediately show as single gray badge
+            if (prefillText) {
                 assistantResponse = prefillText;
+                const placeholderSpan = document.createElement('span');
+                placeholderSpan.className = 'token prefill-placeholder prefilled-token';
+                placeholderSpan.textContent = prefillText;
+                placeholderSpan.style.backgroundColor = 'hsl(0, 0%, 80%)';
+                tokensContainer.appendChild(placeholderSpan);
             }
             
             try {
+                // Create abort controller for this generation
+                currentAbortController = new AbortController();
+                
                 // Use fetch with streaming for POST requests
+                const temperature = newNode.temperature;
+                
+                // Get conversation history from tree
+                const threadNodes = getActiveThread();
+                console.log('Active thread nodes:', threadNodes.length);
+                
+                // The API expects [ {role, content}, ... ].
+                // The last node in threadNodes is our new assistant node (empty).
+                // We should send everything *before* it.
+                const messagesToSend = threadNodes.slice(0, -1).map(n => ({
+                    role: n.role,
+                    content: n.content
+                }));
+                console.log('Messages to send:', messagesToSend);
+
                 const requestBody = {
-                    messages: conversationHistory,
-                    model: modelName
+                    messages: messagesToSend,
+                    model: modelName,
+                    temperature: temperature
                 };
                 
                 if (prefillText) {
                     requestBody.prefill = prefillText;
                 }
                 
+                console.log('Sending request...', requestBody);
                 const response = await fetch('/stream', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(requestBody),
+                    signal: currentAbortController.signal
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
@@ -348,6 +624,7 @@
                                 
                                 if (data.type === 'token') {
                                     const isPromptToken = data.is_prompt_token || false;
+                                    const isPrefillToken = data.is_prefill_token || false;
                                     
                                     // Skip prompt tokens entirely
                                     if (isPromptToken) {
@@ -356,46 +633,91 @@
                                     
                                     assistantResponse += data.token;
                                     const tokenIdx = responseTokens.length;
-                                    responseTokens.push({
+                                    
+                                    const tokenData = {
                                         token: data.token,
                                         probability: data.probability,
                                         rank: data.rank,
                                         vocab_size: data.vocab_size,
-                                        top_alternatives: data.top_alternatives
-                                    });
-                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx);
+                                        top_alternatives: data.top_alternatives,
+                                        model: modelName,
+                                        temperature: temperature,
+                                        is_prefill_token: isPrefillToken,
+                                        is_prompt_token: isPromptToken
+                                    };
+                                    
+                                    responseTokens.push(tokenData);
+                                    
+                                    // Update the node in real-time
+                                    newNode.content = assistantResponse;
+                                    newNode.tokens = responseTokens;
+                                    
+                                    // If first prefill token, remove placeholder
+                                    if (isPrefillToken && prefillTokenCount === 0) {
+                                        const placeholder = tokensContainer.querySelector('.prefill-placeholder');
+                                        if (placeholder) {
+                                            placeholder.remove();
+                                        }
+                                    }
+                                    
+                                    // Add token normally
+                                    const tokenSpan = addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx, null, modelName, temperature);
+                                    // Link token to node
+                                    tokenSpan.dataset.nodeId = nodeId;
+                                    
+                                    // Add prefill styling if applicable
+                                    if (isPrefillToken && tokenSpan) {
+                                        tokenSpan.classList.add('prefilled-token');
+                                        prefillTokenCount++;
+                                    }
+                                    
                                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                                 } else if (data.type === 'done') {
-                                    // Add assistant response to conversation history
-                                    conversationHistory.push({
-                                        role: 'assistant',
-                                        content: assistantResponse,
-                                        tokens: responseTokens
-                                    });
+                                    console.log('Generation done');
+                                    // Finalize node update
+                                    newNode.content = assistantResponse;
+                                    newNode.tokens = responseTokens;
+                                    
                                     saveCurrentConversation(true); // Update timestamp for new message
                                     isGenerating = false;
-                                    sendBtn.disabled = false;
+                                    currentAbortController = null;
+                                    updateSendButton();
+                                    
+                                    // Update navigation controls (if this was a regeneration)
+                                    updateMessageControls(nodeId);
+                                    
                                 } else if (data.type === 'error') {
-                                    console.error('Error:', data.message);
+                                    console.error('Server Error:', data.message);
                                     tokensContainer.innerHTML += `<div class="error-message">Error: ${escapeHtml(data.message)}</div>`;
                                     isGenerating = false;
-                                    sendBtn.disabled = false;
+                                    currentAbortController = null;
+                                    updateSendButton();
                                 }
                             } catch (e) {
                                 // Skip invalid JSON
+                                console.warn('JSON parse error in chunk:', e);
                             }
                         }
                     }
                 }
             } catch (error) {
-                console.error('Fetch error:', error);
-                tokensContainer.innerHTML += `<div class="error-message">Connection error. Please try again.</div>`;
+                if (error.name === 'AbortError') {
+                    console.log('Generation stopped by user');
+                    // Save partial response
+                    newNode.content = assistantResponse;
+                    newNode.tokens = responseTokens;
+                    saveCurrentConversation(true);
+                } else {
+                console.error('Fetch/Stream error:', error);
+                tokensContainer.innerHTML += `<div class="error-message">Connection error: ${error.message}. Please try again.</div>`;
+                }
                 isGenerating = false;
-                sendBtn.disabled = false;
+                currentAbortController = null;
+                updateSendButton();
             }
         }
 
-        function addToken(container, token, probability, rank, vocabSize, topAlternatives, tokenIndex) {
+        function addToken(container, token, probability, rank, vocabSize, topAlternatives, tokenIndex, messageIndex = null, model = null, temperature = null) {
             const tokenSpan = document.createElement('span');
             tokenSpan.className = 'token';
             
@@ -406,10 +728,20 @@
             tokenSpan.dataset.vocabSize = vocabSize;
             tokenSpan.dataset.topAlternatives = JSON.stringify(topAlternatives || []);
             tokenSpan.dataset.tokenIndex = tokenIndex;
+            // tokenSpan.dataset.messageIndex = messageIndex !== null ? messageIndex : conversationHistory.length; // Deprecated
+            tokenSpan.dataset.model = model || document.getElementById('model-select')?.value || 'Unknown';
+            tokenSpan.dataset.temperature = temperature !== null ? temperature : (parseFloat(document.getElementById('temperature-input')?.value) || 1.0);
             
-            // Color based on probability
+            // Color based on probability (or gray if in DiffLens mode)
+            if (currentView === 'diff') {
+                // In DiffLens mode, new tokens should be gray until analyzed
+                tokenSpan.style.backgroundColor = 'hsl(0, 0%, 75%)';
+                tokenSpan.style.color = 'hsl(0, 0%, 30%)';
+                tokenSpan.classList.add('difflens-neutral');
+            } else {
             const color = getColorForProb(probability || 0);
             tokenSpan.style.backgroundColor = color;
+            }
             
             // Handle special tokens - check for any whitespace, not just exact matches
             let displayToken = token;
@@ -436,8 +768,6 @@
             } 
             // Check if token is only spaces
             else if (token === ' ' || /^\s+$/.test(token)) {
-                const spaceCount = token.length;
-                displayToken = spaceCount === 1 ? '·' : `·×${spaceCount}`;
                 tokenSpan.classList.add('space-token');
                 isWhitespace = true;
             }
@@ -452,57 +782,23 @@
             // Use textContent to prevent any HTML rendering issues
             tokenSpan.textContent = displayToken;
             
-            // Add click handler for context menu
-            tokenSpan.addEventListener('click', function(e) {
-                e.stopPropagation();
-                showTokenContextMenu(tokenSpan, e);
+            // Add hover handler for tooltip (read-only mode)
+            tokenSpan.addEventListener('mouseenter', function(e) {
+                // Don't show hover tooltip if click tooltip is active
+                const tooltip = document.getElementById('token-tooltip');
+                if (!tooltip.classList.contains('click-mode')) {
+                    showUnifiedTooltip(tokenSpan, 'hover');
+                }
             });
             
-            // Create tooltip with escaped/readable whitespace
-            const tooltip = document.createElement('span');
-            tooltip.className = 'custom-tooltip';
+            tokenSpan.addEventListener('mouseleave', function(e) {
+                hideUnifiedTooltip('hover');
+            });
             
-            // For tooltip, show escaped version of whitespace
-            let displayTokenForTooltip = token
-                .replace(/\n/g, '\\n')
-                .replace(/\r/g, '\\r')
-                .replace(/\t/g, '\\t')
-                .replace(/ /g, '·');
-            
-            let tooltipHTML = `<strong>Token:</strong> "${escapeHtml(displayTokenForTooltip)}"<br>`;
-            
-            if (probability !== null && probability !== undefined && !isNaN(probability)) {
-                tooltipHTML += `<strong>Probability:</strong> ${probability.toFixed(6)}<br>`;
-            } else {
-                tooltipHTML += `<strong>Probability:</strong> N/A<br>`;
-            }
-            
-            if (rank !== null && rank !== undefined && vocabSize) {
-                tooltipHTML += `<strong>Rank:</strong> ${rank} / ${vocabSize}`;
-            } else {
-                tooltipHTML += `<strong>Rank:</strong> N/A`;
-            }
-            
-            if (topAlternatives && topAlternatives.length > 0 && topAlternatives[0].probability !== null) {
-                tooltipHTML += '<br><br><strong>Top 3 Alternatives:</strong><ol class="alternatives-list">';
-                topAlternatives.forEach(alt => {
-                    // Also escape whitespace in alternatives
-                    let altDisplay = alt.token
-                        .replace(/\n/g, '\\n')
-                        .replace(/\r/g, '\\r')
-                        .replace(/\t/g, '\\t')
-                        .replace(/ /g, '·');
-                    tooltipHTML += `<li>${escapeHtml(altDisplay)}: ${(alt.probability * 100).toFixed(2)}%</li>`;
-                });
-                tooltipHTML += '</ol>';
-            }
-            
-            tooltip.innerHTML = tooltipHTML;
-            tokenSpan.appendChild(tooltip);
-            
-            // Add smart tooltip positioning on hover
-            tokenSpan.addEventListener('mouseenter', function() {
-                positionTooltip(tokenSpan, tooltip);
+            // Add click handler for tooltip (interactive mode)
+            tokenSpan.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showUnifiedTooltip(tokenSpan, 'click');
             });
             
             container.appendChild(tokenSpan);
@@ -514,52 +810,8 @@
                     container.appendChild(document.createElement('br'));
                 }
             }
-        }
-
-        function positionTooltip(tokenElement, tooltip) {
-            // Remove all positioning classes first
-            tooltip.classList.remove('tooltip-below', 'tooltip-left', 'tooltip-right');
             
-            // Get positions and dimensions
-            const tokenRect = tokenElement.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            
-            // Account for header and sidebar
-            const header = document.querySelector('.chat-header');
-            const sidebar = document.getElementById('sidebar');
-            const headerHeight = header ? header.getBoundingClientRect().height : 0;
-            const sidebarWidth = (sidebar && !sidebar.classList.contains('collapsed')) ? sidebar.getBoundingClientRect().width : 0;
-            
-            const margin = 10;
-            const topBoundary = headerHeight + margin;
-            const leftBoundary = sidebarWidth + margin;
-            
-            // Check vertical positioning
-            // Default is above (bottom: calc(100% + 8px) in CSS)
-            // Calculate where tooltip would be if positioned above
-            const tooltipAboveTop = tokenRect.top - tooltipRect.height - 8;
-            
-            // If tooltip would go above header, position below instead
-            if (tooltipAboveTop < topBoundary) {
-                tooltip.classList.add('tooltip-below');
-            }
-            
-            // Check horizontal positioning
-            // Default is centered (left: 50%, transform: translateX(-50%) in CSS)
-            // Calculate where tooltip edges would be if centered
-            const tooltipCenterLeft = tokenRect.left + (tokenRect.width / 2) - (tooltipRect.width / 2);
-            const tooltipCenterRight = tooltipCenterLeft + tooltipRect.width;
-            
-            // If tooltip would go behind sidebar or off left edge
-            if (tooltipCenterLeft < leftBoundary) {
-                tooltip.classList.add('tooltip-left');
-            }
-            // If tooltip would go off right edge, align to right of token
-            else if (tooltipCenterRight > viewportWidth - margin) {
-                tooltip.classList.add('tooltip-right');
-            }
+            return tokenSpan;
         }
 
         function getColorForProb(probability) {
@@ -574,390 +826,560 @@
             return div.innerHTML;
         }
 
-        // ===== MODE SWITCHING =====
+        // ===== VIEW SWITCHING =====
         
-        function switchMode() {
-            const mode = document.getElementById('mode-select').value;
-            currentMode = mode;
+        function switchView() {
+            const viewSelect = document.getElementById('view-select');
+            const view = viewSelect ? viewSelect.value : 'token';
+            currentView = view;
+            
+            // Save view to localStorage
+            localStorage.setItem('tokenlens_view', view);
             
             const appContainer = document.querySelector('.app-container');
-            const inputContainer = document.querySelector('.input-container');
-            const modelSelector = document.querySelector('.model-selector');
+            if (appContainer) {
+                appContainer.classList.remove('view-token', 'view-diff');
+                appContainer.classList.add(view === 'diff' ? 'view-diff' : 'view-token');
+            }
             
-            // Remove all mode classes
-            appContainer.classList.remove('mode-default', 'mode-comparison', 'mode-prefill');
-            
-            // Apply new mode class
-            appContainer.classList.add(`mode-${mode}`);
-            
-            // Show/hide elements based on mode
-            if (mode === 'comparison') {
-                // Show dual model selectors and comparison layout
-                showComparisonMode();
+            if (view === 'diff') {
+                applyDiffLensView();
             } else {
-                hideComparisonMode();
-            }
-            
-            if (mode === 'prefill') {
-                // Show prefill input
-                showPrefillMode();
-            } else {
-                hidePrefillMode();
+                resetDiffLensView();
             }
         }
         
-        function showPrefillMode() {
-            const prefillWrapper = document.getElementById('prefill-wrapper');
-            prefillWrapper.classList.remove('hidden');
-        }
-        
-        function hidePrefillMode() {
-            const prefillWrapper = document.getElementById('prefill-wrapper');
-            prefillWrapper.classList.add('hidden');
-            // Clear prefill input when hiding
-            document.getElementById('prefill-input').value = '';
-        }
-        
-        function showComparisonMode() {
-            const comparisonContainer = document.getElementById('comparison-container');
-            comparisonContainer.classList.remove('hidden');
-            
-            // Set default models if not already set
-            const model1Select = document.getElementById('model-select-1');
-            const model2Select = document.getElementById('model-select-2');
-            
-            if (!model1Select.value) {
-                model1Select.value = 'meta-llama/Llama-3.1-8B-Instruct';
-            }
-            if (!model2Select.value) {
-                model2Select.value = 'google/gemma-2-2b-it';
-            }
-        }
-        
-        function hideComparisonMode() {
-            const comparisonContainer = document.getElementById('comparison-container');
-            comparisonContainer.classList.add('hidden');
-        }
-        
-        async function generateComparisonResponses(message, prefillText = null) {
-            isGenerating = true;
-            const sendBtn = document.getElementById('send-btn');
-            sendBtn.disabled = true;
-            
-            const model1Name = document.getElementById('model-select-1').value;
-            const model2Name = document.getElementById('model-select-2').value;
-            
-            const diffMessages = document.getElementById('diff-messages');
-            
-            // Add assistant message placeholder for diff view
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message assistant-message diff-message';
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="diff-header">
-                        <span class="model-label model-1-label">${model1Name.split('/').pop()}</span>
-                        <span class="diff-separator">↔</span>
-                        <span class="model-label model-2-label">${model2Name.split('/').pop()}</span>
-                    </div>
-                    <div class="message-tokens" id="diff-tokens">
-                        <div class="generating-indicator">Generating from both models...</div>
-                    </div>
-                </div>
-            `;
-            diffMessages.appendChild(messageDiv);
-            diffMessages.scrollTop = diffMessages.scrollHeight;
-            
-            // Generate from both models simultaneously (but don't display yet)
-            const response1Promise = generateForModelSilent(model1Name, prefillText);
-            const response2Promise = generateForModelSilent(model2Name, prefillText);
-            
-            // Wait for both to complete
-            const [response1, response2] = await Promise.all([response1Promise, response2Promise]);
-            
-            // Build and display the diff
-            buildDiffView('diff-tokens', response1, response2);
-            
-            // Save to conversation history
-            conversationHistory.push({
-                role: 'assistant',
-                content: response1.text,
-                tokens: response1.tokens,
-                comparison: {
-                    model1: model1Name,
-                    model2: model2Name,
-                    response1: response1,
-                    response2: response2
-                }
-            });
-            
-            saveCurrentConversation(true); // Update timestamp for new message
-            isGenerating = false;
-            sendBtn.disabled = false;
-        }
-        
-        function buildDiffView(containerId, response1, response2) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            // Filter out prompt tokens
-            const tokens1 = response1.tokens.filter(t => !t.is_prompt_token);
-            const tokens2 = response2.tokens.filter(t => !t.is_prompt_token);
-            
-            let i = 0;
-            let j = 0;
-            
-            while (i < tokens1.length || j < tokens2.length) {
-                // Check if tokens match
-                if (i < tokens1.length && j < tokens2.length && tokens1[i].token === tokens2[j].token) {
-                    // Tokens match - show as normal (use model 1's token data)
-                    addToken(container, tokens1[i].token, tokens1[i].probability, tokens1[i].rank, tokens1[i].vocab_size, tokens1[i].top_alternatives, i);
-                    
-                    // Add newline if token contains newline
-                    if (tokens1[i].token.includes('\n')) {
-                        container.appendChild(document.createElement('br'));
-                    }
-                    
-                    i++;
-                    j++;
-                } else {
-                    // Tokens diverge - show diff
-                    const diffGroup = document.createElement('span');
-                    diffGroup.className = 'diff-group';
-                    
-                    // Add model 1 version
-                    if (i < tokens1.length) {
-                        const token1Span = document.createElement('span');
-                        token1Span.className = 'diff-token model-1-token';
-                        const color = getColorForProb(tokens1[i].probability);
-                        token1Span.style.backgroundColor = color;
-                        
-                        let displayToken1 = tokens1[i].token;
-                        if (tokens1[i].token.includes('\n')) {
-                            displayToken1 = '↵';
-                        } else if (tokens1[i].token === ' ') {
-                            displayToken1 = '·';
-                        }
-                        token1Span.textContent = displayToken1;
-                        
-                        // Add tooltip
-                        const tooltip1 = createTooltip(tokens1[i], i);
-                        token1Span.appendChild(tooltip1);
-                        token1Span.addEventListener('mouseenter', function() {
-                            positionTooltip(token1Span, tooltip1);
-                        });
-                        
-                        diffGroup.appendChild(token1Span);
-                    }
-                    
-                    // Add separator
-                    const separator = document.createElement('span');
-                    separator.className = 'diff-separator-inline';
-                    separator.textContent = ' | ';
-                    diffGroup.appendChild(separator);
-                    
-                    // Add model 2 version
-                    if (j < tokens2.length) {
-                        const token2Span = document.createElement('span');
-                        token2Span.className = 'diff-token model-2-token';
-                        const color = getColorForProb(tokens2[j].probability);
-                        token2Span.style.backgroundColor = color;
-                        
-                        let displayToken2 = tokens2[j].token;
-                        if (tokens2[j].token.includes('\n')) {
-                            displayToken2 = '↵';
-                        } else if (tokens2[j].token === ' ') {
-                            displayToken2 = '·';
-                        }
-                        token2Span.textContent = displayToken2;
-                        
-                        // Add tooltip
-                        const tooltip2 = createTooltip(tokens2[j], j);
-                        token2Span.appendChild(tooltip2);
-                        token2Span.addEventListener('mouseenter', function() {
-                            positionTooltip(token2Span, tooltip2);
-                        });
-                        
-                        diffGroup.appendChild(token2Span);
-                    }
-                    
-                    container.appendChild(diffGroup);
-                    
-                    // Add newline if either token contains newline
-                    if ((i < tokens1.length && tokens1[i-1]?.token.includes('\n')) || 
-                        (j < tokens2.length && tokens2[j-1]?.token.includes('\n'))) {
-                        container.appendChild(document.createElement('br'));
-                    }
-                    
-                    i++;
-                    j++;
+        function applyDiffLensView() {
+            // Restore saved analysis model selection
+            const savedAnalysisModel = localStorage.getItem('tokenlens_analysis_model');
+            if (savedAnalysisModel) {
+                const analysisSelect = document.getElementById('analysis-model-select');
+                if (analysisSelect) {
+                    analysisSelect.value = savedAnalysisModel;
                 }
             }
-        }
-        
-        function createTooltip(tokenData, idx) {
-            const tooltip = document.createElement('span');
-            tooltip.className = 'custom-tooltip';
             
-            let displayTokenForTooltip = tokenData.token
-                .replace(/\n/g, '\\n')
-                .replace(/\r/g, '\\r')
-                .replace(/\t/g, '\\t')
-                .replace(/ /g, '·');
+            // Apply colors to tokens based on DiffLens data (or neutral if missing)
+            const messagesContainer = document.getElementById('messages-container');
+            const assistantMessages = messagesContainer.querySelectorAll('.assistant-message');
             
-            let tooltipHTML = `<strong>Token:</strong> "${escapeHtml(displayTokenForTooltip)}"<br>`;
-            
-            if (tokenData.probability !== null && tokenData.probability !== undefined && !isNaN(tokenData.probability)) {
-                tooltipHTML += `<strong>Probability:</strong> ${tokenData.probability.toFixed(6)}<br>`;
-            } else {
-                tooltipHTML += `<strong>Probability:</strong> N/A<br>`;
-            }
-            
-            if (tokenData.rank !== null && tokenData.rank !== undefined && tokenData.vocab_size) {
-                tooltipHTML += `<strong>Rank:</strong> ${tokenData.rank} / ${tokenData.vocab_size}`;
-            } else {
-                tooltipHTML += `<strong>Rank:</strong> N/A`;
-            }
-            
-            if (tokenData.top_alternatives && tokenData.top_alternatives.length > 0 && tokenData.top_alternatives[0].probability !== null) {
-                tooltipHTML += '<br><br><strong>Top 3 Alternatives:</strong><ol class="alternatives-list">';
-                tokenData.top_alternatives.forEach(alt => {
-                    let altDisplay = alt.token
-                        .replace(/\n/g, '\\n')
-                        .replace(/\r/g, '\\r')
-                        .replace(/\t/g, '\\t')
-                        .replace(/ /g, '·');
-                    tooltipHTML += `<li>${escapeHtml(altDisplay)}: ${(alt.probability * 100).toFixed(2)}%</li>`;
+            assistantMessages.forEach(messageDiv => {
+                const tokens = messageDiv.querySelectorAll('.token');
+                tokens.forEach(token => {
+                    if (token.dataset.difflensProbDiff) {
+                        const diff = parseFloat(token.dataset.difflensProbDiff);
+                        const color = getDiffLensColor(diff);
+                        token.style.backgroundColor = color;
+                        
+                        if (Math.abs(diff) < 2) {
+                            token.style.color = 'hsl(0, 0%, 30%)';
+                            token.classList.remove('difflens-gen-prefers', 'difflens-analysis-prefers');
+                            token.classList.add('difflens-neutral');
+                        } else if (diff > 0) {
+                            token.style.color = 'hsl(120, 50%, 20%)';
+                            token.classList.remove('difflens-analysis-prefers', 'difflens-neutral');
+                            token.classList.add('difflens-gen-prefers');
+                        } else {
+                            token.style.color = 'hsl(0, 50%, 25%)';
+                            token.classList.remove('difflens-gen-prefers', 'difflens-neutral');
+                            token.classList.add('difflens-analysis-prefers');
+                        }
+                    } else {
+                        token.style.backgroundColor = 'hsl(0, 0%, 75%)';
+                        token.style.color = 'hsl(0, 0%, 30%)';
+                        token.classList.remove('difflens-gen-prefers', 'difflens-analysis-prefers');
+                        token.classList.add('difflens-neutral');
+                    }
                 });
-                tooltipHTML += '</ol>';
-            }
-            
-            tooltip.innerHTML = tooltipHTML;
-            return tooltip;
+            });
         }
         
-        async function generateForModelSilent(modelName, prefillText = null) {
-            // Generate without displaying - used for comparison mode
-            let assistantResponse = prefillText || '';
-            let responseTokens = [];
+        function resetDiffLensView() {
+            clearDiffLensAnalysis();
+        }
+        
+        function clearDiffLensAnalysis() {
+            // Reset all tokens to their original probability-based colors
+            const allTokens = document.querySelectorAll('.token');
+            allTokens.forEach(token => {
+                const prob = parseFloat(token.dataset.probability);
+                if (!isNaN(prob)) {
+                    const color = getColorForProb(prob);
+                    token.style.backgroundColor = color;
+                }
+                token.style.color = '';
+                token.classList.remove('difflens-gen-prefers', 'difflens-analysis-prefers', 'difflens-neutral');
+            });
+        }
+        
+        async function triggerDiffLensAnalysis() {
+            const analysisModel = document.getElementById('analysis-model-select').value;
+            if (!analysisModel) {
+                clearDiffLensAnalysis();
+                return;
+            }
+            
+            // Get apply button and set loading state
+            const applyBtn = document.getElementById('apply-difflens-btn');
+            const originalText = applyBtn.textContent;
+            applyBtn.disabled = true;
+            applyBtn.textContent = 'Analyzing...';
+            applyBtn.style.opacity = '0.6';
+            applyBtn.style.cursor = 'not-allowed';
             
             try {
-                const requestBody = {
-                    messages: conversationHistory,
-                    model: modelName
-                };
+                // Save analysis model selection
+                localStorage.setItem('tokenlens_analysis_model', analysisModel);
                 
-                if (prefillText) {
-                    requestBody.prefill = prefillText;
-                }
+                const generationModel = document.getElementById('model-select').value;
+                const messagesContainer = document.getElementById('messages-container');
+                const assistantMessages = messagesContainer.querySelectorAll('.assistant-message');
                 
-                const response = await fetch('/stream', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(requestBody)
-                });
+                for (const messageDiv of assistantMessages) {
+                const tokensContainer = messageDiv.querySelector('.message-tokens');
+                if (!tokensContainer) continue;
                 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
+                const tokens = tokensContainer.querySelectorAll('.token');
+                if (tokens.length === 0) continue;
                 
-                while (true) {
-                    const {done, value} = await reader.read();
-                    if (done) break;
+                // Build context up to this message using active thread (approximate)
+                // Since we are iterating over visible messages, they correspond to active thread
+                const thread = getActiveThread();
+                const messageIndex = Array.from(assistantMessages).indexOf(messageDiv);
+                // We need context messages. 
+                // Active thread contains {role, content, ...} nodes.
+                // Assistant messages in thread are at index 1, 3, 5... (assuming User-Assistant-User...)
+                // Actually, we can just find the node corresponding to this message in the thread.
+                const nodeId = messageDiv.dataset.nodeId;
+                const nodeIndex = thread.findIndex(n => n.id === nodeId);
+                
+                if (nodeIndex === -1) continue;
+                
+                // Context is everything before this node
+                const contextMessages = thread.slice(0, nodeIndex).map(n => ({
+                    role: n.role,
+                    content: n.content
+                }));
+                
+                // Get token data including rank and top alternatives
+                const tokenData = Array.from(tokens).map(token => ({
+                    token: token.dataset.token,
+                    gen_prob: parseFloat(token.dataset.probability),
+                    gen_rank: parseInt(token.dataset.rank),
+                    gen_top_alternatives: JSON.parse(token.dataset.topAlternatives || '[]')
+                }));
+                
+                try {
+                    // Call backend to analyze
+                    const response = await fetch('/api/analyze-difflens', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            generation_model: generationModel,
+                            analysis_model: analysisModel,
+                            context: contextMessages,
+                            tokens: tokenData
+                        })
+                    });
                     
-                    const chunk = decoder.decode(value, {stream: true});
-                    const lines = chunk.split('\n');
+                    const result = await response.json();
                     
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const jsonStr = line.substring(6);
-                            try {
-                                const data = JSON.parse(jsonStr);
-                                
-                                if (data.type === 'token') {
-                                    assistantResponse += data.token;
-                                    responseTokens.push({
-                                        token: data.token,
-                                        probability: data.probability,
-                                        rank: data.rank,
-                                        vocab_size: data.vocab_size,
-                                        top_alternatives: data.top_alternatives
-                                    });
-                                } else if (data.type === 'done') {
-                                    break;
-                                }
-                            } catch (e) {
-                                // Skip invalid JSON
-                            }
+                    if (result.token_data && result.token_data.length > 0) {
+                        // Store DiffLens data in node
+                        const node = messageTree[nodeId];
+                        if (node) {
+                            node.difflens_data = {
+                                generation_model: result.generation_model,
+                                analysis_model: result.analysis_model,
+                                token_data: result.token_data
+                            };
                         }
+                        
+                        // Apply diff lens colors and update token data
+                        tokens.forEach((token, idx) => {
+                            if (result.token_data[idx]) {
+                                const tokenInfo = result.token_data[idx];
+                                const diff = tokenInfo.prob_diff;
+                                const color = getDiffLensColor(diff);
+                                token.style.backgroundColor = color;
+                                
+                                // Set text color based on difference
+                                if (Math.abs(diff) < 0.5) {
+                                    token.style.color = 'hsl(0, 0%, 30%)';
+                                } else if (diff > 0) {
+                                    token.style.color = 'hsl(120, 50%, 20%)';
+                                } else {
+                                    token.style.color = 'hsl(0, 50%, 25%)';
+                                }
+                                
+                                // Store DiffLens data in token element
+                                token.dataset.difflensGenProb = tokenInfo.gen_prob;
+                                token.dataset.difflensGenRank = tokenInfo.gen_rank;
+                                token.dataset.difflensGenTopAlternatives = JSON.stringify(tokenInfo.gen_top_alternatives);
+                                token.dataset.difflensAnalysisProb = tokenInfo.analysis_prob;
+                                token.dataset.difflensAnalysisRank = tokenInfo.analysis_rank;
+                                token.dataset.difflensAnalysisTopAlternatives = JSON.stringify(tokenInfo.analysis_top_alternatives);
+                                token.dataset.difflensProbDiff = tokenInfo.prob_diff;
+                                token.dataset.difflensRankDiff = tokenInfo.rank_diff;
+                                token.dataset.difflensGenModel = result.generation_model;
+                                token.dataset.difflensAnalysisModel = result.analysis_model;
+                                
+                                // Add class for styling
+                                token.classList.remove('difflens-gen-prefers', 'difflens-analysis-prefers', 'difflens-neutral');
+                                if (Math.abs(diff) < 0.5) {
+                                    token.classList.add('difflens-neutral');
+                                } else if (diff > 0) {
+                                    token.classList.add('difflens-gen-prefers');
+                                } else {
+                                    token.classList.add('difflens-analysis-prefers');
+                                }
+                            }
+                        });
+                        
+                        // Save conversation with DiffLens data
+                        saveCurrentConversation();
                     }
+                } catch (error) {
+                    console.error('DiffLens analysis error:', error);
                 }
-                
-                return {
-                    text: assistantResponse,
-                    tokens: responseTokens,
-                    model: modelName
-                };
-                
-            } catch (error) {
-                console.error('Generation failed:', error);
-                return {
-                    text: '',
-                    tokens: [],
-                    model: modelName
-                };
+            }
+            } finally {
+                // Reset button state
+                applyBtn.disabled = false;
+                applyBtn.textContent = originalText;
+                applyBtn.style.opacity = '1';
+                applyBtn.style.cursor = 'pointer';
             }
         }
         
+        function getDiffLensColor(percentageDiff) {
+            // percentageDiff = (gen_prob - analysis_prob) * 100
+            // Positive = generation model prefers (green)
+            // Negative = analysis model prefers (red)
+            // Near zero = similar (gray)
+            
+            // Clamp to reasonable range [-50, 50] (percentage points)
+            const clamped = Math.max(-50, Math.min(50, percentageDiff));
+            const normalized = clamped / 50; // Now in [-1, 1]
+            
+            if (Math.abs(percentageDiff) < 2) {
+                // Low difference (< 2 percentage points) - gray
+                return 'hsl(0, 0%, 75%)';
+            } else if (normalized > 0) {
+                // Generation model prefers - green
+                const intensity = Math.abs(normalized);
+                const lightness = 85 - (intensity * 35); // 85% to 50%
+                return `hsl(120, 60%, ${lightness}%)`;
+            } else {
+                // Analysis model prefers - red
+                const intensity = Math.abs(normalized);
+                const lightness = 85 - (intensity * 35); // 85% to 50%
+                return `hsl(0, 60%, ${lightness}%)`;
+            }
+        }
 
         // ===== TOKEN CONTEXT MENU =====
         
-        function showTokenContextMenu(tokenElement, event) {
-            const menu = document.getElementById('token-context-menu');
-            const alternativesList = document.getElementById('top-alternatives-list');
+        function showUnifiedTooltip(tokenElement, mode) {
+            const tooltip = document.getElementById('token-tooltip');
+            const currentTokenDiv = document.getElementById('tooltip-current-token');
+            const alternativesDiv = document.getElementById('tooltip-alternatives');
             const searchInput = document.getElementById('token-search-input');
             const searchResults = document.getElementById('token-search-results');
             
-            // Store reference to clicked token
-            selectedTokenElement = tokenElement;
-            selectedAlternativeToken = null;
+            // Check if we're in DiffLens mode and have DiffLens data
+            const inDiffLensMode = currentView === 'diff';
+            const hasDiffLensData = tokenElement.dataset.difflensProbDiff !== undefined;
             
             // Get token data
+            const token = tokenElement.dataset.token;
+            const probability = parseFloat(tokenElement.dataset.probability);
+            const rank = parseInt(tokenElement.dataset.rank);
+            const vocabSize = parseInt(tokenElement.dataset.vocabSize);
             const topAlternatives = JSON.parse(tokenElement.dataset.topAlternatives);
             
-            // Populate top 3 alternatives
-            alternativesList.innerHTML = '';
-            topAlternatives.forEach((alt, idx) => {
-                const altItem = document.createElement('div');
-                altItem.className = 'alternative-item';
-                altItem.onclick = () => selectAlternativeToken(alt.token, altItem);
+            // Get DiffLens data if available
+            let difflensData = null;
+            if (inDiffLensMode && hasDiffLensData) {
+                difflensData = {
+                    genProb: parseFloat(tokenElement.dataset.difflensGenProb),
+                    genRank: parseInt(tokenElement.dataset.difflensGenRank),
+                    genTopAlternatives: JSON.parse(tokenElement.dataset.difflensGenTopAlternatives || '[]'),
+                    analysisProb: parseFloat(tokenElement.dataset.difflensAnalysisProb),
+                    analysisRank: parseInt(tokenElement.dataset.difflensAnalysisRank),
+                    analysisTopAlternatives: JSON.parse(tokenElement.dataset.difflensAnalysisTopAlternatives || '[]'),
+                    probDiff: parseFloat(tokenElement.dataset.difflensProbDiff),
+                    rankDiff: parseInt(tokenElement.dataset.difflensRankDiff),
+                    genModel: tokenElement.dataset.difflensGenModel,
+                    analysisModel: tokenElement.dataset.difflensAnalysisModel
+                };
+            }
+            
+            // Format token for display (same as main stream)
+            let displayToken = token;
+            
+            // Check for newlines
+            if (token.includes('\n')) {
+                const newlineCount = (token.match(/\n/g) || []).length;
+                displayToken = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
+            } 
+            // Check if token is only spaces
+            else if (token === ' ' || /^\s+$/.test(token)) {
+                // Keep as space, no visual replacement
+            }
+            // Check for tab characters
+            else if (token.includes('\t')) {
+                const tabCount = (token.match(/\t/g) || []).length;
+                displayToken = tabCount === 1 ? '→' : `→×${tabCount}`;
+            }
+            
+            // DiffLens mode: show comparison header and two-column layout
+            if (inDiffLensMode) {
+                // Show diff info at top if we have analysis data
+                if (difflensData) {
+                    currentTokenDiv.innerHTML = `
+                        <div style="padding: 8px 12px; border-bottom: 1px solid var(--border-color); font-size: 0.9em;">
+                            <strong>Prob Diff:</strong> ${difflensData.probDiff >= 0 ? '+' : ''}${difflensData.probDiff.toFixed(2)}% &nbsp;&nbsp;
+                            <strong>Rank Diff:</strong> ${difflensData.rankDiff >= 0 ? '+' : ''}${difflensData.rankDiff}
+                        </div>
+                    `;
+                } else {
+                    currentTokenDiv.innerHTML = `
+                        <div style="padding: 8px 12px; border-bottom: 1px solid var(--border-color); font-size: 0.9em; color: var(--text-secondary);">
+                            Click "Apply" to analyze with analysis model
+                        </div>
+                    `;
+                }
                 
-                let displayToken = alt.token;
+                // Two-column layout for models
+                alternativesDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0; padding: 12px; min-width: 500px;">
+                        <div class="model-column" style="padding-right: 12px; min-width: 0; overflow: hidden;">
+                            <div style="font-weight: 600; margin-bottom: 8px; font-size: 0.875em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${difflensData?.genModel || document.getElementById('model-select')?.value || 'Generation'}</div>
+                            <div class="tooltip-current-token" style="margin-bottom: 8px; min-width: 0;">
+                                <div class="current-left" style="min-width: 0; overflow: hidden;">
+                                    ${rank ? `<span class="current-rank" style="flex-shrink: 0;">#${rank}</span>` : ''}
+                                    <span class="current-token-text" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+                                </div>
+                                ${probability ? `<span class="current-prob" style="flex-shrink: 0;">${(probability * 100).toFixed(1)}%</span>` : ''}
+                            </div>
+                            <div class="alternatives-list">
+                                ${topAlternatives && topAlternatives.length > 0 ? 
+                                    topAlternatives
+                                        .map((alt, i) => ({...alt, originalRank: i + 1}))
+                                        .filter(alt => alt.token !== token)
+                                        .slice(0, 3)
+                                        .map((alt) => {
+                                        let displayAlt = alt.token;
+                                        if (alt.token.includes('\n')) {
+                                            const newlineCount = (alt.token.match(/\n/g) || []).length;
+                                            displayAlt = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
+                                        } else if (/^\s+$/.test(alt.token) && !alt.token.includes('\t')) {
+                                            // Handle space-only tokens (excluding tabs)
+                                            const spaceCount = alt.token.length;
+                                            displayAlt = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
+                                        } else if (alt.token.includes('\t')) {
+                                            const tabCount = (alt.token.match(/\t/g) || []).length;
+                                            displayAlt = tabCount === 1 ? '→' : `→×${tabCount}`;
+                                        }
+                                        return `
+                                            <div class="tooltip-alternative-item" style="margin-bottom: 4px; min-width: 0;">
+                                                <div class="alt-left" style="min-width: 0; overflow: hidden;">
+                                                    <span class="alt-rank">#${alt.originalRank}</span>
+                                                    <span class="alt-token" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayAlt}</span>
+                                                </div>
+                                                <span class="alt-prob" style="flex-shrink: 0;">${(alt.probability * 100).toFixed(1)}%</span>
+                                            </div>
+                                        `;
+                                    }).join('') : '<div style="color: var(--text-secondary); font-size: 0.85em;">No alternatives</div>'}
+                            </div>
+                        </div>
+                        <div style="background: var(--border-color); width: 1px;"></div>
+                        <div class="model-column" style="padding-left: 12px; min-width: 0; overflow: hidden;">
+                            <div style="font-weight: 600; margin-bottom: 8px; font-size: 0.875em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${difflensData?.analysisModel || document.getElementById('analysis-model-select')?.value || 'Analysis'}</div>
+                            ${difflensData ? `
+                                <div class="tooltip-current-token" style="margin-bottom: 8px; min-width: 0;">
+                                    <div class="current-left" style="min-width: 0; overflow: hidden;">
+                                        ${difflensData.analysisRank ? `<span class="current-rank" style="flex-shrink: 0;">#${difflensData.analysisRank}</span>` : ''}
+                                        <span class="current-token-text" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+                                    </div>
+                                    ${difflensData.analysisProb ? `<span class="current-prob" style="flex-shrink: 0;">${(difflensData.analysisProb * 100).toFixed(1)}%</span>` : ''}
+                                </div>
+                                <div class="alternatives-list">
+                                    ${difflensData.analysisTopAlternatives && difflensData.analysisTopAlternatives.length > 0 ? 
+                                        difflensData.analysisTopAlternatives
+                                            .map((alt, i) => ({...alt, originalRank: i + 1}))
+                                            .filter(alt => alt.token !== token)
+                                            .slice(0, 3)
+                                            .map((alt) => {
+                                            let displayAlt = alt.token;
+                                            if (alt.token.includes('\n')) {
+                                                const newlineCount = (alt.token.match(/\n/g) || []).length;
+                                                displayAlt = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
+                                            } else if (/^\s+$/.test(alt.token) && !alt.token.includes('\t')) {
+                                                // Handle space-only tokens (excluding tabs)
+                                                const spaceCount = alt.token.length;
+                                                displayAlt = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
+                                            } else if (alt.token.includes('\t')) {
+                                                const tabCount = (alt.token.match(/\t/g) || []).length;
+                                                displayAlt = tabCount === 1 ? '→' : `→×${tabCount}`;
+                                            }
+                                            return `
+                                                <div class="tooltip-alternative-item" style="margin-bottom: 4px; min-width: 0;">
+                                                    <div class="alt-left" style="min-width: 0; overflow: hidden;">
+                                                        <span class="alt-rank">#${alt.originalRank}</span>
+                                                        <span class="alt-token" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayAlt}</span>
+                                                    </div>
+                                                    <span class="alt-prob" style="flex-shrink: 0;">${(alt.probability * 100).toFixed(1)}%</span>
+                                                </div>
+                                            `;
+                                        }).join('') : '<div style="color: var(--text-secondary); font-size: 0.85em;">No alternatives</div>'}
+                                </div>
+                            ` : '<div style="color: var(--text-secondary); font-size: 0.85em; padding: 8px;">Not analyzed yet</div>'}
+                        </div>
+                    </div>
+                `;
+                
+                // Set token text for both columns
+                const tokenTextEls = alternativesDiv.querySelectorAll('.current-token-text');
+                tokenTextEls.forEach(el => el.textContent = displayToken);
+                
+            } else {
+                // Normal mode tooltip (existing implementation)
+                const modelName = tokenElement.dataset.model || 'Unknown';
+                const temperature = parseFloat(tokenElement.dataset.temperature) || 1.0;
+                
+                currentTokenDiv.innerHTML = `
+                    <div style="padding: 8px 12px; border-bottom: 1px solid var(--border-color); font-size: 0.85em; color: var(--text-secondary);">
+                        <strong>Model:</strong> ${modelName} &nbsp;&nbsp; <strong>Temp:</strong> ${temperature.toFixed(1)}
+                    </div>
+                    <div class="tooltip-current-token ${mode === 'click' ? 'clickable' : ''}">
+                    <div class="current-left">
+                        ${rank !== null && rank !== undefined && vocabSize ? `<span class="current-rank">#${rank}</span>` : '<span class="current-rank"></span>'}
+                        <span class="current-token-text"></span>
+                    </div>
+                    ${probability !== null && probability !== undefined && !isNaN(probability) ? `<span class="current-prob">${(probability * 100).toFixed(1)}%</span>` : '<span class="current-prob"></span>'}
+                </div>`;
+                
+                // Set token text directly to preserve all characters (including special tokens)
+                const tokenTextEl = currentTokenDiv.querySelector('.current-token-text');
+                tokenTextEl.textContent = displayToken;
+                
+                // Make current token clickable in click mode
+                if (mode === 'click') {
+                    const currentTokenRow = currentTokenDiv.querySelector('.tooltip-current-token');
+                    currentTokenRow.onclick = () => selectAlternativeToken(token, currentTokenRow);
+                }
+                
+                // Build alternatives list (exclude current token and show next 3)
+                alternativesDiv.innerHTML = '';
+                if (topAlternatives && topAlternatives.length > 0 && topAlternatives[0].probability !== null) {
+                    // Filter out the current token, preserve original indices for rank calculation
+                    const filteredAlts = topAlternatives
+                        .map((alt, originalIdx) => ({ ...alt, originalRank: originalIdx + 1 }))
+                        .filter(alt => alt.token !== token)
+                        .slice(0, 3);
+                    
+                    filteredAlts.forEach((alt) => {
+                const altItem = document.createElement('div');
+                        altItem.className = 'tooltip-alternative-item';
+                        
+                        // Only clickable in click mode
+                        if (mode === 'click') {
+                            altItem.classList.add('clickable');
+                altItem.onclick = () => selectAlternativeToken(alt.token, altItem);
+                        }
+                
+                        const altRank = alt.originalRank;
+                        
+                        // Format token for display (same as main stream)
+                        let displayAltToken = alt.token;
                 if (alt.token.includes('\n')) {
-                    displayToken = '↵';
-                } else if (alt.token === ' ') {
-                    displayToken = '·';
+                            const newlineCount = (alt.token.match(/\n/g) || []).length;
+                            displayAltToken = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
+                        } else if (/^\s+$/.test(alt.token) && !alt.token.includes('\t')) {
+                            // Handle space-only tokens (excluding tabs)
+                            const spaceCount = alt.token.length;
+                            displayAltToken = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
+                        } else if (alt.token.includes('\t')) {
+                            const tabCount = (alt.token.match(/\t/g) || []).length;
+                            displayAltToken = tabCount === 1 ? '→' : `→×${tabCount}`;
                 }
                 
                 altItem.innerHTML = `
-                    <span class="alt-token">${escapeHtml(displayToken)}</span>
+                            <div class="alt-left">
+                                <span class="alt-rank">#${altRank}</span>
+                                <span class="alt-token"></span>
+                            </div>
                     <span class="alt-prob">${(alt.probability * 100).toFixed(1)}%</span>
                 `;
-                alternativesList.appendChild(altItem);
-            });
+                        
+                        // Set token text directly to preserve all characters
+                        const altTokenEl = altItem.querySelector('.alt-token');
+                        altTokenEl.textContent = displayAltToken;
+                        
+                        alternativesDiv.appendChild(altItem);
+                    });
+                }
+            }
+            
+            // Position tooltip
+            const rect = tokenElement.getBoundingClientRect();
+            tooltip.style.top = `${rect.bottom + 8}px`;
+            tooltip.style.left = `${rect.left}px`;
+            
+            // Set mode
+            tooltip.className = 'token-tooltip';
+            if (mode === 'hover') {
+                tooltip.classList.add('hover-mode');
+            } else if (mode === 'click') {
+                tooltip.classList.add('click-mode');
+                selectedTokenElement = tokenElement;
+                selectedAlternativeToken = token; // Select current token by default
+                
+                // Highlight current token row
+                const currentTokenRow = tooltip.querySelector('.tooltip-current-token');
+                if (currentTokenRow) {
+                    currentTokenRow.classList.add('selected');
+                }
             
             // Clear search
             searchInput.value = '';
             searchResults.innerHTML = '';
             
-            // Position menu near the token
-            const rect = tokenElement.getBoundingClientRect();
-            menu.style.top = `${rect.bottom + 5}px`;
-            menu.style.left = `${rect.left}px`;
-            
-            // Show menu
-            menu.classList.remove('hidden');
-            
             // Focus search input
             setTimeout(() => searchInput.focus(), 0);
+            }
+            
+            // Show tooltip
+            tooltip.classList.remove('hidden');
+        }
+        
+        function hideUnifiedTooltip(mode) {
+            const tooltip = document.getElementById('token-tooltip');
+            
+            // Only hide if in the specified mode
+            if (mode === 'hover' && tooltip.classList.contains('hover-mode')) {
+                tooltip.classList.add('hidden');
+                tooltip.classList.remove('hover-mode');
+            } else if (mode === 'click' && tooltip.classList.contains('click-mode')) {
+                // Clear all selections
+                const currentTokenRow = tooltip.querySelector('.tooltip-current-token');
+                if (currentTokenRow) {
+                    currentTokenRow.classList.remove('selected');
+                }
+                tooltip.querySelectorAll('.tooltip-alternative-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                tooltip.querySelectorAll('.search-result-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                tooltip.classList.add('hidden');
+                tooltip.classList.remove('click-mode');
+                selectedTokenElement = null;
+                selectedAlternativeToken = null;
+            }
         }
         
         let searchListenerSetup = false;
@@ -994,46 +1416,62 @@
             selectedAlternativeToken = token;
             
             // Update UI to show selection
-            document.querySelectorAll('.alternative-item').forEach(item => {
+            const tooltip = document.getElementById('token-tooltip');
+            const currentTokenRow = tooltip.querySelector('.tooltip-current-token');
+            if (currentTokenRow) {
+                currentTokenRow.classList.remove('selected');
+            }
+            tooltip.querySelectorAll('.tooltip-alternative-item').forEach(item => {
                 item.classList.remove('selected');
             });
-            document.querySelectorAll('.search-result-item').forEach(item => {
+            tooltip.querySelectorAll('.search-result-item').forEach(item => {
                 item.classList.remove('selected');
             });
             element.classList.add('selected');
         }
         
-        function hideContextMenu() {
-            const menu = document.getElementById('token-context-menu');
-            menu.classList.add('hidden');
-            selectedTokenElement = null;
-            selectedAlternativeToken = null;
-        }
-        
-        // Close context menu when clicking outside (setup after DOM loads)
-        function setupContextMenuHandlers() {
+        // Setup unified tooltip handlers
+        function setupTooltipHandlers() {
+            // Close click tooltip when clicking outside
             document.addEventListener('click', function(e) {
-                const menu = document.getElementById('token-context-menu');
-                if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && !e.target.classList.contains('token')) {
-                    hideContextMenu();
+                const tooltip = document.getElementById('token-tooltip');
+                if (tooltip && tooltip.classList.contains('click-mode') && !tooltip.contains(e.target) && !e.target.classList.contains('token')) {
+                    hideUnifiedTooltip('click');
                 }
             });
             
-            // Prevent context menu from closing when clicking inside it
-            const menu = document.getElementById('token-context-menu');
-            if (menu) {
-                menu.addEventListener('click', function(e) {
+            // Prevent tooltip from closing when clicking inside it
+            const tooltip = document.getElementById('token-tooltip');
+            if (tooltip) {
+                tooltip.addEventListener('click', function(e) {
                     e.stopPropagation();
                 });
             }
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideUnifiedTooltip('click');
+                }
+            });
         }
         
         // Token search with debouncing
         let searchTimeout = null;
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup context menu handlers
-            setupContextMenuHandlers();
+            // Restore view from localStorage
+            const viewSelect = document.getElementById('view-select');
+            const legacyMode = localStorage.getItem('tokenlens_mode');
+            const savedView = localStorage.getItem('tokenlens_view') || (legacyMode === 'difflens' ? 'diff' : 'token');
+            if (viewSelect) {
+                viewSelect.value = savedView || 'token';
+            }
+            currentView = viewSelect ? viewSelect.value : 'token';
+            switchView();
+            
+            // Setup tooltip handlers
+            setupTooltipHandlers();
             
             // Setup token search
             setupTokenSearchListener();
@@ -1044,9 +1482,9 @@
                 injectBtn.onclick = () => injectAndRegenerate();
             }
             
-            const branchBtn = document.getElementById('branch-conversation-btn');
-            if (branchBtn) {
-                branchBtn.onclick = () => branchConversation();
+            const logitLensBtn = document.getElementById('open-logit-lens-btn');
+            if (logitLensBtn) {
+                logitLensBtn.onclick = () => openLogitLensFromTooltip();
             }
         });
         
@@ -1084,25 +1522,36 @@
                     item.className = 'search-result-item';
                     item.onclick = () => selectAlternativeToken(result.token, item);
                     
-                    let displayToken = result.token;
+                    // Format token for display (same as main stream)
+                    let displaySearchToken = result.token;
                     if (result.token.includes('\n')) {
-                        displayToken = '↵';
-                    } else if (result.token === ' ') {
-                        displayToken = '·';
+                        const newlineCount = (result.token.match(/\n/g) || []).length;
+                        displaySearchToken = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
+                    } else if (result.token === ' ' || /^\s+$/.test(result.token)) {
+                        // Keep as space
                     } else if (result.token.includes('\t')) {
-                        displayToken = '→';
+                        const tabCount = (result.token.match(/\t/g) || []).length;
+                        displaySearchToken = tabCount === 1 ? '→' : `→×${tabCount}`;
                     }
                     
-                    // Show raw token string if different from decoded
-                    let rawInfo = '';
-                    if (result.raw && result.raw !== result.token) {
-                        rawInfo = ` <span class="token-raw">(${escapeHtml(result.raw)})</span>`;
+                    // Build probability badge if available
+                    let probHTML = '';
+                    if (result.probability !== null && result.probability !== undefined) {
+                        probHTML = `<span class="alt-prob">${(result.probability * 100).toFixed(1)}%</span>`;
                     }
                     
-                    item.innerHTML = `<span class="alt-token">${escapeHtml(displayToken)}</span>${rawInfo}`;
+                    item.innerHTML = `
+                        <span class="alt-token"></span>
+                        ${probHTML}
+                    `;
+                    
+                    // Set token text directly to preserve all characters
+                    const searchTokenEl = item.querySelector('.alt-token');
+                    searchTokenEl.textContent = displaySearchToken;
+                    
                     resultsDiv.appendChild(item);
                     
-                    console.log(`Search result ${idx}:`, result.token);
+                    console.log(`Search result ${idx}:`, result.token, result.probability);
                 });
             } catch (error) {
                 console.error('Token search failed:', error);
@@ -1117,18 +1566,24 @@
             }
             
             const tokenIndex = parseInt(selectedTokenElement.dataset.tokenIndex);
+            const nodeId = selectedTokenElement.dataset.nodeId;
             
-            // Get the last assistant message
-            const lastAssistantIndex = conversationHistory.length - 1;
-            if (lastAssistantIndex < 0 || conversationHistory[lastAssistantIndex].role !== 'assistant') {
-                alert('Cannot inject: no assistant message found');
+            // Find the message node
+            const node = messageTree[nodeId];
+            if (!node || node.role !== 'assistant') {
+                alert('Cannot inject: invalid message or not an assistant message');
                 return;
             }
             
-            const lastMessage = conversationHistory[lastAssistantIndex];
+            // Get parent node (User message) to branch from
+            const parentId = node.parentId;
+            if (!parentId) {
+                alert('Cannot inject: no parent message found');
+                return;
+            }
             
             // Get the original token's alternatives to find the probability of the injected token
-            const originalToken = lastMessage.tokens[tokenIndex];
+            const originalToken = node.tokens[tokenIndex];
             const topAlternatives = originalToken.top_alternatives || [];
             
             // Find the probability of the selected alternative
@@ -1136,66 +1591,39 @@
             const injectedTokenProb = altData ? altData.probability : null;
             
             // Truncate the response up to the selected token and inject the alternative
-            const tokensBeforeInjection = lastMessage.tokens.slice(0, tokenIndex);
+            const tokensBeforeInjection = node.tokens.slice(0, tokenIndex);
             const textBeforeInjection = tokensBeforeInjection.map(t => t.token).join('');
-            const injectedText = textBeforeInjection + selectedAlternativeToken;
+            const prefillText = textBeforeInjection + selectedAlternativeToken;
             
-            // Remove the last assistant message
-            conversationHistory.pop();
+            // Set current leaf to parent to branch from there
+            currentLeafId = parentId;
             
-            // Clear the visual message
-            const messagesContainer = document.getElementById('messages-container');
-            const lastMsgElement = messagesContainer.querySelector('.message.assistant-message:last-child');
-            if (lastMsgElement) {
-                lastMsgElement.remove();
+            // Update UI to reflect the state before generation (hides the old branch)
+            renderActiveThread();
+            
+            // Trigger generation with prefill
+            // This will create a NEW assistant node attached to parentId
+            // and fill it with prefillText before continuing generation
+            await generateResponse(prefillText);
+            
+            hideUnifiedTooltip('click');
+        }
+
+        function openLogitLensFromTooltip() {
+            if (!selectedTokenElement) {
+                alert('Please select a token first');
+                return;
             }
             
-            // Create new message with the injected tokens displayed normally
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message assistant-message';
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="message-tokens" id="streaming-tokens"></div>
-                </div>
-            `;
-            messagesContainer.appendChild(messageDiv);
+            const tokenElement = selectedTokenElement;
             
-            const tokensContainer = document.getElementById('streaming-tokens');
-            
-            // Display the tokens before injection normally (not as prefill)
-            tokensBeforeInjection.forEach((tokenData, idx) => {
-                addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx);
-            });
-            
-            // Display the injected token with its probability data and special styling
-            const injectedTokenData = {
-                token: selectedAlternativeToken,
-                probability: injectedTokenProb,
-                rank: altData ? topAlternatives.indexOf(altData) + 1 : null,
-                vocab_size: originalToken.vocab_size,
-                top_alternatives: topAlternatives
-            };
-            
-            const injectedIdx = tokensBeforeInjection.length;
-            addToken(tokensContainer, injectedTokenData.token, injectedTokenData.probability, injectedTokenData.rank, injectedTokenData.vocab_size, injectedTokenData.top_alternatives, injectedIdx);
-            
-            // Add injected styling to the token we just created
-            const lastToken = tokensContainer.lastElementChild;
-            if (lastToken && lastToken.classList.contains('token')) {
-                lastToken.classList.add('injected-token');
-            }
-            
-            // Now continue generation from this point
-            const startingTokenIndex = tokensBeforeInjection.length + 1;
-            await continueGenerationFromPoint(tokensContainer, injectedText, tokensBeforeInjection, injectedTokenData, startingTokenIndex);
-            
-            hideContextMenu();
+            hideUnifiedTooltip('click');
+            openLogitLens(tokenElement);
         }
         
         async function continueGenerationFromPoint(tokensContainer, prefillText, tokensBeforeInjection, injectedTokenData, startingIndex) {
             isGenerating = true;
-            const sendBtn = document.getElementById('send-btn');
-            sendBtn.disabled = true;
+            updateSendButton();
             const modelName = document.getElementById('model-select').value;
             const messagesContainer = document.getElementById('messages-container');
             
@@ -1206,6 +1634,9 @@
             allTokens.push(injectedTokenData);
             
             try {
+                // Create abort controller for this generation
+                currentAbortController = new AbortController();
+                
                 const response = await fetch('/stream', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -1213,7 +1644,8 @@
                         messages: conversationHistory,
                         model: modelName,
                         prefill: prefillText
-                    })
+                    }),
+                    signal: currentAbortController.signal
                 });
                 
                 const reader = response.body.getReader();
@@ -1234,6 +1666,8 @@
                                 
                                 if (data.type === 'token') {
                                     const isPromptToken = data.is_prompt_token || false;
+                                    
+                                    // Skip prompt tokens
                                     if (isPromptToken) continue;
                                     
                                     assistantResponse += data.token;
@@ -1256,7 +1690,8 @@
                                     });
                                     saveCurrentConversation(true);
                                     isGenerating = false;
-                                    sendBtn.disabled = false;
+                                    currentAbortController = null;
+                                    updateSendButton();
                                     break;
                                 }
                             } catch (e) {
@@ -1266,26 +1701,23 @@
                     }
                 }
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.log('Generation stopped by user');
+                    // Save partial response
+                    conversationHistory.push({
+                        role: 'assistant',
+                        content: assistantResponse,
+                        tokens: allTokens
+                    });
+                    saveCurrentConversation(true);
+                } else {
                 console.error('Continuation failed:', error);
                 tokensContainer.innerHTML += `<div class="error-message">Error: ${error.message}</div>`;
+                }
                 isGenerating = false;
-                sendBtn.disabled = false;
+                currentAbortController = null;
+                updateSendButton();
             }
-        }
-        
-        async function branchConversation() {
-            if (!selectedTokenElement || !selectedAlternativeToken) {
-                alert('Please select a token first');
-                return;
-            }
-            
-            // Create a new conversation as a branch
-            createNewChat();
-            
-            // TODO: Copy conversation up to this point and inject the alternative token
-            console.log('Branch conversation with token', selectedAlternativeToken);
-            
-            hideContextMenu();
         }
 
         // ===== CONVERSATION MANAGEMENT =====
@@ -1365,12 +1797,15 @@
                 id: id,
                 title: 'New Chat',
                 timestamp: Date.now(),
-                messages: [],
+                messageTree: {},
+                currentLeafId: null,
                 model: document.getElementById('model-select').value
             };
             
             currentConversationId = id;
-            conversationHistory = [];
+            messageTree = {};
+            currentLeafId = null;
+            // conversationHistory = []; // Removed as it's derived
             
             // Clear UI
             clearChat();
@@ -1389,8 +1824,13 @@
             const conversation = conversations[currentConversationId];
             if (!conversation) return;
             
-            conversation.messages = conversationHistory;
+            // Update conversation object with current tree state
+            conversation.messageTree = messageTree;
+            conversation.currentLeafId = currentLeafId;
             conversation.model = document.getElementById('model-select').value;
+            
+            // Also save linear messages for backwards compatibility or preview
+            // conversation.messages = getActiveThread(); 
             
             // Only update timestamp when new content is added, not when just switching
             if (updateTimestamp) {
@@ -1398,8 +1838,9 @@
             }
             
             // Generate title from first user message
-            if (conversationHistory.length > 0 && conversation.title === 'New Chat') {
-                const firstUserMsg = conversationHistory.find(msg => msg.role === 'user');
+            const thread = getActiveThread();
+            if (thread.length > 0 && conversation.title === 'New Chat') {
+                const firstUserMsg = thread.find(msg => msg.role === 'user');
                 if (firstUserMsg) {
                     conversation.title = firstUserMsg.content.substring(0, 50);
                     if (firstUserMsg.content.length > 50) {
@@ -1443,31 +1884,53 @@
             if (!conversation) return;
             
             currentConversationId = id;
-            conversationHistory = conversation.messages || [];
+            
+            // Handle legacy format (list of messages) vs new format (tree)
+            if (conversation.messageTree) {
+                messageTree = conversation.messageTree;
+                currentLeafId = conversation.currentLeafId;
+            } else if (conversation.messages) {
+                // Migrate legacy messages to tree
+                console.log('Migrating legacy conversation to tree format');
+                messageTree = {};
+                let prevId = null;
+                
+                conversation.messages.forEach(msg => {
+                    const nodeId = uuidv4();
+                    const node = {
+                        id: nodeId,
+                        parentId: prevId,
+                        childrenIds: [],
+                        role: msg.role,
+                        content: msg.content,
+                        tokens: msg.tokens || [],
+                        model: msg.role === 'assistant' ? (conversation.model || 'meta-llama/Llama-3.1-8B-Instruct') : null,
+                        temperature: 1.0,
+                        timestamp: Date.now(),
+                        difflens_data: msg.difflens_data || null
+                    };
+                    
+                    messageTree[nodeId] = node;
+                    
+                    if (prevId && messageTree[prevId]) {
+                        messageTree[prevId].childrenIds.push(nodeId);
+                    }
+                    
+                    prevId = nodeId;
+                });
+                
+                currentLeafId = prevId;
+            } else {
+                // Empty
+                messageTree = {};
+                currentLeafId = null;
+            }
             
             // Set model
             document.getElementById('model-select').value = conversation.model || 'meta-llama/Llama-3.1-8B-Instruct';
             
             // Render messages
-            const messagesContainer = document.getElementById('messages-container');
-            messagesContainer.innerHTML = '';
-            
-            if (conversationHistory.length === 0) {
-                messagesContainer.innerHTML = `
-                    <div class="welcome-message">
-                        <h2>Welcome to TokenLens</h2>
-                        <p>Chat with AI and see token probabilities in real-time</p>
-                    </div>
-                `;
-            } else {
-                conversationHistory.forEach(msg => {
-                    if (msg.role === 'user') {
-                        addUserMessage(msg.content, false);
-                    } else if (msg.role === 'assistant') {
-                        addAssistantMessage(msg.content, msg.tokens || []);
-                    }
-                });
-            }
+            renderActiveThread();
             
             // Update URL if requested
             if (updateUrlFlag) {
@@ -1476,6 +1939,219 @@
             
             saveConversations();
             updateSidebar();
+        }
+
+        function renderActiveThread() {
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.innerHTML = '';
+            
+            const thread = getActiveThread();
+            
+            if (thread.length === 0) {
+                messagesContainer.innerHTML = `
+                    <div class="welcome-message">
+                        <h2>Welcome to Scope</h2>
+                        <p>Chat with AI and see token probabilities in real-time</p>
+                    </div>
+                `;
+            } else {
+                thread.forEach((msg) => {
+                    if (msg.role === 'user') {
+                        addUserMessage(msg, false);
+                    } else if (msg.role === 'assistant') {
+                        addAssistantMessage(msg.content, msg.tokens || [], msg, msg.difflens_data);
+                    }
+                });
+            }
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Re-apply DiffLens if active
+            if (currentView === 'diff') {
+                applyDiffLensView();
+            }
+        }
+        
+        // Helper to navigate to a specific node (make it the active path)
+        function navigateToNode(nodeId) {
+            if (!messageTree[nodeId]) return;
+            
+            // If this node is a leaf, just set it
+            if (messageTree[nodeId].childrenIds.length === 0) {
+                currentLeafId = nodeId;
+            } else {
+                // If not a leaf, we need to find the most recently active leaf that descends from this node
+                // For now, just pick the last child recursively?
+                // Better: Store 'lastSelectedChild' in nodes to remember branch history.
+                
+                let curr = nodeId;
+                while (messageTree[curr] && messageTree[curr].childrenIds.length > 0) {
+                    // Prefer lastSelectedChildId if we track it, otherwise last added child
+                    const children = messageTree[curr].childrenIds;
+                    const preferredChild = messageTree[curr].lastSelectedChildId;
+                    
+                    if (preferredChild && children.includes(preferredChild)) {
+                        curr = preferredChild;
+                    } else {
+                        // Default to the last child (most recent)
+                        curr = children[children.length - 1];
+                    }
+                }
+                currentLeafId = curr;
+            }
+            
+            saveCurrentConversation();
+            renderActiveThread();
+        }
+        
+        function navigateSibling(nodeId, direction) {
+            const node = messageTree[nodeId];
+            if (!node) return;
+            
+            let siblings = [];
+            if (node.parentId) {
+                siblings = messageTree[node.parentId].childrenIds;
+            } else {
+                siblings = Object.values(messageTree).filter(n => !n.parentId).map(n => n.id);
+            }
+            
+            const currentIndex = siblings.indexOf(nodeId);
+            if (currentIndex === -1) return;
+            
+            const newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < siblings.length) {
+                const siblingId = siblings[newIndex];
+                
+                // Update parent's lastSelectedChildId preference
+                if (node.parentId && messageTree[node.parentId]) {
+                    messageTree[node.parentId].lastSelectedChildId = siblingId;
+                }
+                
+                navigateToNode(siblingId);
+            }
+        }
+        
+        function updateMessageControls(nodeId) {
+             // Re-renders the specific message controls if possible, or just full re-render
+             // Full re-render is safer
+             renderActiveThread();
+        }
+        
+        async function regenerateFromNode(parentId) {
+            // If parentId is null, it means we are regenerating from root? usually assistant has a parent (user msg)
+            // If parentId is "null" string (from template), treat as null
+            const realParentId = parentId === 'null' ? null : parentId;
+            
+            // Set current leaf to the parent, effectively "rewinding" to that point
+            // But we want to branch, not delete. 
+            // Setting currentLeafId to parentId means the next message added will be a child of parentId.
+            // But wait, if we set currentLeafId to parentId, then `generateResponse` will add a NEW child to it.
+            // Yes, that's what we want.
+            
+            currentLeafId = realParentId;
+            
+            // Update UI to reflect the state before generation (hides the old branch)
+            renderActiveThread();
+            
+            await generateResponse();
+            
+            // After generation, the new node is the leaf.
+            // renderActiveThread() is called by generateResponse implicitly via updates? 
+            // No, generateResponse appends DOM. We should force a re-render to show the navigation buttons on the new message.
+            // Actually generateResponse updates the DOM of the *new* message.
+            // But the *sibling* (previous response) navigation buttons might need updating if they are visible?
+            // Since we are on a new branch, the old response is not in the active thread anymore.
+            // So we just need to ensure the View matches the new Thread.
+            // generateResponse appends to the container.
+            // But since we "rewound" currentLeafId, the getActiveThread() changed.
+            // The existing DOM messages might be "future" messages if we were in the middle of a thread?
+            // Wait. If we go back to a user message and regenerate:
+            // The user message is displayed. The old assistant message is displayed after it.
+            // If we regenerate, we are effectively replacing the old assistant message in the view with a new one (streaming).
+            // So we should probably clear the messages *after* the parent node from the DOM before generating.
+            
+            renderActiveThread(); // This will show the thread up to parent.
+            // Then generateResponse will append the new message.
+        }
+        
+        function enableEditMode(nodeId) {
+            const node = messageTree[nodeId];
+            if (!node) return;
+            
+            const messageDiv = document.querySelector(`.message[data-node-id="${nodeId}"]`);
+            if (!messageDiv) return;
+            
+            const contentDiv = messageDiv.querySelector('.message-content');
+            
+            // Save current HTML to restore if cancelled (optional, or just re-render)
+            
+            contentDiv.innerHTML = `
+                <div class="edit-mode-container">
+                    <textarea class="edit-message-input">${node.content}</textarea>
+                    <div class="edit-actions">
+                        <button class="btn-secondary" onclick="cancelEditMessage('${nodeId}')">Cancel</button>
+                        <button class="btn-primary" onclick="saveEditedMessage('${nodeId}')">Save & Submit</button>
+                    </div>
+                </div>
+            `;
+            
+            // Auto-resize
+            const textarea = contentDiv.querySelector('textarea');
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        
+        function cancelEditMessage(nodeId) {
+            // Just re-render the thread to restore view
+            renderActiveThread();
+        }
+        
+        function saveEditedMessage(nodeId) {
+            const messageDiv = document.querySelector(`.message[data-node-id="${nodeId}"]`);
+            const textarea = messageDiv.querySelector('textarea');
+            const newContent = textarea.value.trim();
+            
+            if (!newContent) return;
+            
+            const oldNode = messageTree[nodeId];
+            
+            // If content hasn't changed, just cancel
+            if (newContent === oldNode.content) {
+                cancelEditMessage(nodeId);
+                return;
+            }
+            
+            // Create a NEW sibling node with the new content
+            const newNodeId = uuidv4();
+            const newNode = {
+                ...oldNode,
+                id: newNodeId,
+                childrenIds: [], // New branch starts here
+                content: newContent,
+                timestamp: Date.now(),
+                tokens: [] // Clear tokens as it's a new user message? Or re-tokenize? 
+                           // For User messages, tokens are usually computed on backend for analysis, 
+                           // but here we treat it as text. User nodes don't usually have 'tokens' property populated by backend in this app yet?
+                           // Actually addUserMessage just displays text.
+            };
+            
+            // Add to tree
+            messageTree[newNodeId] = newNode;
+            
+            // Link to parent
+            if (oldNode.parentId && messageTree[oldNode.parentId]) {
+                messageTree[oldNode.parentId].childrenIds.push(newNodeId);
+                // Set this as the preferred child
+                messageTree[oldNode.parentId].lastSelectedChildId = newNodeId;
+            }
+            
+            // Set as current leaf (temporarily, until we generate response)
+            currentLeafId = newNodeId;
+            
+            // Re-render view to show the updated user message
+            renderActiveThread();
+            
+            // Trigger generation for the Assistant response
+            generateResponse();
         }
         
         async function deleteCurrentChat() {
@@ -1525,23 +2201,45 @@
                 item.className = 'conversation-item' + (id === currentConversationId ? ' active' : '');
                 item.onclick = () => loadConversation(id);
                 
-                const date = new Date(conv.timestamp);
-                const timeStr = formatDate(date);
-                
                 item.innerHTML = `
-                    <div class="conversation-content">
-                        <div class="conversation-title">${escapeHtml(conv.title)}</div>
-                        <div class="conversation-meta">${timeStr}</div>
-                    </div>
-                    <button class="copy-link-btn" onclick="copyConversationLink('${id}', event)" title="Copy link">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M5 7L7 5M4 3H3C2.44772 3 2 3.44772 2 4V9C2 9.55228 2.44772 10 3 10H8C8.55228 10 9 9.55228 9 9V8M7 2H10V5M10 2L5.5 6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <div class="conversation-title">${conv.title}</div>
+                    <button class="delete-conversation-btn" onclick="event.stopPropagation(); deleteConversation('${id}')" title="Delete chat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
                         </svg>
                     </button>
                 `;
                 
                 list.appendChild(item);
             });
+        }
+        
+        async function deleteConversation(id) {
+            delete conversations[id];
+            
+            // Delete from server
+            try {
+                await fetch(`/api/conversations/${id}`, {
+                    method: 'DELETE'
+                });
+            } catch (error) {
+                console.error('Failed to delete conversation from server:', error);
+            }
+            
+            // If we deleted the current conversation, switch to another or create new
+            if (id === currentConversationId) {
+                const remainingIds = Object.keys(conversations);
+                if (remainingIds.length > 0) {
+                    loadConversation(remainingIds[0]);
+                } else {
+                    createNewChat();
+                }
+            }
+            
+            saveConversations();
+            updateSidebar(); // Refresh the sidebar UI
         }
         
         function formatDate(date) {
@@ -1583,26 +2281,6 @@
             }
         }
         
-        function copyConversationLink(conversationId, event) {
-            event.stopPropagation(); // Prevent loading the conversation
-            
-            const url = `${window.location.origin}/chat/${conversationId}`;
-            navigator.clipboard.writeText(url).then(() => {
-                // Show temporary success message
-                const button = event.target.closest('button');
-                const originalHTML = button.innerHTML;
-                button.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-                button.style.color = 'var(--success)';
-                
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.style.color = '';
-                }, 1500);
-            }).catch(err => {
-                console.error('Failed to copy link:', err);
-                alert('Failed to copy link');
-            });
-        }
         
         // Handle browser back/forward buttons
         window.addEventListener('popstate', function(event) {
@@ -1615,10 +2293,43 @@
             }
         });
         
-        function addAssistantMessage(content, tokens) {
+        function addAssistantMessage(content, tokens, nodeOrIdx, difflensData = null) {
             const messagesContainer = document.getElementById('messages-container');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message assistant-message';
+            
+            let node = null;
+            if (typeof nodeOrIdx === 'object') {
+                node = nodeOrIdx;
+                messageDiv.dataset.nodeId = node.id;
+            }
+            
+            // Controls
+            let controlsHtml = '';
+            if (node) {
+                 const parent = node.parentId ? messageTree[node.parentId] : null;
+                 let siblings = parent ? parent.childrenIds : [];
+                 const currentIndex = siblings.indexOf(node.id);
+                 const total = siblings.length;
+                 
+                 controlsHtml += `
+                    <button class="regenerate-btn" onclick="regenerateFromNode('${node.parentId}')" title="Regenerate response">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                        </svg>
+                    </button>
+                `;
+                
+                 if (total > 1) {
+                     controlsHtml += `
+                        <div class="message-nav">
+                            <button class="nav-btn prev" ${currentIndex === 0 ? 'disabled' : ''} onclick="navigateSibling('${node.id}', -1)">❮</button>
+                            <span class="nav-count">${currentIndex + 1}/${total}</span>
+                            <button class="nav-btn next" ${currentIndex === total - 1 ? 'disabled' : ''} onclick="navigateSibling('${node.id}', 1)">❯</button>
+                        </div>
+                    `;
+                 }
+            }
             
             const tokensContainer = document.createElement('div');
             tokensContainer.className = 'message-tokens';
@@ -1630,7 +2341,61 @@
                     if (tokenData.is_prompt_token) {
                         return;
                     }
-                    addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx);
+                    // Note: messageIndex param in addToken is not strictly used for logic, mostly for referencing. 
+                    // Passing node.id or null is better if we update addToken.
+                    // For now passing idx is fine.
+                    const tokenSpan = addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx, null, tokenData.model, tokenData.temperature);
+                    if (node) {
+                        tokenSpan.dataset.nodeId = node.id;
+                    }
+                    
+                    if (tokenData.is_prefill_token) {
+                        tokenSpan.classList.add('prefilled-token');
+                    }
+                    
+                    // Apply DiffLens data if available
+                    if (difflensData && difflensData.token_data && difflensData.token_data[idx]) {
+                        const tokenInfo = difflensData.token_data[idx];
+                        const diff = tokenInfo.prob_diff;
+                        const color = getDiffLensColor(diff);
+                        tokenSpan.style.backgroundColor = color;
+                        
+                        // Set text color based on difference (diff is in percentage points)
+                        if (Math.abs(diff) < 2) {
+                            tokenSpan.style.color = 'hsl(0, 0%, 30%)';
+                        } else if (diff > 0) {
+                            tokenSpan.style.color = 'hsl(120, 50%, 20%)';
+                        } else {
+                            tokenSpan.style.color = 'hsl(0, 50%, 25%)';
+                        }
+                        
+                        // Store DiffLens data in token element
+                        tokenSpan.dataset.difflensGenProb = tokenInfo.gen_prob;
+                        tokenSpan.dataset.difflensGenRank = tokenInfo.gen_rank;
+                        tokenSpan.dataset.difflensGenTopAlternatives = JSON.stringify(tokenInfo.gen_top_alternatives);
+                        tokenSpan.dataset.difflensAnalysisProb = tokenInfo.analysis_prob;
+                        tokenSpan.dataset.difflensAnalysisRank = tokenInfo.analysis_rank;
+                        tokenSpan.dataset.difflensAnalysisTopAlternatives = JSON.stringify(tokenInfo.analysis_top_alternatives);
+                        tokenSpan.dataset.difflensProbDiff = tokenInfo.prob_diff;
+                        tokenSpan.dataset.difflensRankDiff = tokenInfo.rank_diff;
+                        tokenSpan.dataset.difflensGenModel = difflensData.generation_model;
+                        tokenSpan.dataset.difflensAnalysisModel = difflensData.analysis_model;
+                        
+                        // Add class for styling
+                        tokenSpan.classList.remove('difflens-gen-prefers', 'difflens-analysis-prefers', 'difflens-neutral');
+                        if (Math.abs(diff) < 0.5) {
+                            tokenSpan.classList.add('difflens-neutral');
+                        } else if (diff > 0) {
+                            tokenSpan.classList.add('difflens-gen-prefers');
+                        } else {
+                            tokenSpan.classList.add('difflens-analysis-prefers');
+                        }
+                    } else if (currentView === 'diff') {
+                        // In DiffLens mode but no analysis yet - make gray
+                        tokenSpan.style.backgroundColor = 'hsl(0, 0%, 75%)';
+                        tokenSpan.style.color = 'hsl(0, 0%, 30%)';
+                        tokenSpan.classList.add('difflens-neutral');
+                    }
                 });
             } else {
                 // Plain text rendering
@@ -1639,7 +2404,18 @@
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
+            
+            // Add tokens container
             contentDiv.appendChild(tokensContainer);
+            
+            // Add controls below content
+            if (controlsHtml) {
+                const controlsDiv = document.createElement('div');
+                controlsDiv.className = 'message-controls';
+                controlsDiv.innerHTML = controlsHtml;
+                contentDiv.appendChild(controlsDiv);
+            }
+            
             messageDiv.appendChild(contentDiv);
             
             messagesContainer.appendChild(messageDiv);
@@ -1679,6 +2455,586 @@
                 }
             }
         });
+        
+        // ============= LOGIT LENS FUNCTIONS =============
+        
+        let currentLogitLensData = null;
+        let currentLogitLensView = 'heatmap';
+        let activeChartTokens = [];
+        const CHART_COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
+        
+        async function openLogitLens(tokenElement) {
+            // Get token context - find all tokens up to this one
+            const messageContainer = tokenElement.closest('.message-content');
+            if (!messageContainer) {
+                console.error('Cannot find message container');
+                return;
+            }
+            
+            // Get all tokens in this message
+            const allTokens = Array.from(messageContainer.querySelectorAll('.token'));
+            const targetIndex = allTokens.indexOf(tokenElement);
+            
+            if (targetIndex === -1) {
+                console.error('Token not found in message');
+                return;
+            }
+            
+            // Determine the window of tokens to analyze
+            // Show a context window ending at the clicked token
+            const windowSize = 10; // Show up to 10 tokens for a nice view
+            const startIndex = Math.max(0, targetIndex - windowSize + 1);
+            
+            // Collect tokens for the analysis window (including the target)
+            const tokensWindow = allTokens.slice(startIndex, targetIndex + 1);
+            
+            // Collect all tokens BEFORE the window for context
+            const contextTokens = allTokens.slice(0, startIndex).map(span => ({
+                token: span.dataset.token,
+                probability: parseFloat(span.dataset.probability),
+                rank: parseInt(span.dataset.rank),
+                vocab_size: parseInt(span.dataset.vocabSize)
+            }));
+            
+            // The tokens in the window (for display and analysis)
+            const windowTokensData = tokensWindow.map(span => ({
+                token: span.dataset.token,
+                display: span.textContent,
+                probability: parseFloat(span.dataset.probability),
+                rank: parseInt(span.dataset.rank),
+                vocab_size: parseInt(span.dataset.vocabSize)
+            }));
+            
+            // Get the node ID to find context
+            const nodeId = tokenElement.dataset.nodeId;
+            let context = [];
+            
+            if (nodeId && messageTree[nodeId]) {
+                // Build context from message tree
+                let currentNode = messageTree[nodeId];
+                const thread = [];
+                
+                while (currentNode && currentNode.parentId) {
+                    const parent = messageTree[currentNode.parentId];
+                    if (parent) {
+                        thread.unshift(parent);
+                    }
+                    currentNode = parent;
+                }
+                
+                // Convert to context format (only user messages for context)
+                context = thread
+                    .filter(node => node.role === 'user')
+                    .map(node => ({
+                        role: node.role,
+                        content: node.content
+                    }));
+            }
+            
+            // Show modal with loading state
+            const modal = document.getElementById('logit-lens-modal');
+            const tokenDisplay = document.getElementById('logit-lens-token');
+            const loading = modal.querySelector('.logit-lens-loading');
+            const viz = modal.querySelector('.logit-lens-viz');
+            
+            tokenDisplay.textContent = tokenElement.dataset.token;
+            modal.classList.remove('hidden');
+            loading.style.display = 'flex';
+            viz.classList.add('hidden');
+            
+            try {
+                // Call API
+                const model = tokenElement.dataset.model || document.getElementById('model-select')?.value;
+                
+                const response = await fetch('/api/logit-lens', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: model,
+                        context: context,
+                        context_tokens: contextTokens, // All tokens before the window
+                        window_tokens: windowTokensData, // The tokens in the window to analyze
+                        top_k: 20 // Get top 20 for better vocab coverage in search
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to analyze token');
+                }
+                
+                const data = await response.json();
+                // Add window tokens for display
+                data.window_tokens = windowTokensData;
+                currentLogitLensData = data;
+                
+                // Reset chart tokens for new analysis
+                activeChartTokens = [];
+                
+                // Hide loading, show viz
+                loading.style.display = 'none';
+                viz.classList.remove('hidden');
+                
+                // Render based on current view
+                if (currentLogitLensView === 'heatmap') {
+                    renderLogitLensHeatmap(data);
+                } else {
+                    renderLogitLensChart(data);
+                }
+                
+            } catch (error) {
+                console.error('Error in logit lens:', error);
+                alert('Failed to analyze token: ' + error.message);
+                closeLogitLensModal();
+            }
+        }
+        
+        function closeLogitLensModal() {
+            const modal = document.getElementById('logit-lens-modal');
+            modal.classList.add('hidden');
+            currentLogitLensData = null;
+            activeChartTokens = [];
+            
+            // Destroy chart
+            if (currentChart) {
+                currentChart.destroy();
+                currentChart = null;
+            }
+            
+            // Clear search
+            const searchInput = document.getElementById('chart-token-search');
+            if (searchInput) searchInput.value = '';
+            const searchResults = document.getElementById('chart-search-results');
+            if (searchResults) searchResults.classList.remove('active');
+        }
+        
+        function switchLogitLensView(view) {
+            currentLogitLensView = view;
+            
+            // Update toggle buttons
+            document.querySelectorAll('.view-toggle .toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            
+            // Update viz containers
+            const heatmapContainer = document.getElementById('logit-lens-heatmap');
+            const chartContainer = document.getElementById('logit-lens-chart');
+            
+            if (view === 'heatmap') {
+                heatmapContainer.classList.add('active');
+                chartContainer.classList.remove('active');
+                if (currentLogitLensData) {
+                    renderLogitLensHeatmap(currentLogitLensData);
+                }
+            } else {
+                heatmapContainer.classList.remove('active');
+                chartContainer.classList.add('active');
+                if (currentLogitLensData) {
+                    // Initialize chart with top 3 tokens on first view
+                    if (activeChartTokens.length === 0) {
+                        initializeChartTokens();
+                    }
+                    // Delay rendering to ensure container is visible
+                    setTimeout(() => renderLogitLensChart(), 50);
+                }
+            }
+        }
+        
+        function renderLogitLensHeatmap(data) {
+            const container = document.getElementById('heatmap-canvas-container');
+            const positions = data.positions; // Array of position analyses
+            const windowTokens = data.window_tokens; // The actual tokens
+            const numLayers = data.num_layers;
+            
+            // Create table with classic Logit Lens style
+            // Columns: Input tokens (sequence positions)
+            // Rows: Layers
+            // Cells: Top predicted token at that position and layer
+            
+            let html = '<table class="heatmap-table">';
+            
+            // Header row: show the actual input tokens
+            html += '<tr><th style="min-width: 100px; background: var(--bg-secondary);">Layer</th>';
+            windowTokens.forEach(t => {
+                const displayToken = t.display || t.token.replace(/\n/g, '↵').replace(/\t/g, '→');
+                html += `<th style="min-width: 80px; background: var(--bg-secondary); font-family: var(--font-mono);">${displayToken}</th>`;
+            });
+            html += '</tr>';
+            
+            // Data rows: one row per layer
+            for (let layerIdx = 0; layerIdx < numLayers; layerIdx++) {
+                const layerLabel = `Layer ${layerIdx}`;
+                html += `<tr><td style="background: var(--bg-secondary); font-weight: 600;">${layerLabel}</td>`;
+                
+                // For each position in the window
+                positions.forEach(posData => {
+                    // Find the prediction for this layer
+                    const layerPred = posData.layer_predictions.find(lp => lp.layer === layerIdx);
+                    
+                    if (layerPred && layerPred.predictions && layerPred.predictions.length > 0) {
+                        const topPred = layerPred.predictions[0];
+                        const prob = topPred.probability;
+                        const token = topPred.token;
+                        const displayToken = token.replace(/\n/g, '↵').replace(/ /g, '·').replace(/\t/g, '→');
+                        const color = getColorForProb(prob);
+                        const textColor = prob > 0.6 ? '#000' : 'var(--text-color)';
+                        
+                        html += `<td style="background-color: ${color}; color: ${textColor}; text-align: center; font-family: var(--font-mono); padding: 8px; font-size: 0.85em; cursor: pointer;" 
+                            class="heatmap-cell-hover"
+                            data-layer="${layerIdx}"
+                            data-position="${posData.position}"
+                            data-token="${token}"
+                            data-prob="${prob}">
+                            ${displayToken}
+                        </td>`;
+                    } else {
+                        html += '<td style="background: var(--bg-secondary);">-</td>';
+                    }
+                });
+                
+                html += '</tr>';
+            }
+            
+            html += '</table>';
+            container.innerHTML = '<div class="heatmap-table-scroll">' + html + '</div>';
+            
+            // Add hover listeners for custom tooltips
+            setTimeout(() => {
+                document.querySelectorAll('.heatmap-cell-hover').forEach(cell => {
+                    cell.addEventListener('mouseenter', showLogitLensTooltip);
+                    cell.addEventListener('mouseleave', hideLogitLensTooltip);
+                });
+            }, 100);
+        }
+        
+        function showLogitLensTooltip(e) {
+            const cell = e.target;
+            const layer = cell.dataset.layer;
+            const position = cell.dataset.position;
+            const token = cell.dataset.token;
+            const prob = parseFloat(cell.dataset.prob);
+            
+            const tooltip = document.getElementById('logit-lens-tooltip');
+            const header = document.getElementById('tooltip-header');
+            const body = document.getElementById('tooltip-body');
+            
+            const windowTokens = currentLogitLensData.window_tokens;
+            const inputToken = windowTokens[position];
+            const inputDisplay = inputToken ? inputToken.display : '';
+            
+            const layerLabel = `Layer ${layer}`;
+            
+            header.textContent = `${layerLabel} → Position ${parseInt(position) + 1}`;
+            
+            body.innerHTML = `
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Input Token:</span>
+                    <span class="tooltip-value">"${inputDisplay}"</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Predicted:</span>
+                    <span class="tooltip-value">"${token.replace(/\n/g, '↵').replace(/ /g, '·')}"</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Probability:</span>
+                    <span class="tooltip-value">${(prob * 100).toFixed(2)}%</span>
+                </div>
+            `;
+            
+            tooltip.classList.add('visible');
+            
+            // Position tooltip near cursor
+            const rect = cell.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.bottom + 10) + 'px';
+        }
+        
+        function hideLogitLensTooltip() {
+            const tooltip = document.getElementById('logit-lens-tooltip');
+            tooltip.classList.remove('visible');
+        }
+        
+        function initializeChartTokens() {
+            if (!currentLogitLensData || !currentLogitLensData.positions) return;
+            
+            // Get the last position (clicked token)
+            const lastPos = currentLogitLensData.positions[currentLogitLensData.positions.length - 1];
+            const finalLayer = lastPos.layer_predictions[lastPos.layer_predictions.length - 1];
+            
+            // Add top 3 tokens
+            const top3 = finalLayer.predictions.slice(0, 3).map(p => p.token);
+            activeChartTokens = top3.map((token, idx) => ({
+                token,
+                color: CHART_COLORS[idx]
+            }));
+            
+            updateActiveTokensDisplay();
+        }
+        
+        function updateActiveTokensDisplay() {
+            const container = document.getElementById('active-chart-tokens');
+            container.innerHTML = '';
+            
+            activeChartTokens.forEach((tokenData, idx) => {
+                const chip = document.createElement('div');
+                chip.className = 'active-token-chip';
+                
+                const displayToken = tokenData.token.replace(/\n/g, '↵').replace(/\t/g, '→');
+                
+                chip.innerHTML = `
+                    <div class="active-token-color" style="background-color: ${tokenData.color};"></div>
+                    <span>${displayToken}</span>
+                    <button class="active-token-remove" onclick="removeChartToken(${idx})">×</button>
+                `;
+                
+                container.appendChild(chip);
+            });
+        }
+        
+        function removeChartToken(idx) {
+            activeChartTokens.splice(idx, 1);
+            updateActiveTokensDisplay();
+            renderLogitLensChart();
+        }
+        
+        function addChartToken(token) {
+            // Don't add if already present
+            if (activeChartTokens.some(t => t.token === token)) return;
+            
+            // Get next color
+            const colorIdx = activeChartTokens.length % CHART_COLORS.length;
+            activeChartTokens.push({
+                token,
+                color: CHART_COLORS[colorIdx]
+            });
+            
+            updateActiveTokensDisplay();
+            renderLogitLensChart();
+        }
+        
+        // Token search for chart - search full vocab like inject feature
+        const chartSearchInput = document.getElementById('chart-token-search');
+        const chartSearchResults = document.getElementById('chart-search-results');
+        
+        if (chartSearchInput) {
+            let searchTimeout;
+            chartSearchInput.addEventListener('input', async (e) => {
+                const query = e.target.value.trim();
+                
+                if (query.length < 1) {
+                    chartSearchResults.classList.remove('active');
+                    return;
+                }
+                
+                // Debounce search
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        // Get model and context
+                        const modelSelect = document.getElementById('model-select');
+                        const modelName = modelSelect ? modelSelect.value : 'meta-llama/Llama-3.1-8B-Instruct';
+                        
+                        // Build context from message tree if available
+                        let context = [];
+                        if (currentLogitLensData && currentLogitLensData.positions) {
+                            // Try to get context from the analysis
+                            context = getActiveThread().map(node => ({
+                                role: node.role,
+                                content: node.content
+                            }));
+                        }
+                        
+                        // Search full vocabulary
+                        const response = await fetch('/api/search-tokens', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                query: query,
+                                model: modelName,
+                                context: context,
+                                prefix_tokens: []
+                            })
+                        });
+                        
+                        if (!response.ok) throw new Error('Search failed');
+                        
+                        const matches = await response.json();
+                        
+                        if (matches && matches.length > 0) {
+                            chartSearchResults.innerHTML = matches.slice(0, 15).map(match => {
+                                const displayToken = match.token.replace(/\n/g, '↵').replace(/\t/g, '→');
+                                const probText = match.probability ? ` (${(match.probability * 100).toFixed(1)}%)` : '';
+                                return `<div class="token-result-item" onclick="addChartToken('${match.token.replace(/'/g, "\\'")}')">${displayToken}${probText}</div>`;
+                            }).join('');
+                            chartSearchResults.classList.add('active');
+                        } else {
+                            chartSearchResults.innerHTML = '<div class="search-no-results">No matches found</div>';
+                            chartSearchResults.classList.add('active');
+                        }
+                    } catch (error) {
+                        console.error('Token search error:', error);
+                        chartSearchResults.innerHTML = '<div class="search-error">Search error</div>';
+                        chartSearchResults.classList.add('active');
+                    }
+                }, 300);
+            });
+            
+            // Close results when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!chartSearchInput.contains(e.target) && !chartSearchResults.contains(e.target)) {
+                    chartSearchResults.classList.remove('active');
+                }
+            });
+        }
+        
+        let currentChart = null; // Store Chart.js instance
+        
+        function renderLogitLensChart() {
+            if (!currentLogitLensData || !currentLogitLensData.positions) return;
+            
+            const canvas = document.getElementById('probability-chart');
+            const container = canvas.parentElement;
+            
+            if (!container || container.offsetWidth === 0) {
+                console.warn('Chart container not visible');
+                return;
+            }
+            
+            // Destroy previous chart if it exists
+            if (currentChart) {
+                currentChart.destroy();
+                currentChart = null;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Show message if no tokens selected
+            if (activeChartTokens.length === 0) {
+                canvas.width = container.offsetWidth - 40;
+                canvas.height = container.offsetHeight - 40;
+                ctx.fillStyle = '#666';
+                ctx.font = '14px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No tokens selected. Search and add tokens to visualize.', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            // Get the last position (clicked token) data
+            const lastPos = currentLogitLensData.positions[currentLogitLensData.positions.length - 1];
+            
+            // Build layer labels
+            const layerLabels = lastPos.layer_predictions.map(layer => `Layer ${layer.layer}`);
+            
+            // Build datasets for Chart.js
+            const datasets = activeChartTokens.map(tokenData => {
+                const data = lastPos.layer_predictions.map(layer => {
+                    const pred = layer.predictions.find(p => p.token === tokenData.token);
+                    return pred ? pred.probability : 0;
+                });
+                
+                return {
+                    label: tokenData.token.replace(/\n/g, '↵').replace(/\t/g, '→'),
+                    data: data,
+                    borderColor: tokenData.color,
+                    backgroundColor: tokenData.color,
+                    tension: 0.1,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                };
+            });
+            
+            // Create Chart.js chart
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: layerLabels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'nearest',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // We have our own legend with remove buttons
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    const token = context.dataset.label;
+                                    const prob = context.parsed.y;
+                                    return `${token}: ${(prob * 100).toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Layer',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: '#ddd'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Probability',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            min: 0,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(1);
+                                }
+                            },
+                            grid: {
+                                color: '#ddd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('logit-lens-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                const content = modal.querySelector('.logit-lens-content');
+                if (content && !content.contains(e.target)) {
+                    // Don't close if clicking on a token (to allow double-click)
+                    if (!e.target.classList.contains('token')) {
+                        closeLogitLensModal();
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
+

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, session, Response, stream_with_context
+from flask import Flask, render_template, url_for, request, redirect, flash, session, Response, stream_with_context, jsonify
 import json
 import os
 import math
@@ -291,7 +291,7 @@ def load_model_and_tokenizer(model_name):
     return model, tokenizer, device
 
 
-def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_k=3):
+def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_k=4):
     """Calculate token probabilities for the output text given the prompt."""
     # Lazy import - only load when needed
     import torch
@@ -352,12 +352,13 @@ def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_
     return token_data, vocab_size
 
 
-def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=3, prefill=None, show_prompt_tokens=False):
+def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=4, temperature=1.0, prefill=None, show_prompt_tokens=False):
     """Generate tokens one at a time with probabilities using streaming.
     
     Args:
         messages: List of message dicts with 'role' and 'content' keys
                   e.g., [{"role": "user", "content": "Hello!"}]
+        temperature: Sampling temperature (default 1.0)
         prefill: Optional text to prepend to assistant's response
         show_prompt_tokens: If True, yield prompt tokens (including special tokens) before generation
     """
@@ -384,13 +385,55 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
     # Store original prompt length before prefill
     original_prompt_length = input_ids.size(1)
     
-    # If prefill is provided, add it to the input
+    vocab_size = tokenizer.vocab_size
+    
+    # If prefill is provided, calculate probabilities efficiently with single forward pass
     if prefill:
         print(f"Prefilling with: {prefill[:100]}...")
         prefill_ids = tokenizer.encode(prefill, return_tensors="pt", add_special_tokens=False).to(device)
+        
+        # Single forward pass for all prefill tokens
+        with torch.no_grad():
+            all_ids = torch.cat([input_ids, prefill_ids], dim=1)
+            logits = model(all_ids).logits  # [1, total_len, vocab_size]
+        
+        prompt_len = input_ids.size(1)
+        
+        # Calculate probabilities for each prefill token from single forward pass
+        for i, token_id in enumerate(prefill_ids[0]):
+            token_id_item = token_id.item()
+            
+            # Get logits for position that predicts this token
+            current_logits = logits[0, prompt_len + i - 1]
+            probabilities = torch.softmax(current_logits, dim=-1)
+            
+            token_prob = probabilities[token_id_item].item()
+            
+            # Calculate rank
+            sorted_indices = torch.argsort(probabilities, descending=True)
+            token_rank = (sorted_indices == token_id_item).nonzero(as_tuple=True)[0].item() + 1
+            
+            # Get top k alternatives
+            top_k_probs, top_k_indices = torch.topk(probabilities, top_k)
+            top_k_tokens = [tokenizer.decode([idx.item()]) for idx in top_k_indices]
+            
+            top_alternatives = [
+                {"token": token, "probability": prob.item()}
+                for token, prob in zip(top_k_tokens, top_k_probs)
+            ]
+            
+            # Yield prefill token with probabilities
+            yield {
+                "token": tokenizer.decode([token_id_item]),
+                "probability": token_prob,
+                "rank": token_rank,
+                "vocab_size": vocab_size,
+                "top_alternatives": top_alternatives,
+                "is_prefill_token": True
+            }
+        
+        # Add prefill to input for generation
         input_ids = torch.cat([input_ids, prefill_ids], dim=1)
-    
-    vocab_size = tokenizer.vocab_size
     
     # If requested, yield prompt tokens (to show special tokens like <start_of_turn>)
     if show_prompt_tokens:
@@ -446,11 +489,20 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
             outputs = model(generated_ids)
             logits = outputs.logits[:, -1, :]  # Get logits for the last token
             
+        # Apply temperature to logits
+        if temperature > 0:
+            logits = logits / temperature
+        
         # Calculate probabilities
         probabilities = torch.softmax(logits, dim=-1)
         
-        # Sample next token (greedy for now)
-        next_token_id = torch.argmax(probabilities, dim=-1).item()
+        # Sample next token
+        if temperature == 0:
+            # Greedy sampling
+            next_token_id = torch.argmax(probabilities, dim=-1).item()
+        else:
+            # Sample from the distribution
+            next_token_id = torch.multinomial(probabilities, num_samples=1).item()
         
         # Get probability and rank of selected token
         token_prob = probabilities[0, next_token_id].item()
@@ -559,17 +611,21 @@ def manage_conversation(conversation_id):
 @app.route('/api/search-tokens', methods=['POST'])
 def search_tokens():
     """Search for tokens in the tokenizer vocabulary."""
+    import torch
+    
     try:
         data = request.get_json()
         query = data.get('query', '').strip()
         model_name = data.get('model', DEFAULT_MODEL)
+        context = data.get('context', [])  # Conversation history
+        prefix_tokens = data.get('prefix_tokens', [])  # Tokens before injection point
         
         print(f"Token search request: query='{query}', model={model_name}")
         
         if not query:
             return json.dumps([])
         
-        # Load tokenizer
+        # Load model and tokenizer
         model, tokenizer, device = load_model_and_tokenizer(model_name)
         
         # Search for matching tokens
@@ -600,21 +656,77 @@ def search_tokens():
                 })
                 seen_tokens.add(decoded)
                 
-                if len(matches) >= 30:  # Get more results initially
+                if len(matches) >= 50:  # Get more results to filter
                     break
         
-        # Sort by relevance:
+        # Calculate probabilities if context is provided
+        probabilities = {}
+        if context or prefix_tokens:
+            try:
+                # Build the context
+                if context and hasattr(tokenizer, 'apply_chat_template') and tokenizer.chat_template:
+                    formatted_context = tokenizer.apply_chat_template(
+                        context,
+                        tokenize=False,
+                        add_generation_prompt=True
+                    )
+                    context_ids = tokenizer.encode(formatted_context, return_tensors="pt").to(device)
+                else:
+                    context_ids = torch.tensor([[]], dtype=torch.long).to(device)
+                
+                # Add prefix tokens if provided
+                if prefix_tokens:
+                    prefix_text = ''.join([t['token'] for t in prefix_tokens])
+                    prefix_ids = tokenizer.encode(prefix_text, return_tensors="pt", add_special_tokens=False).to(device)
+                    if context_ids.size(1) > 0:
+                        all_ids = torch.cat([context_ids, prefix_ids], dim=1)
+                    else:
+                        all_ids = prefix_ids
+                else:
+                    all_ids = context_ids
+                
+                # Get logits at the current position
+                if all_ids.size(1) > 0:
+                    with torch.no_grad():
+                        logits = model(all_ids).logits[:, -1, :]  # Get last position
+                    
+                    # Calculate probabilities for all tokens
+                    all_probs = torch.softmax(logits[0], dim=-1)
+                    
+                    # Extract probabilities for matching tokens
+                    for match in matches:
+                        token_id = match['token_id']
+                        probabilities[token_id] = all_probs[token_id].item()
+                        
+                    print(f"Calculated probabilities for {len(matches)} matching tokens")
+                    
+            except Exception as e:
+                print(f"Error calculating probabilities: {e}")
+                import traceback
+                traceback.print_exc()
+                # Continue without probabilities
+        
+        # Add probabilities to matches
+        for match in matches:
+            if match['token_id'] in probabilities:
+                match['probability'] = probabilities[match['token_id']]
+            else:
+                match['probability'] = None
+        
+        # Sort by relevance and probability:
         # 1. Exact matches first
         # 2. Starts with query
-        # 3. Then by length (shorter = more relevant)
+        # 3. Then by probability (if available) or length
         def sort_key(x):
             token_lower = x['token'].lower()
+            prob = x.get('probability', 0) or 0
+            
             if token_lower == query_lower:
-                return (0, len(x['token']))
+                return (0, -prob)  # Negative for descending order
             elif token_lower.startswith(query_lower):
-                return (1, len(x['token']))
+                return (1, -prob)
             else:
-                return (2, len(x['token']))
+                return (2, -prob if prob > 0 else len(x['token']))
         
         matches.sort(key=sort_key)
         
@@ -686,8 +798,8 @@ def calculate_logprobs():
                 sorted_indices = torch.argsort(probabilities, descending=True)
                 rank = (sorted_indices == token_id).nonzero(as_tuple=True)[0].item() + 1
                 
-                # Get top 3 alternatives
-                top_k_probs, top_k_indices = torch.topk(probabilities, 3)
+                # Get top 4 alternatives (will filter current token in UI to show 3)
+                top_k_probs, top_k_indices = torch.topk(probabilities, 4)
                 top_alternatives = [
                     {"token": tokenizer.decode([idx.item()]), "probability": p.item()}
                     for idx, p in zip(top_k_indices, top_k_probs)
@@ -715,6 +827,326 @@ def calculate_logprobs():
         return json.dumps({'tokens': []}), 500
 
 
+@app.route('/api/analyze-difflens', methods=['POST'])
+def analyze_difflens():
+    """Analyze tokens with analysis model to compare probabilities."""
+    import torch
+    import math
+    
+    try:
+        data = request.get_json()
+        generation_model_name = data.get('generation_model')
+        analysis_model_name = data.get('analysis_model')
+        context = data.get('context', [])
+        tokens = data.get('tokens', [])
+        
+        if not analysis_model_name or not tokens:
+            return jsonify({'token_data': []})
+        
+        # Load analysis model
+        analysis_model, analysis_tokenizer, analysis_device = load_model_and_tokenizer(analysis_model_name)
+        
+        # Reconstruct assistant text from tokens
+        assistant_text = ''.join([t.get('token', '') for t in tokens])
+        
+        # Build context messages
+        context_messages = []
+        for msg in context:
+            if msg['role'] == 'user':
+                context_messages.append(msg)
+            elif msg['role'] == 'assistant':
+                break
+        
+        # Format context
+        if context_messages and hasattr(analysis_tokenizer, 'apply_chat_template') and analysis_tokenizer.chat_template:
+            formatted_context = analysis_tokenizer.apply_chat_template(
+                context_messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+        else:
+            formatted_context = ''
+        
+        # Tokenize
+        if formatted_context:
+            context_ids = analysis_tokenizer.encode(formatted_context, return_tensors="pt", add_special_tokens=False).to(analysis_device)
+        else:
+            context_ids = torch.tensor([[]], dtype=torch.long).to(analysis_device)
+        
+        assistant_ids = analysis_tokenizer.encode(assistant_text, return_tensors="pt", add_special_tokens=False).to(analysis_device)
+        full_ids = torch.cat([context_ids, assistant_ids], dim=1) if context_ids.size(1) > 0 else assistant_ids
+        
+        # Get logits
+        with torch.no_grad():
+            logits = analysis_model(full_ids).logits
+        
+        # Process each generation token
+        token_data = []
+        context_len = context_ids.size(1)
+        vocab_size = analysis_tokenizer.vocab_size
+        
+        # Use same number of tokens as generation
+        for i in range(len(tokens)):
+            gen_token_info = tokens[i]
+            gen_token = gen_token_info.get('token', '')
+            gen_prob = gen_token_info.get('gen_prob', 0)
+            gen_rank = gen_token_info.get('gen_rank', None)
+            gen_top_alternatives = gen_token_info.get('gen_top_alternatives', [])
+            
+            # For simplicity, use same index in analysis model tokens
+            if i < assistant_ids.size(1):
+                token_id = assistant_ids[0, i].item()
+                
+                if context_len + i > 0:
+                    # Get logits for position that predicts this token
+                    current_logits = logits[0, context_len + i - 1]
+                    probabilities = torch.softmax(current_logits, dim=-1)
+                    analysis_prob = probabilities[token_id].item()
+                    
+                    # Calculate rank
+                    sorted_indices = torch.argsort(probabilities, descending=True)
+                    analysis_rank = (sorted_indices == token_id).nonzero(as_tuple=True)[0].item() + 1
+                    
+                    # Get top 4 (will filter current token in UI to show 3)
+                    top_k_probs, top_k_indices = torch.topk(probabilities, min(4, vocab_size))
+                    analysis_top_alternatives = [
+                        {'token': analysis_tokenizer.decode([int(idx)]), 'probability': float(prob)}
+                        for prob, idx in zip(top_k_probs.cpu().tolist(), top_k_indices.cpu().tolist())
+                    ]
+                    
+                    # Calculate differences (as percentages)
+                    prob_diff = (gen_prob - analysis_prob) * 100  # Percentage point difference
+                    rank_diff = (analysis_rank - gen_rank) if gen_rank else 0
+                    
+                    token_data.append({
+                        'token': gen_token,
+                        'gen_prob': float(gen_prob),
+                        'gen_rank': int(gen_rank) if gen_rank else None,
+                        'gen_top_alternatives': gen_top_alternatives,
+                        'analysis_prob': float(analysis_prob),
+                        'analysis_rank': int(analysis_rank),
+                        'analysis_top_alternatives': analysis_top_alternatives,
+                        'prob_diff': float(prob_diff),
+                        'rank_diff': int(rank_diff)
+                    })
+                else:
+                    # First token
+                    token_data.append({
+                        'token': gen_token,
+                        'gen_prob': float(gen_prob),
+                        'gen_rank': int(gen_rank) if gen_rank else None,
+                        'gen_top_alternatives': gen_top_alternatives,
+                        'analysis_prob': 0,
+                        'analysis_rank': None,
+                        'analysis_top_alternatives': [],
+                        'prob_diff': 0,
+                        'rank_diff': 0
+                    })
+        
+        return jsonify({
+            'token_data': token_data,
+            'generation_model': generation_model_name,
+            'analysis_model': analysis_model_name
+        })
+        
+    except Exception as e:
+        print(f"Error in DiffLens analysis: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'token_data': []}), 500
+
+
+@app.route('/api/logit-lens', methods=['POST'])
+def logit_lens():
+    """Perform logit lens analysis on a specific token position."""
+    import torch
+    
+    try:
+        data = request.get_json()
+        model_name = data.get('model', DEFAULT_MODEL)
+        context = data.get('context', [])  # Previous messages
+        context_tokens = data.get('context_tokens', [])  # Tokens before the window
+        window_tokens = data.get('window_tokens', [])  # The tokens in the window
+        top_k = data.get('top_k', 20)  # Top K tokens to track across layers
+        
+        if not window_tokens or len(window_tokens) > 20:
+            return jsonify({'error': 'Invalid window tokens'}), 400
+        
+        # Load model
+        model, tokenizer, device = load_model_and_tokenizer(model_name)
+        
+        # Build context from chat history
+        if context and hasattr(tokenizer, 'apply_chat_template') and tokenizer.chat_template:
+            formatted_context = tokenizer.apply_chat_template(
+                context,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+            context_ids = tokenizer.encode(formatted_context, return_tensors="pt").to(device)
+        else:
+            context_ids = torch.tensor([[]], dtype=torch.long).to(device)
+        
+        # Tokenize the context tokens (before the window)
+        if context_tokens:
+            context_text = ''.join([t.get('token', '') for t in context_tokens])
+            context_text_ids = tokenizer.encode(context_text, return_tensors="pt", add_special_tokens=False).to(device)
+        else:
+            context_text_ids = torch.tensor([[]], dtype=torch.long).to(device)
+        
+        # Combine chat context and text context
+        if context_ids.size(1) > 0 and context_text_ids.size(1) > 0:
+            base_ids = torch.cat([context_ids, context_text_ids], dim=1)
+        elif context_ids.size(1) > 0:
+            base_ids = context_ids
+        elif context_text_ids.size(1) > 0:
+            base_ids = context_text_ids
+        else:
+            base_ids = torch.tensor([[]], dtype=torch.long).to(device)
+        
+        # Get number of layers
+        num_layers = len(model.model.layers) if hasattr(model, 'model') and hasattr(model.model, 'layers') else 0
+        
+        if num_layers == 0:
+            # Try alternative model structures
+            if hasattr(model, 'transformer') and hasattr(model.transformer, 'h'):
+                num_layers = len(model.transformer.h)
+            else:
+                return jsonify({'error': 'Could not determine model layers'}), 500
+        
+        # Get model components
+        if hasattr(model, 'model'):
+            embed_tokens = model.model.embed_tokens if hasattr(model.model, 'embed_tokens') else None
+            norm = model.model.norm if hasattr(model.model, 'norm') else None
+            lm_head = model.lm_head if hasattr(model, 'lm_head') else None
+            layers = model.model.layers if hasattr(model.model, 'layers') else None
+        elif hasattr(model, 'transformer'):
+            embed_tokens = model.transformer.wte if hasattr(model.transformer, 'wte') else None
+            norm = model.transformer.ln_f if hasattr(model.transformer, 'ln_f') else None
+            lm_head = model.lm_head if hasattr(model, 'lm_head') else None
+            layers = model.transformer.h if hasattr(model.transformer, 'h') else None
+        else:
+            return jsonify({'error': 'Could not access model layers'}), 500
+        
+        positions_data = []
+        
+        # Analyze each position in the window
+        for pos_idx in range(len(window_tokens)):
+            # Build input: base_ids + tokens before this position
+            if pos_idx == 0:
+                position_ids = base_ids
+            else:
+                tokens_before = window_tokens[:pos_idx]
+                text_before = ''.join([t.get('token', '') for t in tokens_before])
+                tokens_before_ids = tokenizer.encode(text_before, return_tensors="pt", add_special_tokens=False).to(device)
+                
+                if base_ids.size(1) > 0:
+                    position_ids = torch.cat([base_ids, tokens_before_ids], dim=1)
+                else:
+                    position_ids = tokens_before_ids
+            
+            if position_ids.size(1) == 0:
+                continue
+            
+            # Capture layer outputs
+            layer_outputs = []
+            hooks = []
+            
+            def create_hook(layer_idx):
+                def hook(module, input, output):
+                    if isinstance(output, tuple):
+                        hidden_states = output[0]
+                    else:
+                        hidden_states = output
+                    layer_outputs.append((layer_idx, hidden_states.detach()))
+                return hook
+            
+            if layers:
+                for i, layer in enumerate(layers):
+                    hook = layer.register_forward_hook(create_hook(i))
+                    hooks.append(hook)
+            
+            # Forward pass
+            with torch.no_grad():
+                outputs = model(position_ids, output_hidden_states=True)
+            
+            # Remove hooks
+            for hook in hooks:
+                hook.remove()
+            
+            target_position = position_ids.size(1) - 1
+            
+            # Get predictions at each layer
+            layer_predictions = []
+            
+            for layer_idx, hidden_states in layer_outputs:
+                hidden_state = hidden_states[0, target_position, :]
+                
+                # Apply norm
+                if norm is not None:
+                    hidden_state = norm(hidden_state)
+                
+                # Get logits
+                if lm_head is not None:
+                    logits = lm_head(hidden_state)
+                elif embed_tokens is not None:
+                    logits = torch.matmul(hidden_state, embed_tokens.weight.T)
+                else:
+                    continue
+                
+                # Get probabilities and top k
+                probs = torch.softmax(logits, dim=-1)
+                top_k_probs, top_k_indices = torch.topk(probs, min(top_k, probs.size(-1)))
+                
+                top_predictions = []
+                for prob, idx in zip(top_k_probs, top_k_indices):
+                    token_str = tokenizer.decode([idx.item()])
+                    top_predictions.append({
+                        'token': token_str,
+                        'probability': prob.item(),
+                        'token_id': idx.item()
+                    })
+                
+                layer_predictions.append({
+                    'layer': layer_idx,
+                    'predictions': top_predictions
+                })
+            
+            # Final layer (actual model output)
+            final_logits = outputs.logits[0, target_position, :]
+            final_probs = torch.softmax(final_logits, dim=-1)
+            top_k_probs, top_k_indices = torch.topk(final_probs, min(top_k, final_probs.size(-1)))
+            
+            final_predictions = []
+            for prob, idx in zip(top_k_probs, top_k_indices):
+                token_str = tokenizer.decode([idx.item()])
+                final_predictions.append({
+                    'token': token_str,
+                    'probability': prob.item(),
+                    'token_id': idx.item()
+                })
+            
+            layer_predictions.append({
+                'layer': num_layers,
+                'predictions': final_predictions
+            })
+            
+            positions_data.append({
+                'position': pos_idx,
+                'layer_predictions': layer_predictions
+            })
+        
+        return jsonify({
+            'num_layers': num_layers + 1,
+            'positions': positions_data
+        })
+        
+    except Exception as e:
+        print(f"Error in logit lens analysis: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/stream', methods=['POST'])
 def stream():
     """SSE endpoint for streaming token generation."""
@@ -723,6 +1155,7 @@ def stream():
         messages = data.get('messages', [])
         model_name = data.get('model', DEFAULT_MODEL)
         prefill = data.get('prefill', None)
+        temperature = data.get('temperature', 1.0)
         show_prompt_tokens = data.get('show_prompt_tokens', False)
         
         if not messages:
@@ -735,7 +1168,7 @@ def stream():
                 
                 # Generate tokens with streaming
                 first_token = True
-                for token_data in generate_streaming_tokens(model, tokenizer, device, messages, prefill=prefill, show_prompt_tokens=show_prompt_tokens):
+                for token_data in generate_streaming_tokens(model, tokenizer, device, messages, temperature=temperature, prefill=prefill, show_prompt_tokens=show_prompt_tokens):
                     # Mark first token so frontend can show special context
                     if first_token and token_data.get('type') != 'prompt_token':
                         token_data['is_first_token'] = True

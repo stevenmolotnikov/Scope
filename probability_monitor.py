@@ -41,7 +41,7 @@ def load_model_and_tokenizer(model_name):
     return model, tokenizer, device
 
 
-def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_k=3):
+def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_k=6):
     """Calculate token probabilities for the output text given the prompt."""
     # Tokenize prompt and output separately
     prompt_encoding = tokenizer(prompt, return_tensors="pt")

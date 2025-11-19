@@ -1,129 +1,124 @@
-# TokenLens
+# Scope
 
-A ChatGPT-style interface with real-time token probability visualization for AI research and model analysis.
+Scope is a research interface for reading language-model behavior through multiple complementary
+lenses—token probabilities, counterfactual generations, model comparison, and Logit Lens views—
+all in one place. Instead of juggling ad-hoc scripts and chat transcripts, Scope makes token-level
+signals the default unit of analysis and lets researchers pivot into deeper workflows in seconds.
+
+---
+
+## Abstract
+Scope accelerates empirical AI-safety workflows by unifying token-level probability inspection,
+counterfactual editing, model comparison, and mechanistic interpretability handoffs inside a single
+chat-style UI. The tool streams model generations, records per-token probabilities, ranks, and top
+alternatives, and overlays this substrate with lenses for forcing tokens, branching hypotheses,
+diffing models, and launching Logit Lens visualizations. We argue that token probabilities are the
+natural starting point for many safety investigations—hallucination detection, refusal analysis,
+jailbreaking, calibration, decoding—and Scope compresses hours of manual probing into minutes of
+interactive inspection.
+
+---
 
 ## Motivation
 
-In AI control settings, an untrusted but capable model (UTM) receives both a benign primary task and a hidden malicious side task, while a trusted but weaker model (TM) monitors for misbehavior. Existing control approaches rely on prompting the TM to detect suspicious outputs, but this requires the TM to compress and interpret increasing information as tasks grow complex, resulting in poor performance even on overt misbehavior in environments like ControlArena and SHADE-Arena.
+Current workflows oscillate between:
 
-**Can we shift from semantic interpretation of increasingly large texts to token-level control?**
+1. **High-level evaluations** (benchmarks, red-team suites) that flag failures but rarely show why.
+2. **Mechanistic interpretability tools** that explain circuits but are too heavyweight for every
+   prompt.
 
-This tool introduces an alternative control paradigm grounded in the observation that models form increasingly similar representations of the world as they become stronger (the Platonic Representation Hypothesis). When a UTM behaves honestly, its generated tokens should be plausible under the TM. However, side-task tokens may be out-of-distribution for the TM, since it never received the malicious subtask. 
+Scope fills the “missing middle.” It treats tokens and their probabilities as first-class objects,
+giving researchers a fast, shared workspace to triage model behavior before escalating to heavier
+tooling. Success means jailbreak studies, refusal audits, calibration checks, and hallucination
+investigations routinely start in Scope, making probability inspection the default—not an optional
+API flag.
 
-Rather than asking *"Is there something suspicious in this output?"*, we ask *"What is the probability that a TM given the main task would generate this token?"*
+---
 
-## Features
+## Methodology Snapshot
 
-- **ChatGPT-style interface**: Interactive chat with streaming token generation
-- **Real-time token probabilities**: See probability distributions as tokens are generated
-- **Color-coded visualization**: Tokens colored from red (low probability) to green (high probability)
-- **Hover tooltips**: Detailed probability, rank, and top alternatives for each token
-- **Model selection**: Choose from multiple models (Llama, Gemma, etc.)
-- **Legacy mode**: Access original analysis tools at `/old` route
+1. **Surveyed safety research** (jailbreaking, RL, hallucinations, calibration, decoding) to catalog
+   how teams already inspect log probs, entropy spikes, or token rankings.
+2. **Extracted concrete workflows** (prefilling refusal tokens, comparing checkpoints, watching
+   divergence between models) and mapped them to minimal UI affordances.
+3. **Specified phased delivery** to keep the interface modular:
+   - Phase 1: Chat UI, streaming tokens, hover tooltips, Logit Lens integration. ✅
+   - Phase 2: Investigation workflows (prefill, Diff view, export, annotations). ⏳
+   - Phase 3: Advanced lenses (hallucination alerts, calibration, decoding modes).
+   - Phase 4: Mechanistic integrations (TransformerLens / NDIF hand-offs).
+4. **Iterative design** with researchers to ensure features match real safety tasks.
 
-## Installation
+---
+
+## Prototype Highlights
+
+- **TokenLens** (default): color-coded tokens, entropy-aware tooltips, vocabulary search, injection/
+  branching, Logit Lens modal (heatmap + Chart.js line chart).
+- **Force Assistant Start** (“BreakLens” capability): prefill responses, highlight injected tokens,
+  maintain dashed borders for prefills even after generation completes.
+- **DiffLens**: run an analysis model over the same transcript to expose probability gaps and implicit
+  disagreements.
+
+All modes share the same probability substrate, showing how a single stream of token stats powers
+multiple investigative lenses.
+
+---
+
+## Challenges & Open Questions
+
+- **Model coverage**: log-probabilities are inconsistently exposed across APIs; we lean on providers
+  like OpenRouter or local inference where possible.
+- **Tokenizer alignment**: probability diffs require shared tokenization; richer alignment strategies
+  remain future work.
+- **Mode scoping**: deciding which specialized lenses truly help researchers requires iterative
+  testing and field feedback.
+
+---
+
+## Roadmap Overview
+
+| Phase | Focus | Status |
+|-------|-------|--------|
+| 1 | Core chat UI, streaming tokens, hover tooltips, Logit Lens | ✅ |
+| 2 | Investigation workflows (prefill, diff, export, annotations) | In progress |
+| 3 | Specialized modes (hallucination, calibration, decoding) | Planned |
+| 4 | Mechanistic handoffs (steering vectors, activation patching) | Planned |
+
+---
+
+## Running Locally
 
 ```bash
-pip install torch transformers flask
-```
-
-## Usage
-
-### Command Line Analysis
-
-Generate token probability data from prompt and output files:
-
-```bash
-python probability_monitor.py prompts/my_prompt.txt outputs/my_output.txt --model_name meta-llama/Llama-3.1-8B-Instruct
-```
-
-This saves a JSON file to the `probabilities/` directory containing per-token probability and rank data.
-
-### Web Interface (ChatGPT-Style)
-
-Launch the chat interface:
-
-```bash
+git clone <repo-url>
+cd TokenLens
+python -m venv .venv
+.venv\Scripts\activate      # or source .venv/bin/activate on macOS/Linux
+pip install -r requirements.txt
 python app.py
 ```
 
-Navigate to `http://localhost:5001` to:
-- **Chat with models**: Send messages and see streaming responses with token probabilities
-- **Inspect tokens**: Hover over any token to see:
-  - Exact probability value
-  - Rank in the vocabulary
-  - Top 3 alternative tokens the model considered
-- **Model selection**: Switch between different models in the header
-- **Conversation history**: All chats saved to `conversations/` directory
-- **Shareable links**: Each conversation has its own URL
-- **Clear chat**: Delete conversations anytime
+Visit `http://localhost:5000` and start chatting. Double-click any token or use the tooltip actions
+to inject alternatives, branch generations, or open Logit Lens.
 
-### Legacy Interface
+---
 
-The original analysis interface is still available at `http://localhost:5001/old`:
-- **Load File**: View existing probability analyses
-- **New Analysis**: Run direct analysis on prompt/output pairs
-- **Adjust thresholds**: Configure probability/rank thresholds for flagging tokens
+## Repository Layout
 
-### Conversation Storage
+- `app.py` – Flask backend, SSE streaming, DiffLens / Logit Lens endpoints.
+- `templates/chat.html` – Main interface (token rendering, modals, search, charts).
+- `static/chat.css` – Styling for the chat, tool sidebar, and Logit Lens modal.
+- `probability_monitor.py`, `prompts/`, `probabilities/` – CLI helpers and canned datasets.
+- `templates/index.html`, `static/style.css` – Legacy interface for archived analyses.
 
-Conversations are automatically saved to the `conversations/` directory as JSON files:
+---
 
-```
-conversations/
-├── conv_1699999999.json
-├── conv_1700000000.json
-└── conv_1700000001.json
-```
+## Contributing
 
-Each file contains:
-- Full message history (user and assistant)
-- Token probability data for each response
-- Model name and timestamp
-- Conversation title
+1. Branch from `main`.
+2. Scope front-end changes to `templates/` + `static/`; keep backend updates isolated in `app.py`.
+3. Include tests or repro steps for backend changes; add screenshots/gifs for UI tweaks.
+4. Open a PR—feedback, feature ideas, and bug reports are welcome.
 
-**Benefits:**
-- Survives browser cache clearing
-- Accessible from any browser/device
-- Easy to backup, share, or analyze
-- Each conversation has a unique URL: `http://localhost:5001/chat/conv_1699999999`
+Scope aims to become the standard cockpit for empirical alignment work.
+If you have a workflow that relies on token-level signals, reach out so we can build it in. 
 
-### Output Format
-
-The tool generates JSON files with the following structure:
-
-```json
-{
-  "prompt": "The original prompt text",
-  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
-  "vocab_size": 128256,
-  "tokens": [
-    {
-      "token": "Hello",
-      "probability": 0.856234,
-      "rank": 1,
-      "top_alternatives": [...]
-    }
-  ]
-}
-```
-
-## How It Works
-
-1. **Tokenization**: The prompt and output are tokenized separately
-2. **Forward Pass**: The model computes logits for the concatenated sequence
-3. **Probability Calculation**: For each output token, we compute:
-   - The probability assigned to the actual token
-   - The rank of that token (1 = most likely)
-   - Top alternative tokens the model preferred
-4. **Visualization**: Tokens are color-coded from red (low probability) to green (high probability)
-
-## Control Strategy
-
-This tool enables a token-level control strategy:
-
-1. Run the UTM's output through the TM to get per-token probabilities
-2. Flag tokens with unusually low probability under the TM
-3. Investigate flagged regions for potential malicious behavior
-
-Since the TM only sees the benign task, tokens related to the hidden malicious task should be out-of-distribution and receive low probabilities.
