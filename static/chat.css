@@ -453,37 +453,63 @@ body {
     box-shadow: 0 0 0 2px var(--border-color);
 }
 
+.tool-textarea {
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-dark);
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.2s ease;
+    resize: vertical;
+    min-height: 80px;
+    width: 100%;
+}
+
+.tool-textarea:hover {
+    border-color: var(--text-color);
+    background-color: var(--bg-secondary);
+}
+
+.tool-textarea:focus {
+    outline: none;
+    border-color: var(--text-color);
+    box-shadow: 0 0 0 2px var(--border-color);
+}
+
+.tool-btn {
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: 2px solid var(--border-dark);
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.tool-btn:hover {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.tool-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .tool-help {
     font-size: 0.75rem;
     color: var(--text-secondary);
     line-height: 1.4;
-}
-
-.apply-btn {
-    padding: 10px 16px;
-    border: 2px solid var(--border-dark);
-    border-radius: 4px;
-    background: var(--bg-color);
-    color: var(--text-color);
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.apply-btn:hover {
-    background: var(--text-color);
-    color: var(--bg-color);
-    transform: translateY(-1px);
-}
-
-.apply-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
 }
 
 
@@ -512,6 +538,56 @@ body {
 
 .welcome-message p {
     font-size: 1.125rem;
+}
+
+/* System Prompt Bubble */
+.system-prompt-bubble {
+    margin: 0 0 16px 0;
+    padding: 16px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.system-prompt-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.system-prompt-header:hover {
+    opacity: 0.8;
+}
+
+.system-prompt-label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.system-prompt-toggle {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.system-prompt-content {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.system-prompt-content.collapsed {
+    display: none;
 }
 
 /* Message Styles */

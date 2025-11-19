@@ -57,6 +57,17 @@
 
             <!-- Messages Area -->
             <div class="messages-container" id="messages-container">
+                <!-- System Prompt Bubble (hidden by default) -->
+                <div class="system-prompt-bubble" id="system-prompt-bubble" style="display: none;">
+                    <div class="system-prompt-header" onclick="toggleSystemPromptBubble()">
+                        <span class="system-prompt-label">System</span>
+                        <span class="system-prompt-toggle" id="system-prompt-toggle">▼</span>
+                    </div>
+                    <div class="system-prompt-content" id="system-prompt-content">
+                        <!-- System prompt text will be inserted here -->
+                    </div>
+                </div>
+                
                 <div class="welcome-message">
                     <h2>Welcome to Scope</h2>
                     <p>Chat with AI and see token probabilities in real-time</p>
@@ -100,6 +111,23 @@
             
             <div class="tools-content">
                 <details class="tool-section" open>
+                    <summary>Conversation Settings</summary>
+                    <div class="tool-section-content">
+                        <div class="tool-group">
+                            <label class="tool-label">System Prompt</label>
+                            <textarea 
+                                id="system-prompt-input" 
+                                placeholder="e.g., You are a helpful assistant..."
+                                class="tool-textarea"
+                                rows="4"
+                                oninput="updateSystemPrompt()"
+                            ></textarea>
+                            <button class="tool-btn" onclick="saveDefaultSystemPrompt()">Save as Default</button>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="tool-section" open>
                     <summary>Views</summary>
                     <div class="tool-section-content">
                         <div class="tool-group">
@@ -107,6 +135,13 @@
                             <select id="view-select" onchange="switchView()" class="tool-select">
                                 <option value="token">Token View</option>
                                 <option value="diff">Diff View</option>
+                            </select>
+                        </div>
+                        <div class="tool-group" style="margin-top: 16px;">
+                            <label class="tool-label">Highlight By</label>
+                            <select id="highlight-mode-select" onchange="switchHighlightMode()" class="tool-select">
+                                <option value="probability">Probability</option>
+                                <option value="rank">Rank</option>
                             </select>
                         </div>
                     </div>
@@ -123,7 +158,7 @@
                                 <option value="google/gemma-2-2b-it">Gemma-2-2B-IT</option>
                                 <option value="google/gemma-3-1b-it">Gemma-3-1B-IT</option>
                             </select>
-                            <button class="apply-btn" id="apply-difflens-btn" onclick="triggerDiffLensAnalysis()">
+                            <button class="tool-btn" id="apply-difflens-btn" onclick="triggerDiffLensAnalysis()">
                                 Apply Analysis
                             </button>
                         </div>
@@ -155,7 +190,7 @@
         <div class="tooltip-info-section">
             <div id="tooltip-current-token"></div>
             <div class="tooltip-alternatives" id="tooltip-alternatives">
-                <!-- Top 3 alternatives will be inserted here -->
+                <!-- Top 2 alternatives will be inserted here -->
             </div>
         </div>
         
@@ -275,6 +310,9 @@
         let selectedTokenElement = null;
         let selectedAlternativeToken = null;
         let currentView = 'token';
+        let currentHighlightMode = 'probability';  // 'probability' or 'rank'
+        let currentSystemPrompt = '';  // Current conversation's system prompt
+        let systemPromptExpanded = true;  // Track bubble collapse state
         
         // Helper to generate UUIDs
         function uuidv4() {
@@ -282,6 +320,70 @@
                 var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
+        }
+        
+        // System Prompt Functions
+        function updateSystemPrompt() {
+            const systemPromptInput = document.getElementById('system-prompt-input');
+            currentSystemPrompt = systemPromptInput.value.trim();
+            
+            // Update the bubble display
+            updateSystemPromptBubble();
+            
+            // Save to conversation
+            saveCurrentConversation();
+        }
+        
+        function updateSystemPromptBubble() {
+            const bubble = document.getElementById('system-prompt-bubble');
+            const content = document.getElementById('system-prompt-content');
+            
+            if (currentSystemPrompt) {
+                bubble.style.display = 'block';
+                content.textContent = currentSystemPrompt;
+            } else {
+                bubble.style.display = 'none';
+            }
+        }
+        
+        function toggleSystemPromptBubble() {
+            const content = document.getElementById('system-prompt-content');
+            const toggle = document.getElementById('system-prompt-toggle');
+            
+            systemPromptExpanded = !systemPromptExpanded;
+            
+            if (systemPromptExpanded) {
+                content.classList.remove('collapsed');
+                toggle.classList.remove('collapsed');
+                toggle.textContent = '▼';
+            } else {
+                content.classList.add('collapsed');
+                toggle.classList.add('collapsed');
+                toggle.textContent = '▶';
+            }
+        }
+        
+        function saveDefaultSystemPrompt() {
+            const systemPromptInput = document.getElementById('system-prompt-input');
+            const prompt = systemPromptInput.value.trim();
+            
+            if (prompt) {
+                localStorage.setItem('tokenlens_default_system_prompt', prompt);
+                alert('Default system prompt saved!');
+            } else {
+                localStorage.removeItem('tokenlens_default_system_prompt');
+                alert('Default system prompt cleared!');
+            }
+        }
+        
+        function loadDefaultSystemPrompt() {
+            const defaultPrompt = localStorage.getItem('tokenlens_default_system_prompt');
+            if (defaultPrompt) {
+                const systemPromptInput = document.getElementById('system-prompt-input');
+                systemPromptInput.value = defaultPrompt;
+                currentSystemPrompt = defaultPrompt;
+                updateSystemPromptBubble();
+            }
         }
 
         // Get linear thread from root to current leaf
@@ -354,6 +456,17 @@
         function clearChat() {
             const messagesContainer = document.getElementById('messages-container');
             messagesContainer.innerHTML = `
+                <!-- System Prompt Bubble (hidden by default) -->
+                <div class="system-prompt-bubble" id="system-prompt-bubble" style="display: none;">
+                    <div class="system-prompt-header" onclick="toggleSystemPromptBubble()">
+                        <span class="system-prompt-label">System</span>
+                        <span class="system-prompt-toggle" id="system-prompt-toggle">▼</span>
+                    </div>
+                    <div class="system-prompt-content" id="system-prompt-content">
+                        <!-- System prompt text will be inserted here -->
+                    </div>
+                </div>
+                
                 <div class="welcome-message">
                     <h2>Welcome to Scope</h2>
                     <p>Chat with AI and see token probabilities in real-time</p>
@@ -361,6 +474,10 @@
             `;
             messageTree = {};
             currentLeafId = null;
+            
+            // Load default system prompt for new conversation
+            loadDefaultSystemPrompt();
+            
             saveCurrentConversation();
         }
 
@@ -578,6 +695,15 @@
                     role: n.role,
                     content: n.content
                 }));
+                
+                // Prepend system prompt if set
+                if (currentSystemPrompt) {
+                    messagesToSend.unshift({
+                        role: 'system',
+                        content: currentSystemPrompt
+                    });
+                }
+                
                 console.log('Messages to send:', messagesToSend);
 
                 const requestBody = {
@@ -636,6 +762,7 @@
                                     
                                     const tokenData = {
                                         token: data.token,
+                                        token_id: data.token_id,
                                         probability: data.probability,
                                         rank: data.rank,
                                         vocab_size: data.vocab_size,
@@ -661,7 +788,7 @@
                                     }
                                     
                                     // Add token normally
-                                    const tokenSpan = addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx, null, modelName, temperature);
+                                    const tokenSpan = addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx, null, modelName, temperature, data.token_id);
                                     // Link token to node
                                     tokenSpan.dataset.nodeId = nodeId;
                                     
@@ -717,7 +844,7 @@
             }
         }
 
-        function addToken(container, token, probability, rank, vocabSize, topAlternatives, tokenIndex, messageIndex = null, model = null, temperature = null) {
+        function addToken(container, token, probability, rank, vocabSize, topAlternatives, tokenIndex, messageIndex = null, model = null, temperature = null, tokenId = null) {
             const tokenSpan = document.createElement('span');
             tokenSpan.className = 'token';
             
@@ -731,15 +858,16 @@
             // tokenSpan.dataset.messageIndex = messageIndex !== null ? messageIndex : conversationHistory.length; // Deprecated
             tokenSpan.dataset.model = model || document.getElementById('model-select')?.value || 'Unknown';
             tokenSpan.dataset.temperature = temperature !== null ? temperature : (parseFloat(document.getElementById('temperature-input')?.value) || 1.0);
+            tokenSpan.dataset.tokenId = (tokenId !== null && tokenId !== undefined) ? tokenId : '';
             
-            // Color based on probability (or gray if in DiffLens mode)
+            // Color based on probability or rank (or gray if in DiffLens mode)
             if (currentView === 'diff') {
                 // In DiffLens mode, new tokens should be gray until analyzed
                 tokenSpan.style.backgroundColor = 'hsl(0, 0%, 75%)';
                 tokenSpan.style.color = 'hsl(0, 0%, 30%)';
                 tokenSpan.classList.add('difflens-neutral');
             } else {
-            const color = getColorForProb(probability || 0);
+            const color = getColorForProb(probability || 0, rank, vocabSize);
             tokenSpan.style.backgroundColor = color;
             }
             
@@ -814,16 +942,64 @@
             return tokenSpan;
         }
 
-        function getColorForProb(probability) {
-            // Map probability to color: red (low) to green (high)
-            const hue = 120 * probability;
-            return `hsl(${hue}, 70%, 60%)`;
+        function getColorForProb(probability, rank = null, vocabSize = null) {
+            // Color based on current highlight mode
+            if (currentHighlightMode === 'rank' && rank !== null && vocabSize !== null) {
+                // Rank-based coloring: lower rank (1 = best) = greener, higher rank = redder
+                // Cap at rank 5 - anything worse than top 5 is red
+                const cappedRank = Math.min(rank, 5);
+                // Normalize rank to 0-1 scale (inverted so rank 1 = 1.0, rank 5+ = 0.0)
+                const normalizedRank = 1 - (cappedRank - 1) / 4; // (5-1)/4 = 1.0, (1-1)/4 = 0.0
+                const hue = 120 * normalizedRank;
+                return `hsl(${hue}, 70%, 60%)`;
+            } else {
+                // Probability-based coloring: red (low) to green (high)
+                const hue = 120 * (probability || 0);
+                return `hsl(${hue}, 70%, 60%)`;
+            }
         }
 
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Helper function to format tokens for display consistently
+        function formatTokenForDisplay(token, options = {}) {
+            if (!token) return token;
+            
+            const { replaceAllSpaces = false, useSpaceSymbol = true } = options;
+            
+            // Check for newlines
+            if (token.includes('\n')) {
+                const newlineCount = (token.match(/\n/g) || []).length;
+                return newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
+            }
+            
+            // Check for tabs
+            if (token.includes('\t')) {
+                const tabCount = (token.match(/\t/g) || []).length;
+                return tabCount === 1 ? '→' : `→×${tabCount}`;
+            }
+            
+            // Check if token is only whitespace (spaces, not tabs)
+            if (/^\s+$/.test(token) && !token.includes('\t')) {
+                if (useSpaceSymbol) {
+                    const spaceCount = token.length;
+                    return spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
+                }
+                // Otherwise keep as-is
+                return token;
+            }
+            
+            // For mixed content, optionally replace spaces with middle dot
+            if (replaceAllSpaces) {
+                return token.replace(/ /g, '·');
+            }
+            
+            // Return as-is for normal tokens
+            return token;
         }
 
         // ===== VIEW SWITCHING =====
@@ -849,6 +1025,22 @@
             }
         }
         
+        function switchHighlightMode() {
+            const highlightModeSelect = document.getElementById('highlight-mode-select');
+            const mode = highlightModeSelect ? highlightModeSelect.value : 'probability';
+            currentHighlightMode = mode;
+            
+            // Save to localStorage
+            localStorage.setItem('tokenlens_highlight_mode', mode);
+            
+            // Re-apply current view to update colors
+            if (currentView === 'diff') {
+                applyDiffLensView();
+            } else {
+                resetDiffLensView();
+            }
+        }
+        
         function applyDiffLensView() {
             // Restore saved analysis model selection
             const savedAnalysisModel = localStorage.getItem('tokenlens_analysis_model');
@@ -868,7 +1060,8 @@
                 tokens.forEach(token => {
                     if (token.dataset.difflensProbDiff) {
                         const diff = parseFloat(token.dataset.difflensProbDiff);
-                        const color = getDiffLensColor(diff);
+                        const rankDiff = token.dataset.difflensRankDiff ? parseFloat(token.dataset.difflensRankDiff) : null;
+                        const color = getDiffLensColor(diff, rankDiff);
                         token.style.backgroundColor = color;
                         
                         if (Math.abs(diff) < 2) {
@@ -899,12 +1092,14 @@
         }
         
         function clearDiffLensAnalysis() {
-            // Reset all tokens to their original probability-based colors
+            // Reset all tokens to their original probability/rank-based colors
             const allTokens = document.querySelectorAll('.token');
             allTokens.forEach(token => {
                 const prob = parseFloat(token.dataset.probability);
+                const rank = parseInt(token.dataset.rank);
+                const vocabSize = parseInt(token.dataset.vocabSize);
                 if (!isNaN(prob)) {
-                    const color = getColorForProb(prob);
+                    const color = getColorForProb(prob, rank, vocabSize);
                     token.style.backgroundColor = color;
                 }
                 token.style.color = '';
@@ -924,8 +1119,6 @@
             const originalText = applyBtn.textContent;
             applyBtn.disabled = true;
             applyBtn.textContent = 'Analyzing...';
-            applyBtn.style.opacity = '0.6';
-            applyBtn.style.cursor = 'not-allowed';
             
             try {
                 // Save analysis model selection
@@ -961,16 +1154,31 @@
                     content: n.content
                 }));
                 
+                // Prepend system prompt if set
+                if (currentSystemPrompt) {
+                    contextMessages.unshift({
+                        role: 'system',
+                        content: currentSystemPrompt
+                    });
+                }
+                
                 // Get token data including rank and top alternatives
-                const tokenData = Array.from(tokens).map(token => ({
-                    token: token.dataset.token,
-                    gen_prob: parseFloat(token.dataset.probability),
-                    gen_rank: parseInt(token.dataset.rank),
-                    gen_top_alternatives: JSON.parse(token.dataset.topAlternatives || '[]')
-                }));
+                const tokenData = Array.from(tokens).map(token => {
+                    const tokenIdAttr = token.dataset.tokenId;
+                    const parsedTokenId = (tokenIdAttr !== undefined && tokenIdAttr !== '') ? parseInt(tokenIdAttr, 10) : null;
+                    return {
+                        token: token.dataset.token,
+                        token_id: Number.isNaN(parsedTokenId) ? null : parsedTokenId,
+                        gen_prob: parseFloat(token.dataset.probability),
+                        gen_rank: parseInt(token.dataset.rank),
+                        gen_top_alternatives: JSON.parse(token.dataset.topAlternatives || '[]')
+                    };
+                });
                 
                 try {
-                    // Call backend to analyze
+                    // Use the temperature from generation (stored in first token)
+                    const temperature = tokens.length > 0 ? parseFloat(tokens[0].dataset.temperature) || 1.0 : 1.0;
+                    
                     const response = await fetch('/api/analyze-difflens', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -978,7 +1186,8 @@
                             generation_model: generationModel,
                             analysis_model: analysisModel,
                             context: contextMessages,
-                            tokens: tokenData
+                            tokens: tokenData,
+                            temperature: temperature
                         })
                     });
                     
@@ -1000,7 +1209,8 @@
                             if (result.token_data[idx]) {
                                 const tokenInfo = result.token_data[idx];
                                 const diff = tokenInfo.prob_diff;
-                                const color = getDiffLensColor(diff);
+                                const rankDiff = tokenInfo.rank_diff;
+                                const color = getDiffLensColor(diff, rankDiff);
                                 token.style.backgroundColor = color;
                                 
                                 // Set text color based on difference
@@ -1047,34 +1257,60 @@
                 // Reset button state
                 applyBtn.disabled = false;
                 applyBtn.textContent = originalText;
-                applyBtn.style.opacity = '1';
-                applyBtn.style.cursor = 'pointer';
             }
         }
         
-        function getDiffLensColor(percentageDiff) {
-            // percentageDiff = (gen_prob - analysis_prob) * 100
-            // Positive = generation model prefers (green)
-            // Negative = analysis model prefers (red)
-            // Near zero = similar (gray)
-            
-            // Clamp to reasonable range [-50, 50] (percentage points)
-            const clamped = Math.max(-50, Math.min(50, percentageDiff));
-            const normalized = clamped / 50; // Now in [-1, 1]
-            
-            if (Math.abs(percentageDiff) < 2) {
-                // Low difference (< 2 percentage points) - gray
-                return 'hsl(0, 0%, 75%)';
-            } else if (normalized > 0) {
-                // Generation model prefers - green
-                const intensity = Math.abs(normalized);
-                const lightness = 85 - (intensity * 35); // 85% to 50%
-                return `hsl(120, 60%, ${lightness}%)`;
+        function getDiffLensColor(percentageDiff, rankDiff = null) {
+            // Color based on current highlight mode
+            if (currentHighlightMode === 'rank' && rankDiff !== null) {
+                // rankDiff = analysis_rank - gen_rank
+                // Negative = generation model ranked higher (green)
+                // Positive = analysis model ranked higher (red)
+                // Near zero = similar (gray)
+                
+                // Clamp to reasonable range [-5, 5] (since individual ranks are capped at 5)
+                const clamped = Math.max(-5, Math.min(5, rankDiff));
+                const normalized = clamped / 5; // Now in [-1, 1]
+                
+                if (Math.abs(rankDiff) < 1) {
+                    // Small rank difference (less than 1 rank) - gray
+                    return 'hsl(0, 0%, 75%)';
+                } else if (normalized < 0) {
+                    // Generation model ranked higher (lower rank number) - green
+                    const intensity = Math.abs(normalized);
+                    const lightness = 85 - (intensity * 35); // 85% to 50%
+                    return `hsl(120, 60%, ${lightness}%)`;
+                } else {
+                    // Analysis model ranked higher (lower rank number) - red
+                    const intensity = Math.abs(normalized);
+                    const lightness = 85 - (intensity * 35); // 85% to 50%
+                    return `hsl(0, 60%, ${lightness}%)`;
+                }
             } else {
-                // Analysis model prefers - red
-                const intensity = Math.abs(normalized);
-                const lightness = 85 - (intensity * 35); // 85% to 50%
-                return `hsl(0, 60%, ${lightness}%)`;
+                // Probability diff coloring
+                // percentageDiff = (gen_prob - analysis_prob) * 100
+                // Positive = generation model prefers (green)
+                // Negative = analysis model prefers (red)
+                // Near zero = similar (gray)
+                
+                // Clamp to reasonable range [-50, 50] (percentage points)
+                const clamped = Math.max(-50, Math.min(50, percentageDiff));
+                const normalized = clamped / 50; // Now in [-1, 1]
+                
+                if (Math.abs(percentageDiff) < 2) {
+                    // Low difference (< 2 percentage points) - gray
+                    return 'hsl(0, 0%, 75%)';
+                } else if (normalized > 0) {
+                    // Generation model prefers - green
+                    const intensity = Math.abs(normalized);
+                    const lightness = 85 - (intensity * 35); // 85% to 50%
+                    return `hsl(120, 60%, ${lightness}%)`;
+                } else {
+                    // Analysis model prefers - red
+                    const intensity = Math.abs(normalized);
+                    const lightness = 85 - (intensity * 35); // 85% to 50%
+                    return `hsl(0, 60%, ${lightness}%)`;
+                }
             }
         }
 
@@ -1115,23 +1351,7 @@
                 };
             }
             
-            // Format token for display (same as main stream)
-            let displayToken = token;
-            
-            // Check for newlines
-            if (token.includes('\n')) {
-                const newlineCount = (token.match(/\n/g) || []).length;
-                displayToken = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
-            } 
-            // Check if token is only spaces
-            else if (token === ' ' || /^\s+$/.test(token)) {
-                // Keep as space, no visual replacement
-            }
-            // Check for tab characters
-            else if (token.includes('\t')) {
-                const tabCount = (token.match(/\t/g) || []).length;
-                displayToken = tabCount === 1 ? '→' : `→×${tabCount}`;
-            }
+            const displayToken = formatTokenForDisplay(token, { useSpaceSymbol: true });
             
             // DiffLens mode: show comparison header and two-column layout
             if (inDiffLensMode) {
@@ -1168,20 +1388,9 @@
                                     topAlternatives
                                         .map((alt, i) => ({...alt, originalRank: i + 1}))
                                         .filter(alt => alt.token !== token)
-                                        .slice(0, 3)
+                                        .slice(0, 2)
                                         .map((alt) => {
-                                        let displayAlt = alt.token;
-                                        if (alt.token.includes('\n')) {
-                                            const newlineCount = (alt.token.match(/\n/g) || []).length;
-                                            displayAlt = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
-                                        } else if (/^\s+$/.test(alt.token) && !alt.token.includes('\t')) {
-                                            // Handle space-only tokens (excluding tabs)
-                                            const spaceCount = alt.token.length;
-                                            displayAlt = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
-                                        } else if (alt.token.includes('\t')) {
-                                            const tabCount = (alt.token.match(/\t/g) || []).length;
-                                            displayAlt = tabCount === 1 ? '→' : `→×${tabCount}`;
-                                        }
+                                        const displayAlt = formatTokenForDisplay(alt.token, { useSpaceSymbol: true });
                                         return `
                                             <div class="tooltip-alternative-item" style="margin-bottom: 4px; min-width: 0;">
                                                 <div class="alt-left" style="min-width: 0; overflow: hidden;">
@@ -1210,20 +1419,9 @@
                                         difflensData.analysisTopAlternatives
                                             .map((alt, i) => ({...alt, originalRank: i + 1}))
                                             .filter(alt => alt.token !== token)
-                                            .slice(0, 3)
+                                            .slice(0, 2)
                                             .map((alt) => {
-                                            let displayAlt = alt.token;
-                                            if (alt.token.includes('\n')) {
-                                                const newlineCount = (alt.token.match(/\n/g) || []).length;
-                                                displayAlt = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
-                                            } else if (/^\s+$/.test(alt.token) && !alt.token.includes('\t')) {
-                                                // Handle space-only tokens (excluding tabs)
-                                                const spaceCount = alt.token.length;
-                                                displayAlt = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
-                                            } else if (alt.token.includes('\t')) {
-                                                const tabCount = (alt.token.match(/\t/g) || []).length;
-                                                displayAlt = tabCount === 1 ? '→' : `→×${tabCount}`;
-                                            }
+                                            const displayAlt = formatTokenForDisplay(alt.token, { useSpaceSymbol: true });
                                             return `
                                                 <div class="tooltip-alternative-item" style="margin-bottom: 4px; min-width: 0;">
                                                     <div class="alt-left" style="min-width: 0; overflow: hidden;">
@@ -1278,7 +1476,7 @@
                     const filteredAlts = topAlternatives
                         .map((alt, originalIdx) => ({ ...alt, originalRank: originalIdx + 1 }))
                         .filter(alt => alt.token !== token)
-                        .slice(0, 3);
+                        .slice(0, 2);
                     
                     filteredAlts.forEach((alt) => {
                 const altItem = document.createElement('div');
@@ -1291,20 +1489,7 @@
                         }
                 
                         const altRank = alt.originalRank;
-                        
-                        // Format token for display (same as main stream)
-                        let displayAltToken = alt.token;
-                if (alt.token.includes('\n')) {
-                            const newlineCount = (alt.token.match(/\n/g) || []).length;
-                            displayAltToken = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
-                        } else if (/^\s+$/.test(alt.token) && !alt.token.includes('\t')) {
-                            // Handle space-only tokens (excluding tabs)
-                            const spaceCount = alt.token.length;
-                            displayAltToken = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
-                        } else if (alt.token.includes('\t')) {
-                            const tabCount = (alt.token.match(/\t/g) || []).length;
-                            displayAltToken = tabCount === 1 ? '→' : `→×${tabCount}`;
-                }
+                        const displayAltToken = formatTokenForDisplay(alt.token, { useSpaceSymbol: true });
                 
                 altItem.innerHTML = `
                             <div class="alt-left">
@@ -1323,12 +1508,7 @@
                 }
             }
             
-            // Position tooltip
-            const rect = tokenElement.getBoundingClientRect();
-            tooltip.style.top = `${rect.bottom + 8}px`;
-            tooltip.style.left = `${rect.left}px`;
-            
-            // Set mode
+            // Set mode FIRST so dimensions are correct
             tooltip.className = 'token-tooltip';
             if (mode === 'hover') {
                 tooltip.classList.add('hover-mode');
@@ -1343,16 +1523,57 @@
                     currentTokenRow.classList.add('selected');
                 }
             
-            // Clear search
-            searchInput.value = '';
-            searchResults.innerHTML = '';
-            
-            // Focus search input
-            setTimeout(() => searchInput.focus(), 0);
+                // Clear search
+                searchInput.value = '';
+                searchResults.innerHTML = '';
             }
+            
+            // Position tooltip smartly (after mode is set so dimensions are accurate)
+            const rect = tokenElement.getBoundingClientRect();
+            
+            // Show tooltip temporarily to get its dimensions
+            tooltip.style.visibility = 'hidden';
+            tooltip.classList.remove('hidden');
+            const tooltipRect = tooltip.getBoundingClientRect();
+            tooltip.classList.add('hidden');
+            tooltip.style.visibility = 'visible';
+            
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const padding = 8;
+            
+            // Vertical positioning: prefer below, but flip above if not enough space
+            let top;
+            const spaceBelow = viewportHeight - rect.bottom;
+            const spaceAbove = rect.top;
+            
+            if (spaceBelow >= tooltipRect.height + padding || spaceBelow > spaceAbove) {
+                // Position below
+                top = rect.bottom + padding;
+            } else {
+                // Position above
+                top = rect.top - tooltipRect.height - padding;
+            }
+            
+            // Horizontal positioning: keep within viewport bounds
+            let left = rect.left;
+            if (left + tooltipRect.width > viewportWidth - padding) {
+                left = viewportWidth - tooltipRect.width - padding;
+            }
+            if (left < padding) {
+                left = padding;
+            }
+            
+            tooltip.style.top = `${top}px`;
+            tooltip.style.left = `${left}px`;
             
             // Show tooltip
             tooltip.classList.remove('hidden');
+            
+            // Focus search input if in click mode
+            if (mode === 'click') {
+                setTimeout(() => searchInput.focus(), 0);
+            }
         }
         
         function hideUnifiedTooltip(mode) {
@@ -1470,6 +1691,17 @@
             currentView = viewSelect ? viewSelect.value : 'token';
             switchView();
             
+            // Restore highlight mode from localStorage
+            const highlightModeSelect = document.getElementById('highlight-mode-select');
+            const savedHighlightMode = localStorage.getItem('tokenlens_highlight_mode') || 'probability';
+            if (highlightModeSelect) {
+                highlightModeSelect.value = savedHighlightMode;
+            }
+            currentHighlightMode = savedHighlightMode;
+            
+            // Load default system prompt
+            loadDefaultSystemPrompt();
+            
             // Setup tooltip handlers
             setupTooltipHandlers();
             
@@ -1522,17 +1754,7 @@
                     item.className = 'search-result-item';
                     item.onclick = () => selectAlternativeToken(result.token, item);
                     
-                    // Format token for display (same as main stream)
-                    let displaySearchToken = result.token;
-                    if (result.token.includes('\n')) {
-                        const newlineCount = (result.token.match(/\n/g) || []).length;
-                        displaySearchToken = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
-                    } else if (result.token === ' ' || /^\s+$/.test(result.token)) {
-                        // Keep as space
-                    } else if (result.token.includes('\t')) {
-                        const tabCount = (result.token.match(/\t/g) || []).length;
-                        displaySearchToken = tabCount === 1 ? '→' : `→×${tabCount}`;
-                    }
+                    const displaySearchToken = formatTokenForDisplay(result.token, { useSpaceSymbol: false });
                     
                     // Build probability badge if available
                     let probHTML = '';
@@ -1674,12 +1896,13 @@
                                     const tokenIdx = allTokens.length;
                                     allTokens.push({
                                         token: data.token,
+                                        token_id: data.token_id,
                                         probability: data.probability,
                                         rank: data.rank,
                                         vocab_size: data.vocab_size,
                                         top_alternatives: data.top_alternatives
                                     });
-                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx);
+                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx, null, null, null, data.token_id);
                                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                                 } else if (data.type === 'done') {
                                     // Save complete message to conversation
@@ -1828,6 +2051,7 @@
             conversation.messageTree = messageTree;
             conversation.currentLeafId = currentLeafId;
             conversation.model = document.getElementById('model-select').value;
+            conversation.systemPrompt = currentSystemPrompt;
             
             // Also save linear messages for backwards compatibility or preview
             // conversation.messages = getActiveThread(); 
@@ -1929,6 +2153,14 @@
             // Set model
             document.getElementById('model-select').value = conversation.model || 'meta-llama/Llama-3.1-8B-Instruct';
             
+            // Load system prompt
+            currentSystemPrompt = conversation.systemPrompt || '';
+            const systemPromptInput = document.getElementById('system-prompt-input');
+            if (systemPromptInput) {
+                systemPromptInput.value = currentSystemPrompt;
+            }
+            updateSystemPromptBubble();
+            
             // Render messages
             renderActiveThread();
             
@@ -1945,15 +2177,33 @@
             const messagesContainer = document.getElementById('messages-container');
             messagesContainer.innerHTML = '';
             
+            // Add system prompt bubble
+            messagesContainer.innerHTML = `
+                <!-- System Prompt Bubble (hidden by default) -->
+                <div class="system-prompt-bubble" id="system-prompt-bubble" style="display: none;">
+                    <div class="system-prompt-header" onclick="toggleSystemPromptBubble()">
+                        <span class="system-prompt-label">System</span>
+                        <span class="system-prompt-toggle" id="system-prompt-toggle">▼</span>
+                    </div>
+                    <div class="system-prompt-content" id="system-prompt-content">
+                        <!-- System prompt text will be inserted here -->
+                    </div>
+                </div>
+            `;
+            
+            // Update system prompt bubble visibility
+            updateSystemPromptBubble();
+            
             const thread = getActiveThread();
             
             if (thread.length === 0) {
-                messagesContainer.innerHTML = `
-                    <div class="welcome-message">
-                        <h2>Welcome to Scope</h2>
-                        <p>Chat with AI and see token probabilities in real-time</p>
-                    </div>
+                const welcomeDiv = document.createElement('div');
+                welcomeDiv.className = 'welcome-message';
+                welcomeDiv.innerHTML = `
+                    <h2>Welcome to Scope</h2>
+                    <p>Chat with AI and see token probabilities in real-time</p>
                 `;
+                messagesContainer.appendChild(welcomeDiv);
             } else {
                 thread.forEach((msg) => {
                     if (msg.role === 'user') {
@@ -2032,9 +2282,75 @@
         }
         
         function updateMessageControls(nodeId) {
-             // Re-renders the specific message controls if possible, or just full re-render
-             // Full re-render is safer
-             renderActiveThread();
+            // Update just the controls for a specific message without full re-render
+            const node = messageTree[nodeId];
+            if (!node) return;
+            
+            const messageDiv = document.querySelector(`.message[data-node-id="${nodeId}"]`);
+            if (!messageDiv) return;
+            
+            // Find or create the controls container
+            let controlsDiv = messageDiv.querySelector('.message-controls');
+            if (!controlsDiv) {
+                controlsDiv = document.createElement('div');
+                controlsDiv.className = 'message-controls';
+                const contentDiv = messageDiv.querySelector('.message-content');
+                if (contentDiv) {
+                    contentDiv.appendChild(controlsDiv);
+                }
+            }
+            
+            // Build controls HTML
+            let controlsHtml = '';
+            
+            // Check for siblings
+            const parent = node.parentId ? messageTree[node.parentId] : null;
+            let siblings = [];
+            if (parent) {
+                siblings = parent.childrenIds;
+            } else {
+                siblings = Object.values(messageTree).filter(n => !n.parentId).map(n => n.id);
+            }
+            
+            const currentIndex = siblings.indexOf(node.id);
+            const siblingsCount = siblings.length;
+            
+            // Edit button (for user messages)
+            if (node.role === 'user') {
+                controlsHtml += `
+                    <button class="edit-msg-btn" onclick="enableEditMode('${node.id}')" title="Edit message">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                `;
+            }
+            
+            // Regenerate button (for assistant messages)
+            if (node.role === 'assistant' && node.parentId) {
+                controlsHtml += `
+                    <button class="regenerate-btn" onclick="regenerateFromNode('${node.parentId}')" title="Regenerate">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                    </button>
+                `;
+            }
+            
+            // Navigation buttons (if multiple siblings)
+            if (siblingsCount > 1) {
+                controlsHtml += `
+                    <div class="message-nav">
+                        <button class="nav-btn prev" ${currentIndex === 0 ? 'disabled' : ''} onclick="navigateSibling('${node.id}', -1)">❮</button>
+                        <span class="nav-count">${currentIndex + 1}/${siblingsCount}</span>
+                        <button class="nav-btn next" ${currentIndex === siblingsCount - 1 ? 'disabled' : ''} onclick="navigateSibling('${node.id}', 1)">❯</button>
+                    </div>
+                `;
+            }
+            
+            controlsDiv.innerHTML = controlsHtml;
         }
         
         async function regenerateFromNode(parentId) {
@@ -2344,7 +2660,7 @@
                     // Note: messageIndex param in addToken is not strictly used for logic, mostly for referencing. 
                     // Passing node.id or null is better if we update addToken.
                     // For now passing idx is fine.
-                    const tokenSpan = addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx, null, tokenData.model, tokenData.temperature);
+                    const tokenSpan = addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx, null, tokenData.model, tokenData.temperature, tokenData.token_id);
                     if (node) {
                         tokenSpan.dataset.nodeId = node.id;
                     }
@@ -2353,23 +2669,13 @@
                         tokenSpan.classList.add('prefilled-token');
                     }
                     
-                    // Apply DiffLens data if available
+                    // Apply DiffLens data if available AND we're in diff view
                     if (difflensData && difflensData.token_data && difflensData.token_data[idx]) {
                         const tokenInfo = difflensData.token_data[idx];
                         const diff = tokenInfo.prob_diff;
-                        const color = getDiffLensColor(diff);
-                        tokenSpan.style.backgroundColor = color;
+                        const rankDiff = tokenInfo.rank_diff;
                         
-                        // Set text color based on difference (diff is in percentage points)
-                        if (Math.abs(diff) < 2) {
-                            tokenSpan.style.color = 'hsl(0, 0%, 30%)';
-                        } else if (diff > 0) {
-                            tokenSpan.style.color = 'hsl(120, 50%, 20%)';
-                        } else {
-                            tokenSpan.style.color = 'hsl(0, 50%, 25%)';
-                        }
-                        
-                        // Store DiffLens data in token element
+                        // Store DiffLens data in token element (always store, but only apply colors if in diff view)
                         tokenSpan.dataset.difflensGenProb = tokenInfo.gen_prob;
                         tokenSpan.dataset.difflensGenRank = tokenInfo.gen_rank;
                         tokenSpan.dataset.difflensGenTopAlternatives = JSON.stringify(tokenInfo.gen_top_alternatives);
@@ -2381,14 +2687,29 @@
                         tokenSpan.dataset.difflensGenModel = difflensData.generation_model;
                         tokenSpan.dataset.difflensAnalysisModel = difflensData.analysis_model;
                         
-                        // Add class for styling
-                        tokenSpan.classList.remove('difflens-gen-prefers', 'difflens-analysis-prefers', 'difflens-neutral');
-                        if (Math.abs(diff) < 0.5) {
-                            tokenSpan.classList.add('difflens-neutral');
-                        } else if (diff > 0) {
-                            tokenSpan.classList.add('difflens-gen-prefers');
-                        } else {
-                            tokenSpan.classList.add('difflens-analysis-prefers');
+                        // Only apply DiffLens styling if currently in diff view
+                        if (currentView === 'diff') {
+                            const color = getDiffLensColor(diff, rankDiff);
+                            tokenSpan.style.backgroundColor = color;
+                            
+                            // Set text color based on difference (diff is in percentage points)
+                            if (Math.abs(diff) < 2) {
+                                tokenSpan.style.color = 'hsl(0, 0%, 30%)';
+                            } else if (diff > 0) {
+                                tokenSpan.style.color = 'hsl(120, 50%, 20%)';
+                            } else {
+                                tokenSpan.style.color = 'hsl(0, 50%, 25%)';
+                            }
+                            
+                            // Add class for styling
+                            tokenSpan.classList.remove('difflens-gen-prefers', 'difflens-analysis-prefers', 'difflens-neutral');
+                            if (Math.abs(diff) < 0.5) {
+                                tokenSpan.classList.add('difflens-neutral');
+                            } else if (diff > 0) {
+                                tokenSpan.classList.add('difflens-gen-prefers');
+                            } else {
+                                tokenSpan.classList.add('difflens-analysis-prefers');
+                            }
                         }
                     } else if (currentView === 'diff') {
                         // In DiffLens mode but no analysis yet - make gray
@@ -2522,13 +2843,19 @@
                     currentNode = parent;
                 }
                 
-                // Convert to context format (only user messages for context)
-                context = thread
-                    .filter(node => node.role === 'user')
-                    .map(node => ({
-                        role: node.role,
-                        content: node.content
-                    }));
+                // Convert to context format (all messages for context)
+                context = thread.map(node => ({
+                    role: node.role,
+                    content: node.content
+                }));
+                
+                // Prepend system prompt if set
+                if (currentSystemPrompt) {
+                    context.unshift({
+                        role: 'system',
+                        content: currentSystemPrompt
+                    });
+                }
             }
             
             // Show modal with loading state
@@ -2629,7 +2956,7 @@
                 heatmapContainer.classList.remove('active');
                 chartContainer.classList.add('active');
                 if (currentLogitLensData) {
-                    // Initialize chart with top 3 tokens on first view
+                    // Initialize chart with top 2 tokens on first view
                     if (activeChartTokens.length === 0) {
                         initializeChartTokens();
                     }
@@ -2655,7 +2982,7 @@
             // Header row: show the actual input tokens
             html += '<tr><th style="min-width: 100px; background: var(--bg-secondary);">Layer</th>';
             windowTokens.forEach(t => {
-                const displayToken = t.display || t.token.replace(/\n/g, '↵').replace(/\t/g, '→');
+                const displayToken = t.display || formatTokenForDisplay(t.token, { replaceAllSpaces: false });
                 html += `<th style="min-width: 80px; background: var(--bg-secondary); font-family: var(--font-mono);">${displayToken}</th>`;
             });
             html += '</tr>';
@@ -2674,7 +3001,7 @@
                         const topPred = layerPred.predictions[0];
                         const prob = topPred.probability;
                         const token = topPred.token;
-                        const displayToken = token.replace(/\n/g, '↵').replace(/ /g, '·').replace(/\t/g, '→');
+                        const displayToken = formatTokenForDisplay(token, { replaceAllSpaces: true });
                         const color = getColorForProb(prob);
                         const textColor = prob > 0.6 ? '#000' : 'var(--text-color)';
                         
@@ -2732,7 +3059,7 @@
                 </div>
                 <div class="tooltip-row">
                     <span class="tooltip-label">Predicted:</span>
-                    <span class="tooltip-value">"${token.replace(/\n/g, '↵').replace(/ /g, '·')}"</span>
+                    <span class="tooltip-value">"${formatTokenForDisplay(token, { replaceAllSpaces: true })}"</span>
                 </div>
                 <div class="tooltip-row">
                     <span class="tooltip-label">Probability:</span>
@@ -2742,10 +3069,38 @@
             
             tooltip.classList.add('visible');
             
-            // Position tooltip near cursor
+            // Position tooltip smartly near cell
             const rect = cell.getBoundingClientRect();
-            tooltip.style.left = rect.left + 'px';
-            tooltip.style.top = (rect.bottom + 10) + 'px';
+            const tooltipRect = tooltip.getBoundingClientRect();
+            
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const padding = 10;
+            
+            // Vertical positioning: prefer below, but flip above if not enough space
+            let top;
+            const spaceBelow = viewportHeight - rect.bottom;
+            const spaceAbove = rect.top;
+            
+            if (spaceBelow >= tooltipRect.height + padding || spaceBelow > spaceAbove) {
+                // Position below
+                top = rect.bottom + padding;
+            } else {
+                // Position above
+                top = rect.top - tooltipRect.height - padding;
+            }
+            
+            // Horizontal positioning: keep within viewport bounds
+            let left = rect.left;
+            if (left + tooltipRect.width > viewportWidth - padding) {
+                left = viewportWidth - tooltipRect.width - padding;
+            }
+            if (left < padding) {
+                left = padding;
+            }
+            
+            tooltip.style.top = `${top}px`;
+            tooltip.style.left = `${left}px`;
         }
         
         function hideLogitLensTooltip() {
@@ -2760,9 +3115,9 @@
             const lastPos = currentLogitLensData.positions[currentLogitLensData.positions.length - 1];
             const finalLayer = lastPos.layer_predictions[lastPos.layer_predictions.length - 1];
             
-            // Add top 3 tokens
-            const top3 = finalLayer.predictions.slice(0, 3).map(p => p.token);
-            activeChartTokens = top3.map((token, idx) => ({
+            // Add top 2 tokens
+            const top2 = finalLayer.predictions.slice(0, 2).map(p => p.token);
+            activeChartTokens = top2.map((token, idx) => ({
                 token,
                 color: CHART_COLORS[idx]
             }));
@@ -2778,7 +3133,7 @@
                 const chip = document.createElement('div');
                 chip.className = 'active-token-chip';
                 
-                const displayToken = tokenData.token.replace(/\n/g, '↵').replace(/\t/g, '→');
+                const displayToken = formatTokenForDisplay(tokenData.token, { replaceAllSpaces: false });
                 
                 chip.innerHTML = `
                     <div class="active-token-color" style="background-color: ${tokenData.color};"></div>
@@ -2861,7 +3216,7 @@
                         
                         if (matches && matches.length > 0) {
                             chartSearchResults.innerHTML = matches.slice(0, 15).map(match => {
-                                const displayToken = match.token.replace(/\n/g, '↵').replace(/\t/g, '→');
+                                const displayToken = formatTokenForDisplay(match.token, { replaceAllSpaces: false });
                                 const probText = match.probability ? ` (${(match.probability * 100).toFixed(1)}%)` : '';
                                 return `<div class="token-result-item" onclick="addChartToken('${match.token.replace(/'/g, "\\'")}')">${displayToken}${probText}</div>`;
                             }).join('');
@@ -2932,7 +3287,7 @@
                 });
                 
                 return {
-                    label: tokenData.token.replace(/\n/g, '↵').replace(/\t/g, '→'),
+                    label: formatTokenForDisplay(tokenData.token, { replaceAllSpaces: false }),
                     data: data,
                     borderColor: tokenData.color,
                     backgroundColor: tokenData.color,

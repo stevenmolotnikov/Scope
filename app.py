@@ -272,8 +272,40 @@ def load_model_and_tokenizer(model_name):
     if hasattr(tokenizer, 'additional_special_tokens') and tokenizer.additional_special_tokens:
         print(f"Additional special tokens (first 5): {tokenizer.additional_special_tokens[:5]}")
     
-    model = AutoModelForCausalLM.from_pretrained(model_name)
+    # Determine device with detailed logging
+    if torch.cuda.is_available():
+        device = 'cuda'
+        print(f"CUDA is available!")
+        print(f"CUDA device count: {torch.cuda.device_count()}")
+        print(f"CUDA device name: {torch.cuda.get_device_name(0)}")
+        print(f"CUDA version: {torch.version.cuda}")
+    else:
+        device = 'cpu'
+        print(f"WARNING: CUDA not available, using CPU")
+        print(f"PyTorch version: {torch.__version__}")
+        print(f"PyTorch built with CUDA: {torch.version.cuda}")
+    
+    print(f"Loading model to device: {device}")
+    
+    # Clear CUDA cache before loading new model
+    if device == 'cuda':
+        torch.cuda.empty_cache()
+    
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
+        device_map='auto' if device == 'cuda' else None,
+        low_cpu_mem_usage=True
+    )
     model.eval()
+    
+    # Enable memory-efficient features for CUDA
+    if device == 'cuda':
+        # Use gradient checkpointing to save memory (doesn't affect inference much)
+        if hasattr(model, 'gradient_checkpointing_enable'):
+            model.gradient_checkpointing_enable()
+        print(f"GPU memory allocated: {torch.cuda.memory_allocated(0) / 1024**3:.2f} GB")
+        print(f"GPU memory reserved: {torch.cuda.memory_reserved(0) / 1024**3:.2f} GB")
     
     # Check model's generation config for EOS tokens
     if hasattr(model, 'generation_config') and hasattr(model.generation_config, 'eos_token_id'):
@@ -283,9 +315,9 @@ def load_model_and_tokenizer(model_name):
         else:
             print(f"Model generation config EOS token ID: {gen_eos}")
     
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(f"Using device: {device}")
-    model.to(device)
+    # Model should already be on device via device_map, but ensure it
+    if device == 'cpu':
+        model.to(device)
     
     MODEL_CACHE[model_name] = (model, tokenizer, device)
     return model, tokenizer, device
@@ -405,6 +437,11 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
             
             # Get logits for position that predicts this token
             current_logits = logits[0, prompt_len + i - 1]
+            
+            # Apply temperature scaling if not greedy
+            if temperature != 0 and temperature >= 0.01:
+                current_logits = current_logits / temperature
+            
             probabilities = torch.softmax(current_logits, dim=-1)
             
             token_prob = probabilities[token_id_item].item()
@@ -425,6 +462,7 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
             # Yield prefill token with probabilities
             yield {
                 "token": tokenizer.decode([token_id_item]),
+                "token_id": int(token_id_item),
                 "probability": token_prob,
                 "rank": token_rank,
                 "vocab_size": vocab_size,
@@ -442,6 +480,7 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
             token_str = tokenizer.decode([token_id.item()])
             yield {
                 'token': token_str,
+                    'token_id': int(token_id.item()),
                 'probability': None,
                 'rank': None,
                 'vocab_size': vocab_size,
@@ -484,28 +523,41 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
     # Generate tokens one by one
     generated_ids = input_ids.clone()
     
-    for _ in range(max_new_tokens):
+    for step_idx in range(max_new_tokens):
         with torch.no_grad():
             outputs = model(generated_ids)
             logits = outputs.logits[:, -1, :]  # Get logits for the last token
             
-        # Apply temperature to logits
-        if temperature > 0:
-            logits = logits / temperature
-        
-        # Calculate probabilities
-        probabilities = torch.softmax(logits, dim=-1)
-        
-        # Sample next token
-        if temperature == 0:
-            # Greedy sampling
+            # Free intermediate tensors
+            del outputs
+            
+        # Sample next token based on temperature
+        if temperature == 0 or temperature < 0.01:
+            # Greedy sampling (temperature 0 or near-zero)
+            # Don't apply temperature scaling for greedy - just take argmax
+            probabilities = torch.softmax(logits, dim=-1)
             next_token_id = torch.argmax(probabilities, dim=-1).item()
         else:
+            # Temperature sampling
+            # Apply temperature scaling before softmax
+            logits = logits / temperature
+            probabilities = torch.softmax(logits, dim=-1)
             # Sample from the distribution
             next_token_id = torch.multinomial(probabilities, num_samples=1).item()
         
+        # Clear CUDA cache periodically to prevent memory buildup
+        if device == 'cuda' and step_idx % 10 == 0:
+            torch.cuda.empty_cache()
+        
         # Get probability and rank of selected token
         token_prob = probabilities[0, next_token_id].item()
+        
+        # Debug: check for invalid probabilities
+        if token_prob == 0.0 or token_prob < 1e-10:
+            print(f"WARNING: Very low probability detected: {token_prob} for token '{tokenizer.decode([next_token_id])}'")
+            print(f"  Logits shape: {outputs.logits.shape}, Probabilities shape: {probabilities.shape}")
+            print(f"  Selected token ID: {next_token_id}, Temperature: {temperature}")
+            print(f"  Top 5 probabilities: {probabilities[0].topk(5)}")
         
         # Calculate rank
         sorted_indices = torch.argsort(probabilities[0], descending=True)
@@ -529,6 +581,7 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         # Yield token data (including special tokens so user can see them)
         yield {
             "token": token_str,
+            "token_id": int(next_token_id),
             "probability": token_prob,
             "rank": token_rank,
             "vocab_size": vocab_size,
@@ -542,6 +595,11 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         
         # Append to generated sequence
         generated_ids = torch.cat([generated_ids, torch.tensor([[next_token_id]], device=device)], dim=1)
+    
+    # Clean up memory after generation
+    if device == 'cuda':
+        del generated_ids
+        torch.cuda.empty_cache()
 
 
 @app.route('/')
@@ -752,6 +810,7 @@ def calculate_logprobs():
         text = data.get('text', '')
         model_name = data.get('model', DEFAULT_MODEL)
         context = data.get('context', [])  # Previous messages for context
+        temperature = data.get('temperature', 1.0)
         
         if not text:
             return json.dumps({'tokens': []})
@@ -790,6 +849,11 @@ def calculate_logprobs():
             # Get logits for position that predicts this token
             if context_len + i > 0:
                 current_logits = logits[0, context_len + i - 1]
+                
+                # Apply temperature scaling if not greedy
+                if temperature != 0 and temperature >= 0.01:
+                    current_logits = current_logits / temperature
+                
                 probabilities = torch.softmax(current_logits, dim=-1)
                 
                 prob = probabilities[token_id].item()
@@ -798,8 +862,8 @@ def calculate_logprobs():
                 sorted_indices = torch.argsort(probabilities, descending=True)
                 rank = (sorted_indices == token_id).nonzero(as_tuple=True)[0].item() + 1
                 
-                # Get top 4 alternatives (will filter current token in UI to show 3)
-                top_k_probs, top_k_indices = torch.topk(probabilities, 4)
+                # Get top 3 alternatives (will filter current token in UI to show 2)
+                top_k_probs, top_k_indices = torch.topk(probabilities, 3)
                 top_alternatives = [
                     {"token": tokenizer.decode([idx.item()]), "probability": p.item()}
                     for idx, p in zip(top_k_indices, top_k_probs)
@@ -839,6 +903,7 @@ def analyze_difflens():
         analysis_model_name = data.get('analysis_model')
         context = data.get('context', [])
         tokens = data.get('tokens', [])
+        temperature = data.get('temperature', 1.0)
         
         if not analysis_model_name or not tokens:
             return jsonify({'token_data': []})
@@ -846,16 +911,41 @@ def analyze_difflens():
         # Load analysis model
         analysis_model, analysis_tokenizer, analysis_device = load_model_and_tokenizer(analysis_model_name)
         
-        # Reconstruct assistant text from tokens
+        # Check if models are the same (can use token IDs directly)
+        models_match = (generation_model_name == analysis_model_name)
+        
+        # Build assistant token IDs if provided AND models match (for perfectly matching generation)
+        token_id_sequence = []
+        can_use_token_ids = models_match
+        
+        if models_match:
+            for t in tokens:
+                token_id_value = t.get('token_id')
+                if token_id_value is None:
+                    can_use_token_ids = False
+                    break
+                try:
+                    token_id_sequence.append(int(token_id_value))
+                except (ValueError, TypeError):
+                    can_use_token_ids = False
+                    break
+        
+        # Always have text as fallback
         assistant_text = ''.join([t.get('token', '') for t in tokens])
         
-        # Build context messages
+        # Build context messages (mirror full conversation history prior to analyzed message)
         context_messages = []
         for msg in context:
-            if msg['role'] == 'user':
-                context_messages.append(msg)
-            elif msg['role'] == 'assistant':
-                break
+            if not isinstance(msg, dict):
+                continue
+            role = msg.get('role')
+            content = msg.get('content', '')
+            if role is None:
+                continue
+            context_messages.append({
+                'role': role,
+                'content': content
+            })
         
         # Format context
         if context_messages and hasattr(analysis_tokenizer, 'apply_chat_template') and analysis_tokenizer.chat_template:
@@ -867,13 +957,18 @@ def analyze_difflens():
         else:
             formatted_context = ''
         
-        # Tokenize
+        # Tokenize context (match generation behavior - include special tokens)
         if formatted_context:
-            context_ids = analysis_tokenizer.encode(formatted_context, return_tensors="pt", add_special_tokens=False).to(analysis_device)
+            context_ids = analysis_tokenizer.encode(formatted_context, return_tensors="pt").to(analysis_device)
         else:
             context_ids = torch.tensor([[]], dtype=torch.long).to(analysis_device)
         
-        assistant_ids = analysis_tokenizer.encode(assistant_text, return_tensors="pt", add_special_tokens=False).to(analysis_device)
+        # Only use token IDs if models match (same tokenizer)
+        if can_use_token_ids and token_id_sequence:
+            assistant_ids = torch.tensor([token_id_sequence], dtype=torch.long).to(analysis_device)
+        else:
+            # Re-tokenize with analysis model's tokenizer (for cross-model comparison)
+            assistant_ids = analysis_tokenizer.encode(assistant_text, return_tensors="pt", add_special_tokens=False).to(analysis_device)
         full_ids = torch.cat([context_ids, assistant_ids], dim=1) if context_ids.size(1) > 0 else assistant_ids
         
         # Get logits
@@ -885,7 +980,10 @@ def analyze_difflens():
         context_len = context_ids.size(1)
         vocab_size = analysis_tokenizer.vocab_size
         
-        # Use same number of tokens as generation
+        # When models match, we can do 1:1 token comparison
+        # When models differ, tokenization may differ - handle gracefully
+        analysis_token_count = assistant_ids.size(1)
+        
         for i in range(len(tokens)):
             gen_token_info = tokens[i]
             gen_token = gen_token_info.get('token', '')
@@ -893,13 +991,19 @@ def analyze_difflens():
             gen_rank = gen_token_info.get('gen_rank', None)
             gen_top_alternatives = gen_token_info.get('gen_top_alternatives', [])
             
-            # For simplicity, use same index in analysis model tokens
-            if i < assistant_ids.size(1):
+            # Handle token comparison based on whether models match
+            if models_match and i < analysis_token_count:
+                # Perfect alignment - same tokenizer, use token IDs directly
                 token_id = assistant_ids[0, i].item()
                 
                 if context_len + i > 0:
                     # Get logits for position that predicts this token
                     current_logits = logits[0, context_len + i - 1]
+                    
+                    # Apply temperature if not greedy
+                    if temperature != 0 and temperature >= 0.01:
+                        current_logits = current_logits / temperature
+                    
                     probabilities = torch.softmax(current_logits, dim=-1)
                     analysis_prob = probabilities[token_id].item()
                     
@@ -907,8 +1011,8 @@ def analyze_difflens():
                     sorted_indices = torch.argsort(probabilities, descending=True)
                     analysis_rank = (sorted_indices == token_id).nonzero(as_tuple=True)[0].item() + 1
                     
-                    # Get top 4 (will filter current token in UI to show 3)
-                    top_k_probs, top_k_indices = torch.topk(probabilities, min(4, vocab_size))
+                    # Get top 3 (will filter current token in UI to show 2)
+                    top_k_probs, top_k_indices = torch.topk(probabilities, min(3, vocab_size))
                     analysis_top_alternatives = [
                         {'token': analysis_tokenizer.decode([int(idx)]), 'probability': float(prob)}
                         for prob, idx in zip(top_k_probs.cpu().tolist(), top_k_indices.cpu().tolist())
@@ -942,6 +1046,92 @@ def analyze_difflens():
                         'prob_diff': 0,
                         'rank_diff': 0
                     })
+            elif not models_match:
+                # Cross-model comparison with different tokenizers
+                # Approximate matching: find where this generation token text appears in analysis tokenization
+                
+                # Build text up to this point
+                text_before = ''.join([t.get('token', '') for t in tokens[:i]])
+                text_up_to_here = text_before + gen_token
+                
+                # Encode the full text to find position
+                if text_up_to_here:
+                    test_ids = analysis_tokenizer.encode(text_up_to_here, return_tensors="pt", add_special_tokens=False).to(analysis_device)
+                    # The last token position in test_ids represents the end of our generation token
+                    analysis_pos = test_ids.size(1) - 1
+                    
+                    if analysis_pos >= 0 and analysis_pos < analysis_token_count:
+                        # Get the token ID at this position
+                        token_id = assistant_ids[0, analysis_pos].item()
+                        
+                        # Get logits that predict this position
+                        if context_len + analysis_pos > 0:
+                            current_logits = logits[0, context_len + analysis_pos - 1]
+                            
+                            # Apply temperature if not greedy
+                            if temperature != 0 and temperature >= 0.01:
+                                current_logits = current_logits / temperature
+                            
+                            probabilities = torch.softmax(current_logits, dim=-1)
+                            analysis_prob = probabilities[token_id].item()
+                            
+                            # Calculate rank
+                            sorted_indices = torch.argsort(probabilities, descending=True)
+                            analysis_rank = (sorted_indices == token_id).nonzero(as_tuple=True)[0].item() + 1
+                            
+                            # Get top 3 alternatives
+                            top_k_probs, top_k_indices = torch.topk(probabilities, min(3, vocab_size))
+                            analysis_top_alternatives = [
+                                {'token': analysis_tokenizer.decode([int(idx)]), 'probability': float(prob)}
+                                for prob, idx in zip(top_k_probs.cpu().tolist(), top_k_indices.cpu().tolist())
+                            ]
+                            
+                            # Calculate differences
+                            prob_diff = (gen_prob - analysis_prob) * 100
+                            rank_diff = (analysis_rank - gen_rank) if gen_rank else 0
+                            
+                            token_data.append({
+                                'token': gen_token,
+                                'gen_prob': float(gen_prob),
+                                'gen_rank': int(gen_rank) if gen_rank else None,
+                                'gen_top_alternatives': gen_top_alternatives,
+                                'analysis_prob': float(analysis_prob),
+                                'analysis_rank': int(analysis_rank),
+                                'analysis_top_alternatives': analysis_top_alternatives,
+                                'prob_diff': float(prob_diff),
+                                'rank_diff': int(rank_diff)
+                            })
+                            continue
+                
+                # Fallback: can't properly analyze this token
+                token_data.append({
+                    'token': gen_token,
+                    'gen_prob': float(gen_prob),
+                    'gen_rank': int(gen_rank) if gen_rank else None,
+                    'gen_top_alternatives': gen_top_alternatives,
+                    'analysis_prob': 0,
+                    'analysis_rank': None,
+                    'analysis_top_alternatives': [],
+                    'prob_diff': 0,
+                    'rank_diff': 0
+                })
+            else:
+                # Token index out of bounds (shouldn't happen with models_match)
+                token_data.append({
+                    'token': gen_token,
+                    'gen_prob': float(gen_prob),
+                    'gen_rank': int(gen_rank) if gen_rank else None,
+                    'gen_top_alternatives': gen_top_alternatives,
+                    'analysis_prob': 0,
+                    'analysis_rank': None,
+                    'analysis_top_alternatives': [],
+                    'prob_diff': 0,
+                    'rank_diff': 0
+                })
+        
+        # Clean up memory after analysis
+        if analysis_device == 'cuda':
+            torch.cuda.empty_cache()
         
         return jsonify({
             'token_data': token_data,
@@ -949,6 +1139,19 @@ def analyze_difflens():
             'analysis_model': analysis_model_name
         })
         
+    except RuntimeError as e:
+        # Handle CUDA OOM errors specifically
+        if 'out of memory' in str(e).lower():
+            print(f"CUDA OOM Error in DiffLens: {e}")
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                print("Cleared CUDA cache after OOM error")
+            return jsonify({'token_data': [], 'error': 'GPU out of memory. Try analyzing fewer tokens or using a smaller model.'}), 500
+        else:
+            print(f"Runtime error in DiffLens analysis: {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'token_data': []}), 500
     except Exception as e:
         print(f"Error in DiffLens analysis: {e}")
         import traceback
@@ -1135,11 +1338,28 @@ def logit_lens():
                 'layer_predictions': layer_predictions
             })
         
+        # Clean up memory after analysis
+        if device == 'cuda':
+            torch.cuda.empty_cache()
+        
         return jsonify({
             'num_layers': num_layers + 1,
             'positions': positions_data
         })
         
+    except RuntimeError as e:
+        # Handle CUDA OOM errors specifically
+        if 'out of memory' in str(e).lower():
+            print(f"CUDA OOM Error in logit lens: {e}")
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                print("Cleared CUDA cache after OOM error")
+            return jsonify({'error': 'GPU out of memory. Try analyzing fewer tokens at once.'}), 500
+        else:
+            print(f"Runtime error in logit lens analysis: {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'error': str(e)}), 500
     except Exception as e:
         print(f"Error in logit lens analysis: {e}")
         import traceback
@@ -1180,6 +1400,23 @@ def stream():
                 # Send completion signal
                 yield f"data: {json.dumps({'type': 'done'})}\n\n"
                 
+            except RuntimeError as e:
+                # Handle CUDA OOM errors specifically
+                if 'out of memory' in str(e).lower():
+                    print(f"CUDA OOM Error: {e}")
+                    import torch
+                    # Clear CUDA cache
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                        print("Cleared CUDA cache after OOM error")
+                        print(f"GPU memory allocated: {torch.cuda.memory_allocated(0) / 1024**3:.2f} GB")
+                        print(f"GPU memory reserved: {torch.cuda.memory_reserved(0) / 1024**3:.2f} GB")
+                    yield f"data: {json.dumps({'type': 'error', 'message': 'GPU out of memory. Try using a smaller model or shorter context.'})}\n\n"
+                else:
+                    print(f"Runtime error during streaming: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
             except Exception as e:
                 print(f"Error during streaming: {e}")
                 import traceback

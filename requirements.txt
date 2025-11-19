@@ -1,6 +1,6 @@
 accelerate
 Flask
-torch
-torchvision
 transformers
 matplotlib
+# PyTorch with CUDA support - install separately:
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
