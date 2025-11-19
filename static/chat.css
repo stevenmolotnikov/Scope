@@ -145,11 +145,19 @@ body {
 }
 
 .sidebar-header {
-    padding: 16px;
+    padding: 20px 16px;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+}
+
+.sidebar-branding {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    white-space: nowrap;
 }
 
 .sidebar-close-btn {
@@ -171,12 +179,23 @@ body {
 }
 
 .sidebar-title {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-color);
     font-family: var(--font-mono);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    line-height: 1;
+}
+
+.sidebar-subtitle {
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    opacity: 0.7;
 }
 
 .new-chat-btn-sidebar {
@@ -961,7 +980,7 @@ body {
 .tooltip-interactive-section {
     display: none;
     border-top: 1px solid var(--border-color);
-    padding: 12px 16px;
+    padding: 10px 16px;
 }
 
 .token-tooltip.click-mode .tooltip-interactive-section {
@@ -969,10 +988,10 @@ body {
 }
 
 .tooltip-actions {
-    margin-top: 12px;
+    margin-top: 8px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .space-token {
@@ -1265,13 +1284,13 @@ body {
 
 .token-search-input {
     width: 100%;
-    padding: 8px 12px;
+    padding: 7px 12px;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 0.875rem;
     font-family: var(--font-mono);
     background: var(--bg-color);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .token-search-input:focus {
@@ -1281,7 +1300,7 @@ body {
 }
 
 .token-search-results {
-    max-height: 120px;
+    max-height: 80px;
     overflow-y: auto;
 }
 

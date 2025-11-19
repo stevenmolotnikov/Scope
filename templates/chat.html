@@ -21,7 +21,10 @@
                             <path d="M12 5L7 10L12 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
-                    <span class="sidebar-title">Scope</span>
+                    <div class="sidebar-branding">
+                        <span class="sidebar-title">Scope</span>
+                        <span class="sidebar-subtitle">by NDIF</span>
+                    </div>
                 </div>
                 
                 <button class="new-chat-btn-sidebar" onclick="createNewChat()">
@@ -600,8 +603,8 @@
             }
         }
 
-        async function generateResponse(prefillText = null) {
-            console.log('generateResponse started', {prefillText, currentLeafId});
+        async function generateResponse(prefillText = null, injectedTokenIndex = null, preInjectionTokens = null) {
+            console.log('generateResponse started', {prefillText, injectedTokenIndex, preInjectionTokens: preInjectionTokens?.length, currentLeafId});
             isGenerating = true;
             updateSendButton();
             
@@ -667,8 +670,40 @@
             let responseTokens = [];
             let prefillTokenCount = 0;
             
-            // If prefill text provided, immediately show as single gray badge
-            if (prefillText) {
+            // If we have pre-injection tokens, render them immediately (no streaming animation)
+            if (preInjectionTokens && preInjectionTokens.length > 0) {
+                for (const tokenData of preInjectionTokens) {
+                    assistantResponse += tokenData.token;
+                    responseTokens.push(tokenData);
+                    
+                    // Add token to UI immediately without streaming effect
+                    const tokenSpan = addToken(
+                        tokensContainer, 
+                        tokenData.token, 
+                        tokenData.probability, 
+                        tokenData.rank, 
+                        tokenData.vocab_size, 
+                        tokenData.top_alternatives, 
+                        responseTokens.length - 1, 
+                        null, 
+                        tokenData.model, 
+                        tokenData.temperature, 
+                        tokenData.token_id
+                    );
+                    tokenSpan.dataset.nodeId = nodeId;
+                }
+                
+                // Now show placeholder for just the injected token
+                if (prefillText) {
+                    const placeholderSpan = document.createElement('span');
+                    placeholderSpan.className = 'token prefill-placeholder prefilled-token';
+                    placeholderSpan.textContent = prefillText;
+                    placeholderSpan.style.backgroundColor = 'hsl(0, 0%, 80%)';
+                    tokensContainer.appendChild(placeholderSpan);
+                    assistantResponse += prefillText;
+                }
+            } else if (prefillText) {
+                // Regular prefill (no injection) - show placeholder
                 assistantResponse = prefillText;
                 const placeholderSpan = document.createElement('span');
                 placeholderSpan.className = 'token prefill-placeholder prefilled-token';
@@ -757,8 +792,18 @@
                                         continue;
                                     }
                                     
-                                    assistantResponse += data.token;
                                     const tokenIdx = responseTokens.length;
+                                    
+                                    // Skip pre-injection tokens (already rendered immediately)
+                                    if (preInjectionTokens && isPrefillToken && tokenIdx < preInjectionTokens.length) {
+                                        continue;
+                                    }
+                                    
+                                    // Skip the injected token text (already in assistantResponse from placeholder)
+                                    const isInjectedToken = preInjectionTokens && isPrefillToken && tokenIdx === preInjectionTokens.length;
+                                    if (!isInjectedToken) {
+                                        assistantResponse += data.token;
+                                    }
                                     
                                     const tokenData = {
                                         token: data.token,
@@ -770,7 +815,8 @@
                                         model: modelName,
                                         temperature: temperature,
                                         is_prefill_token: isPrefillToken,
-                                        is_prompt_token: isPromptToken
+                                        is_prompt_token: isPromptToken,
+                                        is_injected: injectedTokenIndex !== null && tokenIdx === injectedTokenIndex
                                     };
                                     
                                     responseTokens.push(tokenData);
@@ -779,8 +825,9 @@
                                     newNode.content = assistantResponse;
                                     newNode.tokens = responseTokens;
                                     
-                                    // If first prefill token, remove placeholder
-                                    if (isPrefillToken && prefillTokenCount === 0) {
+                                    // If this is the first streamed prefill token (after pre-injection), remove placeholder
+                                    const expectedFirstPrefillIdx = preInjectionTokens ? preInjectionTokens.length : 0;
+                                    if (isPrefillToken && tokenIdx === expectedFirstPrefillIdx) {
                                         const placeholder = tokensContainer.querySelector('.prefill-placeholder');
                                         if (placeholder) {
                                             placeholder.remove();
@@ -793,8 +840,12 @@
                                     tokenSpan.dataset.nodeId = nodeId;
                                     
                                     // Add prefill styling if applicable
+                                    // Only style the token if it matches injectedTokenIndex (for injected tokens)
+                                    // or if no injectedTokenIndex is set (for regular prefill)
                                     if (isPrefillToken && tokenSpan) {
-                                        tokenSpan.classList.add('prefilled-token');
+                                        if (injectedTokenIndex === null || tokenIdx === injectedTokenIndex) {
+                                            tokenSpan.classList.add('prefilled-token');
+                                        }
                                         prefillTokenCount++;
                                     }
                                     
@@ -1804,31 +1855,30 @@
                 return;
             }
             
-            // Get the original token's alternatives to find the probability of the injected token
-            const originalToken = node.tokens[tokenIndex];
-            const topAlternatives = originalToken.top_alternatives || [];
-            
-            // Find the probability of the selected alternative
-            const altData = topAlternatives.find(alt => alt.token === selectedAlternativeToken);
-            const injectedTokenProb = altData ? altData.probability : null;
-            
-            // Truncate the response up to the selected token and inject the alternative
+            // Get the tokens before injection point
             const tokensBeforeInjection = node.tokens.slice(0, tokenIndex);
-            const textBeforeInjection = tokensBeforeInjection.map(t => t.token).join('');
-            const prefillText = textBeforeInjection + selectedAlternativeToken;
+            
+            // Only the injected token should be prefilled (streamed)
+            const prefillText = selectedAlternativeToken;
+            
+            // Calculate which token index is the injected one (for styling)
+            const injectedTokenIndex = tokensBeforeInjection.length;
             
             // Set current leaf to parent to branch from there
             currentLeafId = parentId;
             
-            // Update UI to reflect the state before generation (hides the old branch)
-            renderActiveThread();
+            // Remove the old assistant message from DOM (the one we're branching away from)
+            const messageDiv = document.querySelector(`.message[data-node-id="${nodeId}"]`);
+            if (messageDiv) {
+                messageDiv.remove();
+            }
             
-            // Trigger generation with prefill
-            // This will create a NEW assistant node attached to parentId
-            // and fill it with prefillText before continuing generation
-            await generateResponse(prefillText);
-            
+            // Hide tooltip before starting generation
             hideUnifiedTooltip('click');
+            
+            // Trigger generation with just the injected token as prefill
+            // Pass the pre-injection tokens so they can be rendered immediately
+            await generateResponse(prefillText, injectedTokenIndex, tokensBeforeInjection);
         }
 
         function openLogitLensFromTooltip() {
@@ -2665,8 +2715,12 @@
                         tokenSpan.dataset.nodeId = node.id;
                     }
                     
+                    // Only apply prefill styling to injected tokens, or all prefill tokens if none are injected
                     if (tokenData.is_prefill_token) {
-                        tokenSpan.classList.add('prefilled-token');
+                        const hasInjectedToken = tokens.some(t => t.is_injected);
+                        if (!hasInjectedToken || tokenData.is_injected) {
+                            tokenSpan.classList.add('prefilled-token');
+                        }
                     }
                     
                     // Apply DiffLens data if available AND we're in diff view
