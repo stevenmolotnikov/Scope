@@ -37,6 +37,7 @@
                         <label class="menu-label">Active View</label>
                         <select id="view-select-menu" onchange="syncViewSelect(this); switchView(); closeAllMenus();" class="menu-select">
                             <option value="token">Token View</option>
+                            <option value="text">Text View</option>
                             <option value="diff">Diff View</option>
                         </select>
                     </div>
@@ -79,6 +80,15 @@
             </div>
             <div class="menu-item">
                 <button class="menu-btn" onclick="openSystemPromptModal()">System Prompt...</button>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" onclick="openSamplingModal()">Sampling...</button>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn rules-menu-btn" onclick="openRulesModal()">
+                    Rules
+                    <span id="rules-count-badge" class="rules-count-badge" style="display: none;"></span>
+                </button>
             </div>
         </div>
         <button class="sidebar-toggle-btn" onclick="toggleRightSidebar()" title="Toggle Inspector">
@@ -226,6 +236,7 @@
                 <div class="inspector-token-details hidden" id="inspector-token-details">
                     <div class="inspector-section">
                         <h4>Selected Token</h4>
+                    <div class="rule-info-banner" id="inspector-rule-banner" style="display: none;"></div>
                         <div class="inspector-token-display" id="inspector-current-token"></div>
             </div>
 
@@ -303,6 +314,81 @@
                 <button class="modal-btn-secondary" onclick="closeSystemPromptModal()">Cancel</button>
                 <button class="modal-btn-primary" onclick="saveSystemPromptFromModal()">Save</button>
                 <button class="modal-btn-primary" onclick="saveSystemPromptAsDefault()">Save as Default</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sampling Settings Modal -->
+    <div id="sampling-modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeSamplingModal()">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Sampling Settings</h3>
+                <button class="modal-close-btn" onclick="closeSamplingModal()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Top-K Filtering</label>
+                    <input 
+                        type="number" 
+                        id="sampling-top-k" 
+                        min="0" 
+                        max="1000" 
+                        step="1" 
+                        value="0"
+                        style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary);"
+                    />
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">Keep only top K tokens (0 = disabled)</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Top-P (Nucleus Sampling)</label>
+                    <input 
+                        type="number" 
+                        id="sampling-top-p" 
+                        min="0" 
+                        max="1" 
+                        step="0.01" 
+                        value="1.0"
+                        style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary);"
+                    />
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">Cumulative probability threshold (1.0 = disabled)</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-secondary" onclick="resetSamplingSettings()">Reset to Defaults</button>
+                <button class="modal-btn-primary" onclick="saveSamplingSettings()">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Automation Rules Modal -->
+    <div id="rules-modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeRulesModal()">
+        <div class="modal-content rules-modal-content">
+            <div class="modal-header">
+                <h3>Auto Rules</h3>
+                <button class="modal-close-btn" onclick="closeRulesModal()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body rules-modal-body">
+                <div class="rules-toolbar">
+                    <div class="rules-copy">
+                        <h4>Automate resampling and replacements</h4>
+                        <p>Create rules that watch tokens during generation and react when they match your criteria.</p>
+                    </div>
+                    <button class="modal-btn-primary" onclick="addNewRule()">Add Rule</button>
+                </div>
+                <div id="rules-list" class="rules-list"></div>
+            </div>
+            <div class="modal-footer rules-modal-footer">
+                <button class="modal-btn-secondary" onclick="resetRules()">Clear All</button>
+                <button class="modal-btn-primary" onclick="closeRulesModal()">Done</button>
             </div>
         </div>
     </div>
@@ -398,8 +484,13 @@
         let selectedTokenElement = null;
         let currentView = 'token';
         let currentHighlightMode = 'probability';  // 'probability' or 'rank'
+        let generationRules = [];
         let currentSystemPrompt = '';  // Current conversation's system prompt
         let systemPromptExpanded = true;  // Track bubble collapse state
+        let samplingSettings = {
+            top_k: 0,
+            top_p: 1.0
+        };
         
         // Helper to generate UUIDs
         function uuidv4() {
@@ -435,6 +526,55 @@
         function closeSystemPromptModal() {
             const modal = document.getElementById('system-prompt-modal');
             modal.style.display = 'none';
+        }
+        
+        function openSamplingModal() {
+            // Load current settings into the modal
+            document.getElementById('sampling-top-k').value = samplingSettings.top_k;
+            document.getElementById('sampling-top-p').value = samplingSettings.top_p;
+            
+            const modal = document.getElementById('sampling-modal');
+            modal.style.display = 'flex';
+        }
+        
+        function closeSamplingModal() {
+            const modal = document.getElementById('sampling-modal');
+            modal.style.display = 'none';
+        }
+        
+        function saveSamplingSettings() {
+            samplingSettings.top_k = parseInt(document.getElementById('sampling-top-k').value) || 0;
+            samplingSettings.top_p = parseFloat(document.getElementById('sampling-top-p').value) || 1.0;
+            
+            // Persist to localStorage
+            localStorage.setItem('tokenlens_sampling_settings', JSON.stringify(samplingSettings));
+            
+            closeSamplingModal();
+        }
+        
+        function resetSamplingSettings() {
+            samplingSettings = {
+                top_k: 0,
+                top_p: 1.0
+            };
+            
+            // Update UI
+            document.getElementById('sampling-top-k').value = 0;
+            document.getElementById('sampling-top-p').value = 1.0;
+            
+            // Persist
+            localStorage.setItem('tokenlens_sampling_settings', JSON.stringify(samplingSettings));
+        }
+        
+        function loadSamplingSettings() {
+            try {
+                const stored = localStorage.getItem('tokenlens_sampling_settings');
+                if (stored) {
+                    samplingSettings = JSON.parse(stored);
+                }
+            } catch (error) {
+                console.error('Failed to load sampling settings:', error);
+            }
         }
         
         function saveSystemPromptFromModal() {
@@ -858,7 +998,8 @@
                         null,
                         tokenData.model,
                         tokenData.temperature,
-                        tokenData.token_id
+                        tokenData.token_id,
+                        tokenData.rule_applied || null
                     );
                     tokenSpan.dataset.nodeId = nodeId;
                 }
@@ -926,8 +1067,17 @@
                     temperature: temperature
                 };
                 
+                if (generationRules && generationRules.length > 0) {
+                    requestBody.rules = generationRules;
+                }
+                
                 if (prefillText) {
                     requestBody.prefill = prefillText;
+                }
+                
+                // Add sampling settings
+                if (samplingSettings) {
+                    requestBody.sampling = samplingSettings;
                 }
                 
                 console.log('Sending request...', requestBody);
@@ -1012,7 +1162,8 @@
                                         temperature: temperature,
                                         is_prefill_token: isPrefillToken,
                                         is_prompt_token: isPromptToken,
-                                        is_injected: injectedTokenIndex !== null && streamTokenIndex === injectedTokenIndex
+                                        is_injected: injectedTokenIndex !== null && streamTokenIndex === injectedTokenIndex,
+                                        rule_applied: data.rule_applied || null
                                     };
                                     
                                     responseTokens.push(tokenData);
@@ -1046,7 +1197,20 @@
                                     }
                                     
                                     // Add token to UI
-                                    const tokenSpan = addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx, null, modelName, temperature, data.token_id);
+                                    const tokenSpan = addToken(
+                                        tokensContainer,
+                                        data.token,
+                                        data.probability,
+                                        data.rank,
+                                        data.vocab_size,
+                                        data.top_alternatives,
+                                        tokenIdx,
+                                        null,
+                                        modelName,
+                                        temperature,
+                                        data.token_id,
+                                        data.rule_applied || null
+                                    );
                                     tokenSpan.dataset.nodeId = nodeId;
                                     
                                     // Apply border styling to injected tokens only
@@ -1115,7 +1279,7 @@
             }
         }
 
-        function addToken(container, token, probability, rank, vocabSize, topAlternatives, tokenIndex, messageIndex = null, model = null, temperature = null, tokenId = null) {
+        function addToken(container, token, probability, rank, vocabSize, topAlternatives, tokenIndex, messageIndex = null, model = null, temperature = null, tokenId = null, ruleApplied = null) {
             const tokenSpan = document.createElement('span');
             tokenSpan.className = 'token';
             
@@ -1130,6 +1294,11 @@
             tokenSpan.dataset.model = model || document.getElementById('model-select')?.value || 'Unknown';
             tokenSpan.dataset.temperature = temperature !== null ? temperature : (parseFloat(document.getElementById('temperature-input')?.value) || 1.0);
             tokenSpan.dataset.tokenId = (tokenId !== null && tokenId !== undefined) ? tokenId : '';
+            if (ruleApplied) {
+                tokenSpan.dataset.ruleApplied = JSON.stringify(ruleApplied);
+            } else {
+                delete tokenSpan.dataset.ruleApplied;
+            }
             
             // Color based on probability or rank (or gray if in DiffLens mode)
             if (currentView === 'diff') {
@@ -1196,6 +1365,10 @@
                 openInspector(tokenSpan);
             });
             
+            if (ruleApplied) {
+                tokenSpan.classList.add('token-rule-adjusted');
+            }
+            
             container.appendChild(tokenSpan);
             
             // Add actual newline break if token contains newlines
@@ -1204,6 +1377,10 @@
                 for (let i = 0; i < newlineCount; i++) {
                     container.appendChild(document.createElement('br'));
                 }
+            }
+            
+            if (currentView === 'text') {
+                updateTokenForView(tokenSpan, 'text');
             }
             
             return tokenSpan;
@@ -1230,6 +1407,298 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function loadGenerationRules() {
+            try {
+                const stored = localStorage.getItem('tokenlens_generation_rules');
+                generationRules = stored ? JSON.parse(stored) : [];
+            } catch (error) {
+                console.warn('Failed to load rules from storage:', error);
+                generationRules = [];
+            }
+            updateRulesBadge();
+        }
+
+        function persistGenerationRules() {
+            localStorage.setItem('tokenlens_generation_rules', JSON.stringify(generationRules));
+            updateRulesBadge();
+        }
+
+        function updateRulesBadge() {
+            const badge = document.getElementById('rules-count-badge');
+            if (!badge) return;
+            const enabledCount = generationRules.filter(rule => rule?.enabled !== false).length;
+            if (enabledCount > 0) {
+                badge.textContent = enabledCount;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function openRulesModal() {
+            renderRulesModal();
+            const modal = document.getElementById('rules-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeRulesModal() {
+            const modal = document.getElementById('rules-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function generateRuleId() {
+            if (window.crypto && window.crypto.randomUUID) {
+                return window.crypto.randomUUID();
+            }
+            return `rule_${Math.random().toString(36).slice(2, 10)}`;
+        }
+
+        function addNewRule() {
+            const newRule = {
+                id: generateRuleId(),
+                name: 'Low probability guard',
+                enabled: true,
+                criteria: { type: 'probability_below', threshold: 0.05 },
+                action: { type: 'resample_same', strategy: 'sample', top_k: 5, max_attempts: 3 }
+            };
+            generationRules.push(newRule);
+            persistGenerationRules();
+            renderRulesModal();
+        }
+
+        function resetRules() {
+            if (!confirm('Clear all automation rules?')) {
+                return;
+            }
+            generationRules = [];
+            persistGenerationRules();
+            renderRulesModal();
+        }
+
+        function removeRule(ruleId) {
+            generationRules = generationRules.filter(rule => rule.id !== ruleId);
+            persistGenerationRules();
+            renderRulesModal();
+        }
+
+        function updateRuleValue(ruleId, path, value, options = {}) {
+            const targetRule = generationRules.find(rule => rule.id === ruleId);
+            if (!targetRule) return;
+            const keys = path.split('.');
+            let target = targetRule;
+            for (let i = 0; i < keys.length - 1; i++) {
+                const key = keys[i];
+                if (target[key] === undefined) {
+                    target[key] = {};
+                }
+                target = target[key];
+            }
+            const finalKey = keys[keys.length - 1];
+            if (options.number && value !== '') {
+                const parsed = parseFloat(value);
+                if (!isNaN(parsed)) {
+                    target[finalKey] = parsed;
+                }
+            } else if (options.integer && value !== '') {
+                const parsedInt = parseInt(value, 10);
+                if (!isNaN(parsedInt)) {
+                    target[finalKey] = parsedInt;
+                }
+            } else if (options.boolean) {
+                target[finalKey] = !!value;
+            } else {
+                target[finalKey] = value;
+            }
+            persistGenerationRules();
+            if (options.refresh) {
+                renderRulesModal();
+            }
+        }
+
+        function toggleRuleEnabled(ruleId, checked) {
+            updateRuleValue(ruleId, 'enabled', checked, { boolean: true });
+        }
+
+        function renderRulesModal() {
+            const list = document.getElementById('rules-list');
+            if (!list) return;
+            if (!generationRules.length) {
+                list.innerHTML = `
+                    <div class="rules-empty-state">
+                        <p>No automation rules yet.</p>
+                        <button class="modal-btn-primary" onclick="addNewRule()">Create your first rule</button>
+                    </div>
+                `;
+                return;
+            }
+            list.innerHTML = generationRules.map(rule => buildRuleCard(rule)).join('');
+        }
+
+        function buildRuleCard(rule) {
+            const criteriaType = rule?.criteria?.type || 'probability_below';
+            const actionType = rule?.action?.type || 'resample_same';
+            const name = escapeHtml(rule?.name || 'Untitled rule');
+            const threshold = rule?.criteria?.threshold ?? 0.05;
+            const count = rule?.criteria?.count ?? 2;
+            const matchValue = escapeHtml(rule?.criteria?.value || '');
+            const matchType = rule?.criteria?.match_type || 'contains';
+            const windowSize = rule?.criteria?.window ?? 3;
+            const actionStrategy = rule?.action?.strategy || 'sample';
+            const actionTopK = rule?.action?.top_k ?? 5;
+            const actionAttempts = rule?.action?.max_attempts ?? 3;
+            const actionModel = rule?.action?.model || '';
+            const actionTemp = rule?.action?.temperature ?? 0.7;
+            const actionText = escapeHtml(rule?.action?.text || '');
+            
+            const criteriaFields = {
+                probability_below: `
+                    <label class="rule-field">
+                        <span>Probability below</span>
+                        <input type="number" step="0.001" min="0" max="1" value="${threshold}"
+                            oninput="updateRuleValue('${rule.id}', 'criteria.threshold', this.value, { number: true })">
+                    </label>
+                `,
+                consecutive_probability_below: `
+                    <label class="rule-field">
+                        <span>Probability below</span>
+                        <input type="number" step="0.001" min="0" max="1" value="${threshold}"
+                            oninput="updateRuleValue('${rule.id}', 'criteria.threshold', this.value, { number: true })">
+                    </label>
+                    <label class="rule-field">
+                        <span>Times in a row</span>
+                        <input type="number" min="2" value="${count}"
+                            oninput="updateRuleValue('${rule.id}', 'criteria.count', this.value, { integer: true })">
+                    </label>
+                `,
+                text_match: `
+                    <label class="rule-field">
+                        <span>Match text</span>
+                        <input type="text" value="${matchValue}"
+                            oninput="updateRuleValue('${rule.id}', 'criteria.value', this.value)">
+                    </label>
+                    <label class="rule-field">
+                        <span>Match type</span>
+                        <select onchange="updateRuleValue('${rule.id}', 'criteria.match_type', this.value)">
+                            <option value="contains" ${matchType === 'contains' ? 'selected' : ''}>Contains</option>
+                            <option value="exact" ${matchType === 'exact' ? 'selected' : ''}>Exact</option>
+                            <option value="regex" ${matchType === 'regex' ? 'selected' : ''}>Regex</option>
+                        </select>
+                    </label>
+                    <label class="rule-field">
+                        <span>Window (tokens)</span>
+                        <input type="number" min="1" value="${windowSize}"
+                            oninput="updateRuleValue('${rule.id}', 'criteria.window', this.value, { integer: true })">
+                    </label>
+                `
+            }[criteriaType];
+
+            const actionFields = {
+                resample_same: `
+                    <label class="rule-field">
+                        <span>Strategy</span>
+                        <select onchange="updateRuleValue('${rule.id}', 'action.strategy', this.value)">
+                            <option value="sample" ${actionStrategy === 'sample' ? 'selected' : ''}>Sample</option>
+                            <option value="greedy" ${actionStrategy === 'greedy' ? 'selected' : ''}>Greedy</option>
+                        </select>
+                    </label>
+                    <label class="rule-field">
+                        <span>Top K focus</span>
+                        <input type="number" min="0" value="${actionTopK}"
+                            oninput="updateRuleValue('${rule.id}', 'action.top_k', this.value, { integer: true })">
+                    </label>
+                    <label class="rule-field">
+                        <span>Max attempts</span>
+                        <input type="number" min="1" max="10" value="${actionAttempts}"
+                            oninput="updateRuleValue('${rule.id}', 'action.max_attempts', this.value, { integer: true })">
+                    </label>
+                `,
+                resample_other_model: `
+                    <label class="rule-field">
+                        <span>Model</span>
+                        <select onchange="updateRuleValue('${rule.id}', 'action.model', this.value)">
+                            <option value="">Select model</option>
+                            <option value="meta-llama/Llama-3.1-8B-Instruct" ${actionModel === 'meta-llama/Llama-3.1-8B-Instruct' ? 'selected' : ''}>Llama-3.1-8B-Instruct</option>
+                            <option value="google/gemma-2-2b-it" ${actionModel === 'google/gemma-2-2b-it' ? 'selected' : ''}>Gemma-2-2B-IT</option>
+                            <option value="google/gemma-3-1b-it" ${actionModel === 'google/gemma-3-1b-it' ? 'selected' : ''}>Gemma-3-1B-IT</option>
+                        </select>
+                    </label>
+                    <label class="rule-field">
+                        <span>Strategy</span>
+                        <select onchange="updateRuleValue('${rule.id}', 'action.strategy', this.value)">
+                            <option value="greedy" ${actionStrategy === 'greedy' ? 'selected' : ''}>Greedy</option>
+                            <option value="sample" ${actionStrategy === 'sample' ? 'selected' : ''}>Sample</option>
+                        </select>
+                    </label>
+                    <label class="rule-field">
+                        <span>Temperature</span>
+                        <input type="number" step="0.05" min="0" max="2" value="${actionTemp}"
+                            oninput="updateRuleValue('${rule.id}', 'action.temperature', this.value, { number: true })">
+                    </label>
+                    <label class="rule-field">
+                        <span>Top K focus</span>
+                        <input type="number" min="0" value="${actionTopK}"
+                            oninput="updateRuleValue('${rule.id}', 'action.top_k', this.value, { integer: true })">
+                    </label>
+                `,
+                replace_text: `
+                    <label class="rule-field">
+                        <span>Replacement text</span>
+                        <textarea rows="2" oninput="updateRuleValue('${rule.id}', 'action.text', this.value)">${actionText}</textarea>
+                    </label>
+                `
+            }[actionType];
+
+            return `
+                <div class="rule-card ${rule.enabled === false ? 'rule-card-disabled' : ''}">
+                    <div class="rule-card-header">
+                        <input type="text" value="${name}" placeholder="Rule name"
+                            oninput="updateRuleValue('${rule.id}', 'name', this.value)">
+                        <label class="switch">
+                            <input type="checkbox" ${rule.enabled !== false ? 'checked' : ''} onchange="toggleRuleEnabled('${rule.id}', this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                        <button class="rule-delete-btn" onclick="removeRule('${rule.id}')" title="Delete rule">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M3 4H13M6 4V3C6 2.44772 6.44772 2 7 2H9C9.55228 2 10 2.44772 10 3V4M12 4V13C12 13.5523 11.5523 14 11 14H5C4.44772 14 4 13.5523 4 13V4H12Z" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="rule-section">
+                        <div class="rule-section-title">When</div>
+                        <div class="rule-grid">
+                            <label class="rule-field">
+                                <span>Criteria</span>
+                                <select onchange="updateRuleValue('${rule.id}', 'criteria.type', this.value, { refresh: true })">
+                                    <option value="probability_below" ${criteriaType === 'probability_below' ? 'selected' : ''}>Probability below</option>
+                                    <option value="consecutive_probability_below" ${criteriaType === 'consecutive_probability_below' ? 'selected' : ''}>Multiple low probs</option>
+                                    <option value="text_match" ${criteriaType === 'text_match' ? 'selected' : ''}>Text match</option>
+                                </select>
+                            </label>
+                            ${criteriaFields}
+                        </div>
+                    </div>
+                    <div class="rule-section">
+                        <div class="rule-section-title">Then</div>
+                        <div class="rule-grid">
+                            <label class="rule-field">
+                                <span>Action</span>
+                                <select onchange="updateRuleValue('${rule.id}', 'action.type', this.value, { refresh: true })">
+                                    <option value="resample_same" ${actionType === 'resample_same' ? 'selected' : ''}>Resample with same model</option>
+                                    <option value="resample_other_model" ${actionType === 'resample_other_model' ? 'selected' : ''}>Borrow from other model</option>
+                                    <option value="replace_text" ${actionType === 'replace_text' ? 'selected' : ''}>Inject text</option>
+                                </select>
+                            </label>
+                            ${actionFields}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // Helper function to format tokens for display consistently
@@ -1279,25 +1748,102 @@
 
         // ===== VIEW SWITCHING =====
         
+        function updateTokenForView(tokenElement, targetView) {
+            if (!tokenElement || !tokenElement.dataset) return;
+            const rawToken = tokenElement.dataset.token;
+            if (rawToken === undefined) return;
+            
+            if (targetView === 'text') {
+                if (rawToken.includes('\n')) {
+                    const newlineCount = (rawToken.match(/\n/g) || []).length;
+                    tokenElement.textContent = newlineCount === 1 ? '↵' : `↵×${newlineCount}`;
+                } else if (rawToken.includes('\t')) {
+                    const tabCount = (rawToken.match(/\t/g) || []).length;
+                    tokenElement.textContent = tabCount === 1 ? '→' : `→×${tabCount}`;
+                } else if (rawToken === ' ' || /^\s+$/.test(rawToken)) {
+                    const spaceCount = rawToken.length;
+                    tokenElement.textContent = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
+                } else {
+                    tokenElement.textContent = rawToken;
+                }
+                tokenElement.style.backgroundColor = 'transparent';
+                tokenElement.style.color = '';
+                tokenElement.style.borderColor = '';
+                tokenElement.style.boxShadow = '';
+                tokenElement.style.padding = '';
+                tokenElement.style.cursor = 'text';
+                tokenElement.style.whiteSpace = 'pre';
+            } else {
+                tokenElement.textContent = formatTokenForDisplay(rawToken, { useSpaceSymbol: true });
+                
+                const probability = parseFloat(tokenElement.dataset.probability);
+                const rank = tokenElement.dataset.rank !== undefined && tokenElement.dataset.rank !== '' 
+                    ? parseInt(tokenElement.dataset.rank, 10) 
+                    : null;
+                const vocabSize = tokenElement.dataset.vocabSize !== undefined && tokenElement.dataset.vocabSize !== '' 
+                    ? parseInt(tokenElement.dataset.vocabSize, 10) 
+                    : null;
+                
+                if (!isNaN(probability)) {
+                    const color = getColorForProb(probability, rank, vocabSize);
+                    tokenElement.style.backgroundColor = color;
+                }
+                
+                tokenElement.style.color = '';
+                tokenElement.style.borderColor = '';
+                tokenElement.style.boxShadow = '';
+                tokenElement.style.padding = '';
+                tokenElement.style.cursor = '';
+                tokenElement.style.whiteSpace = '';
+            }
+        }
+        
+        function refreshTokensForView(targetView) {
+            document.querySelectorAll('.token').forEach(token => updateTokenForView(token, targetView));
+        }
+        
         function switchView() {
             const viewSelect = document.getElementById('view-select');
+            const viewSelectMenu = document.getElementById('view-select-menu');
             const view = viewSelect ? viewSelect.value : 'token';
             currentView = view;
+            
+            if (viewSelectMenu && viewSelectMenu.value !== view) {
+                viewSelectMenu.value = view;
+            }
             
             // Save to localStorage
             localStorage.setItem('tokenlens_current_view', view);
             
             const appContainer = document.querySelector('.app-container');
             if (appContainer) {
-                appContainer.classList.remove('view-token', 'view-diff');
-                appContainer.classList.add(view === 'diff' ? 'view-diff' : 'view-token');
+                appContainer.classList.remove('view-token', 'view-text', 'view-diff');
+                if (view === 'diff') {
+                    appContainer.classList.add('view-diff');
+                } else if (view === 'text') {
+                    appContainer.classList.add('view-text');
+                } else {
+                    appContainer.classList.add('view-token');
+                }
             }
             
             if (view === 'diff') {
+                restoreTokenView();
                 applyDiffLensView();
+            } else if (view === 'text') {
+                applyTextView();
             } else {
+                restoreTokenView();
                 resetDiffLensView();
             }
+        }
+        
+        function applyTextView() {
+            refreshTokensForView('text');
+        }
+        
+        function restoreTokenView() {
+            refreshTokensForView('token');
         }
         
         function switchHighlightMode() {
@@ -1310,9 +1856,12 @@
             
             // Re-apply current view to update colors
             if (currentView === 'diff') {
+                restoreTokenView();
                 applyDiffLensView();
+            } else if (currentView === 'text') {
+                applyTextView();
             } else {
-                resetDiffLensView();
+                restoreTokenView();
             }
         }
         
@@ -2169,6 +2718,85 @@
             const currentTokenDiv = document.getElementById('inspector-current-token');
             currentTokenDiv.innerHTML = ''; // Clear existing
             
+            let ruleAppliedInfo = null;
+            if (tokenElement.dataset.ruleApplied) {
+                try {
+                    ruleAppliedInfo = JSON.parse(tokenElement.dataset.ruleApplied);
+                } catch (error) {
+                    console.warn('Failed to parse rule info:', error);
+                }
+            }
+            const ruleBannerContainer = document.getElementById('inspector-rule-banner');
+            if (ruleBannerContainer) {
+                if (ruleAppliedInfo) {
+                    ruleBannerContainer.style.display = 'block';
+                    
+                    // Build a friendly description of what happened
+                    let description = '';
+                    const actionType = ruleAppliedInfo.action || '';
+                    const reason = ruleAppliedInfo.reason || '';
+                    
+                    // Extract what was actually changed - the token we're looking at
+                    const currentToken = formatTokenForDisplay(token);
+                    const originalToken = ruleAppliedInfo.original_token ? formatTokenForDisplay(ruleAppliedInfo.original_token) : null;
+                    const resamplingChain = ruleAppliedInfo.resampling_chain || [];
+                    
+                    if (actionType === 'replace_text') {
+                        description = originalToken 
+                            ? `Replaced "${originalToken}" with "${currentToken}"`
+                            : `Replaced original token with "${currentToken}"`;
+                    } else if (actionType === 'resample_same') {
+                        // Build chain visualization
+                        if (resamplingChain.length > 0) {
+                            const chainTokens = resamplingChain.map(c => formatTokenForDisplay(c.token));
+                            const chainWithProbs = resamplingChain.map((c, idx) => {
+                                const tkn = formatTokenForDisplay(c.token);
+                                const prob = (c.probability * 100).toFixed(2);
+                                const status = c.matched_rule ? '❌' : '✓';
+                                return `${status} "${tkn}" (${prob}%)`;
+                            }).join(' → ');
+                            
+                            description = originalToken
+                                ? `Resampled "${originalToken}" through: ${chainWithProbs}`
+                                : `Resampling chain: ${chainWithProbs}`;
+                        } else {
+                            const attemptMatch = reason.match(/attempt (\d+)/);
+                            const attemptInfo = attemptMatch ? ` (attempt ${attemptMatch[1]})` : '';
+                            description = originalToken
+                                ? `Resampled "${originalToken}" → "${currentToken}"${attemptInfo}`
+                                : `Resampled to "${currentToken}"${attemptInfo}`;
+                        }
+                    } else if (actionType === 'resample_other_model') {
+                        // Extract model name from reason if present
+                        const modelMatch = reason.match(/from (.+)/);
+                        const modelInfo = modelMatch ? ` from ${modelMatch[1]}` : ' from another model';
+                        description = originalToken
+                            ? `Replaced "${originalToken}" with "${currentToken}"${modelInfo}`
+                            : `Borrowed "${currentToken}"${modelInfo}`;
+                    } else {
+                        description = originalToken
+                            ? `Changed "${originalToken}" to "${currentToken}"`
+                            : reason || `Token changed to "${currentToken}"`;
+                    }
+                    
+                    ruleBannerContainer.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink: 0;">
+                                <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M7 4v3M7 9h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-weight: 600; margin-bottom: 2px;">${escapeHtml(ruleAppliedInfo.name || 'Auto Rule')}</div>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">${escapeHtml(description)}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    ruleBannerContainer.style.display = 'none';
+                    ruleBannerContainer.innerHTML = '';
+                }
+            }
+            
             if (inDiffView && hasDiffLensData) {
                 // DiffLens mode: Show comparative view
                 const difflensData = {
@@ -2421,6 +3049,7 @@
                 isInjected: tokenElement.dataset.isInjected,
                 nodeId: tokenElement.dataset.nodeId || null,
                 tokenIndex: tokenElement.dataset.tokenIndex ?? null,
+                ruleApplied: tokenElement.dataset.ruleApplied || null,
                 // DiffLens data if available
                 difflensGenProb: tokenElement.dataset.difflensGenProb,
                 difflensGenRank: tokenElement.dataset.difflensGenRank,
@@ -2467,6 +3096,9 @@
                 if (inspectorData.nodeId) virtualTokenElement.dataset.nodeId = inspectorData.nodeId;
                 if (inspectorData.tokenIndex !== undefined && inspectorData.tokenIndex !== null) {
                     virtualTokenElement.dataset.tokenIndex = inspectorData.tokenIndex;
+                }
+                if (inspectorData.ruleApplied) {
+                    virtualTokenElement.dataset.ruleApplied = inspectorData.ruleApplied;
                 }
                 
                 // Add DiffLens data if available
@@ -2552,7 +3184,7 @@
         }
         
         // Toggle DiffLens input visibility
-        function toggleDiffLensInput() {
+        function toggleDiffLensInput(skipViewReset = false) {
             const checkbox = document.getElementById('enable-difflens-checkbox');
             const container = document.getElementById('difflens-input-container');
             
@@ -2571,13 +3203,15 @@
                     }
                     localStorage.setItem('tokenlens_difflens_enabled', 'false');
                     
-                    // Switch back to Token view
-                    const viewSelect = document.getElementById('view-select');
-                    const viewSelectMenu = document.getElementById('view-select-menu');
-                    if (viewSelect) viewSelect.value = 'token';
-                    if (viewSelectMenu) viewSelectMenu.value = 'token';
-                    currentView = 'token';
-                    switchView();
+                    if (!skipViewReset) {
+                        // Switch back to Token view
+                        const viewSelect = document.getElementById('view-select');
+                        const viewSelectMenu = document.getElementById('view-select-menu');
+                        if (viewSelect) viewSelect.value = 'token';
+                        if (viewSelectMenu) viewSelectMenu.value = 'token';
+                        currentView = 'token';
+                        switchView();
+                    }
                 }
             }
         }
@@ -2668,6 +3302,52 @@
                     ).join('');
             }
             
+            const existingRuleBanner = document.getElementById('tooltip-rule-banner');
+            if (existingRuleBanner) {
+                existingRuleBanner.remove();
+            }
+            if (tokenElement.dataset.ruleApplied) {
+                try {
+                    const ruleInfo = JSON.parse(tokenElement.dataset.ruleApplied);
+                    const banner = document.createElement('div');
+                    banner.id = 'tooltip-rule-banner';
+                    banner.className = 'tooltip-rule-banner';
+                    
+                    // Build a friendly description with the actual token
+                    const currentToken = formatTokenForDisplay(token);
+                    const originalToken = ruleInfo.original_token ? formatTokenForDisplay(ruleInfo.original_token) : null;
+                    const resamplingChain = ruleInfo.resampling_chain || [];
+                    let description = '';
+                    const actionType = ruleInfo.action || '';
+                    const reason = ruleInfo.reason || '';
+                    
+                    if (actionType === 'replace_text') {
+                        description = originalToken ? `"${originalToken}" → "${currentToken}"` : `Replaced → "${currentToken}"`;
+                    } else if (actionType === 'resample_same') {
+                        if (resamplingChain.length > 0) {
+                            // Show compact chain
+                            const chain = resamplingChain.map(c => formatTokenForDisplay(c.token)).join(' → ');
+                            description = originalToken ? `"${originalToken}" → ${chain}` : `Chain: ${chain}`;
+                        } else {
+                            description = originalToken ? `"${originalToken}" → "${currentToken}"` : `Resampled → "${currentToken}"`;
+                        }
+                    } else if (actionType === 'resample_other_model') {
+                        const modelMatch = reason.match(/from (.+)/);
+                        const modelInfo = modelMatch ? ` (${modelMatch[1]})` : '';
+                        description = originalToken 
+                            ? `"${originalToken}" → "${currentToken}"${modelInfo}`
+                            : `Borrowed → "${currentToken}"${modelInfo}`;
+                    } else {
+                        description = originalToken ? `"${originalToken}" → "${currentToken}"` : `Changed → "${currentToken}"`;
+                    }
+                    
+                    banner.innerHTML = `⚙ <strong>${escapeHtml(ruleInfo.name || 'Rule')}</strong>: ${escapeHtml(description)}`;
+                    currentTokenDiv.appendChild(banner);
+                } catch (error) {
+                    // ignore parse issues
+                }
+            }
+            
             // Position tooltip with viewport safety
             const rect = tokenElement.getBoundingClientRect();
             
@@ -2708,6 +3388,10 @@
         // === END: Menu and Inspector Functions ===
         
         document.addEventListener('DOMContentLoaded', function() {
+            loadSamplingSettings();
+            loadGenerationRules();
+            renderRulesModal();
+            
             // Setup menu syncing
             setupMenuSyncing();
             syncMenuFields();
@@ -2719,13 +3403,7 @@
             const viewSelectMenu = document.getElementById('view-select-menu');
             if (viewSelect) viewSelect.value = savedView;
             if (viewSelectMenu) viewSelectMenu.value = savedView;
-            
-            // Apply the saved view
-            const appContainer = document.querySelector('.app-container');
-            if (appContainer) {
-                appContainer.classList.remove('view-token', 'view-diff');
-                appContainer.classList.add(savedView === 'diff' ? 'view-diff' : 'view-token');
-            }
+            switchView();
             
             // Restore highlight mode from localStorage
             const savedHighlightMode = localStorage.getItem('tokenlens_highlight_mode') || 'probability';
@@ -2748,7 +3426,7 @@
             const difflensCheckbox = document.getElementById('enable-difflens-checkbox');
             if (difflensCheckbox) {
                 difflensCheckbox.checked = difflensEnabled;
-                toggleDiffLensInput(); // Apply the state
+                toggleDiffLensInput(true); // Apply the state without overriding view
             }
             
             // Restore diff model selection from localStorage
@@ -2799,6 +3477,32 @@
                     localStorage.setItem('tokenlens_prefill_text', e.target.value);
                 });
             }
+            
+            initializeSidebar();
+            initializeConversations().then(() => {
+                if (currentConversationId) {
+                    const currentPath = window.location.pathname;
+                    const expectedPath = `/chat/${currentConversationId}`;
+                    
+                    if (currentPath !== expectedPath) {
+                        window.history.replaceState(
+                            { conversationId: currentConversationId },
+                            '',
+                            expectedPath
+                        );
+                        console.log('Updated URL to match loaded conversation:', expectedPath);
+                    } else {
+                        window.history.replaceState(
+                            { conversationId: currentConversationId },
+                            '',
+                            currentPath
+                        );
+                    }
+                }
+                
+                // Ensure loaded tokens reflect the current view preference
+                switchView();
+            });
         });
         
         async function searchTokens(query) {
@@ -2974,7 +3678,8 @@
                     body: JSON.stringify({
                         messages: conversationHistory,
                         model: modelName,
-                        prefill: prefillText
+                        prefill: prefillText,
+                        rules: generationRules
                     }),
                     signal: currentAbortController.signal
                 });
@@ -3009,9 +3714,23 @@
                                         probability: data.probability,
                                         rank: data.rank,
                                         vocab_size: data.vocab_size,
-                                        top_alternatives: data.top_alternatives
+                                        top_alternatives: data.top_alternatives,
+                                        rule_applied: data.rule_applied || null
                                     });
-                                    addToken(tokensContainer, data.token, data.probability, data.rank, data.vocab_size, data.top_alternatives, tokenIdx, null, null, null, data.token_id);
+                                    addToken(
+                                        tokensContainer,
+                                        data.token,
+                                        data.probability,
+                                        data.rank,
+                                        data.vocab_size,
+                                        data.top_alternatives,
+                                        tokenIdx,
+                                        null,
+                                        null,
+                                        null,
+                                        data.token_id,
+                                        data.rule_applied || null
+                                    );
                                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                                 } else if (data.type === 'done') {
                                     // Save complete message to conversation
@@ -3771,7 +4490,20 @@
                     // Note: messageIndex param in addToken is not strictly used for logic, mostly for referencing. 
                     // Passing node.id or null is better if we update addToken.
                     // For now passing idx is fine.
-                    const tokenSpan = addToken(tokensContainer, tokenData.token, tokenData.probability, tokenData.rank, tokenData.vocab_size, tokenData.top_alternatives, idx, null, tokenData.model, tokenData.temperature, tokenData.token_id);
+                    const tokenSpan = addToken(
+                        tokensContainer,
+                        tokenData.token,
+                        tokenData.probability,
+                        tokenData.rank,
+                        tokenData.vocab_size,
+                        tokenData.top_alternatives,
+                        idx,
+                        null,
+                        tokenData.model,
+                        tokenData.temperature,
+                        tokenData.token_id,
+                        tokenData.rule_applied || null
+                    );
                     if (node) {
                         tokenSpan.dataset.nodeId = node.id;
                     }
@@ -3863,33 +4595,6 @@
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 200) + 'px';
-        });
-        
-        // Initialize on page load
-        initializeSidebar();
-        initializeConversations().then(() => {
-            // Set initial history state after conversations are loaded
-            if (currentConversationId) {
-                const currentPath = window.location.pathname;
-                const expectedPath = `/chat/${currentConversationId}`;
-                
-                // Only update if paths don't match
-                if (currentPath !== expectedPath) {
-                    window.history.replaceState(
-                        { conversationId: currentConversationId }, 
-                        '', 
-                        expectedPath
-                    );
-                    console.log('Updated URL to match loaded conversation:', expectedPath);
-                } else {
-                    // Just set the state without changing URL
-                    window.history.replaceState(
-                        { conversationId: currentConversationId }, 
-                        '', 
-                        currentPath
-                    );
-                }
-            }
         });
         
         // ============= LOGIT LENS FUNCTIONS =============
@@ -4502,6 +5207,7 @@
                 }
             }
         });
+        
     </script>
 </body>
 </html>

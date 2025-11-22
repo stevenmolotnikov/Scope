@@ -6,6 +6,7 @@ import datetime
 import re
 import secrets
 import time
+from collections import deque
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -21,6 +22,20 @@ DEFAULT_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 # Global caches to avoid reloading
 MODEL_CACHE = {}
 TOKENIZER_CACHE = {}
+
+SUPPORTED_RULE_CRITERIA = {
+    'probability_below',
+    'consecutive_probability_below',
+    'text_match'
+}
+
+SUPPORTED_RULE_ACTIONS = {
+    'resample_same',
+    'resample_other_model',
+    'replace_text'
+}
+
+MAX_RULE_ITERATIONS = 4
 
 
 def _load_tokenizer_instance(model_name, log_details=False):
@@ -294,6 +309,386 @@ def apply_threshold_filtering(processed_token_data, threshold_mode, prob_thresho
     return processed_token_data, lowest_probs
 
 
+def sanitize_generation_rules(rules_input):
+    """Validate and normalize rule definitions received from the client."""
+    sanitized = []
+    if not isinstance(rules_input, list):
+        return sanitized
+    
+    for idx, raw_rule in enumerate(rules_input):
+        if not isinstance(raw_rule, dict):
+            continue
+        
+        if not raw_rule.get('enabled', True):
+            continue
+        
+        criteria = raw_rule.get('criteria') or {}
+        action = raw_rule.get('action') or {}
+        criteria_type = criteria.get('type')
+        action_type = action.get('type')
+        
+        if criteria_type not in SUPPORTED_RULE_CRITERIA or action_type not in SUPPORTED_RULE_ACTIONS:
+            continue
+        
+        rule_id = str(raw_rule.get('id') or f"rule_{idx + 1}")
+        rule_name = raw_rule.get('name') or f"Rule {idx + 1}"
+        rule_state = {}
+        
+        if criteria_type == 'consecutive_probability_below':
+            rule_state['consecutive_hits'] = 0
+        if criteria_type == 'text_match':
+            window = max(1, int(criteria.get('window', 3)))
+            rule_state['recent_tokens'] = deque(maxlen=max(window, 6))
+        
+        sanitized.append({
+            'id': rule_id,
+            'name': rule_name,
+            'criteria': criteria,
+            'action': action,
+            'enabled': True,
+            '_state': rule_state
+        })
+    
+    return sanitized
+
+
+def rule_matches_candidate(rule, candidate):
+    """Check whether the current candidate token triggers the provided rule."""
+    criteria = rule.get('criteria', {})
+    ctype = criteria.get('type')
+    state = rule.get('_state', {})
+    probability = candidate.get('probability')
+    token_text = candidate.get('token', '')
+    
+    if ctype == 'probability_below':
+        threshold = float(criteria.get('threshold', 0.05))
+        return probability is not None and probability < threshold
+    
+    if ctype == 'consecutive_probability_below':
+        threshold = float(criteria.get('threshold', 0.05))
+        required_count = max(2, int(criteria.get('count', 2)))
+        current_hits = state.get('consecutive_hits', 0)
+        if probability is not None and probability < threshold:
+            return (current_hits + 1) >= required_count
+        return False
+    
+    if ctype == 'text_match':
+        target_value = criteria.get('value', '')
+        if not target_value:
+            return False
+        
+        window = max(1, int(criteria.get('window', 3)))
+        recent_tokens = state.get('recent_tokens')
+        if recent_tokens is None:
+            recent_tokens = deque(maxlen=max(window, 6))
+            state['recent_tokens'] = recent_tokens
+        
+        preview = list(recent_tokens)[- (window - 1):] if window > 1 else []
+        preview.append(token_text or '')
+        combined_text = ''.join(preview[-window:])
+        match_type = criteria.get('match_type', 'contains')
+        
+        if match_type == 'exact':
+            return combined_text == target_value
+        if match_type == 'regex':
+            pattern = state.get('_compiled_regex')
+            if pattern is None:
+                try:
+                    pattern = re.compile(target_value)
+                except re.error:
+                    pattern = None
+                state['_compiled_regex'] = pattern
+            return bool(pattern.search(combined_text)) if pattern else False
+        # Default to substring contains
+        return target_value in combined_text
+    
+    return False
+
+
+def update_rule_state_with_token(rule, token_text, probability):
+    """Update per-rule state after a token has been finalized."""
+    criteria = rule.get('criteria', {})
+    ctype = criteria.get('type')
+    state = rule.get('_state', {})
+    
+    if ctype == 'consecutive_probability_below':
+        threshold = float(criteria.get('threshold', 0.05))
+        if probability is not None and probability < threshold:
+            state['consecutive_hits'] = state.get('consecutive_hits', 0) + 1
+        else:
+            state['consecutive_hits'] = 0
+    
+    if ctype == 'text_match':
+        recent_tokens = state.get('recent_tokens')
+        if recent_tokens is not None:
+            recent_tokens.append(token_text or '')
+
+
+def select_from_distribution(probabilities_row, strategy='sample'):
+    """Select a token ID from a probability vector using the requested strategy."""
+    import torch
+    
+    if probabilities_row.sum() <= 0:
+        return None
+    
+    if strategy == 'greedy':
+        return int(torch.argmax(probabilities_row).item())
+    
+    return int(torch.multinomial(probabilities_row, num_samples=1).item())
+
+
+def execute_rule_action(rule, candidate, probabilities_row, tokenizer, rule_context):
+    """Execute the action associated with a rule and return replacement tokens."""
+    action_type = rule.get('action', {}).get('type')
+    
+    if action_type == 'resample_same':
+        return _rule_action_resample_same(rule, candidate, probabilities_row, tokenizer, rule_context)
+    if action_type == 'replace_text':
+        return _rule_action_replace_text(rule, tokenizer, candidate)
+    if action_type == 'resample_other_model':
+        return _rule_action_resample_other_model(rule, candidate, probabilities_row, tokenizer, rule_context)
+    
+    return None
+
+
+def _rule_action_resample_same(rule, candidate, probabilities_row, tokenizer, rule_context):
+    """Resample a token from the active model distribution."""
+    import torch
+    
+    action_config = rule.get('action', {})
+    strategy = action_config.get('strategy', 'sample')
+    top_k = int(action_config.get('top_k', 0) or 0)
+    max_attempts = max(1, int(action_config.get('max_attempts', 3)))
+    
+    filtered = probabilities_row.clone()
+    if top_k > 0 and top_k < filtered.size(0):
+        top_probs, top_indices = torch.topk(filtered, top_k)
+        mask = torch.zeros_like(filtered)
+        mask[top_indices] = filtered[top_indices]
+        filtered = mask
+    
+    banned_ids = {candidate.get('token_id')}
+    
+    for attempt in range(max_attempts):
+        sample_probs = filtered.clone()
+        for banned in list(banned_ids):
+            if 0 <= banned < sample_probs.size(0):
+                sample_probs[banned] = 0
+        
+        total = float(sample_probs.sum())
+        if total <= 0:
+            break
+        sample_probs = sample_probs / total
+        
+        sampled_id = select_from_distribution(sample_probs, strategy=strategy)
+        if sampled_id is None:
+            break
+        
+        banned_ids.add(sampled_id)
+        if sampled_id == candidate.get('token_id'):
+            continue
+        
+        new_token = tokenizer.decode([sampled_id])
+        rank_tensor = rule_context.get('rank_tensor')
+        new_rank = None
+        if rank_tensor is not None:
+            matches = (rank_tensor == sampled_id).nonzero(as_tuple=True)
+            if matches and len(matches[0]) > 0:
+                new_rank = int(matches[0][0].item() + 1)
+        if new_rank is None:
+            rank_lookup = rule_context.get('rank_lookup') or {}
+            new_rank = rank_lookup.get(int(sampled_id))
+        replacement = {
+            'token_id': int(sampled_id),
+            'token': new_token,
+            'probability': float(probabilities_row[sampled_id].item()),
+            'rank': new_rank,
+            'top_alternatives': candidate.get('top_alternatives', [])
+        }
+        
+        return {
+            'replacement_tokens': [replacement],
+            'reason': f"Resampled from base model (attempt {attempt + 1})"
+        }
+    
+    return None
+
+
+def _rule_action_replace_text(rule, tokenizer, candidate=None):
+    """Replace the current token with static user-provided text."""
+    action_config = rule.get('action', {})
+    replacement_text = action_config.get('text', '')
+    if not replacement_text:
+        return None
+    
+    token_ids = tokenizer.encode(replacement_text, add_special_tokens=False)
+    if not token_ids:
+        return None
+    
+    replacement_tokens = []
+    rank_lookup = rule_context.get('rank_lookup') or {}
+    for idx, token_id in enumerate(token_ids):
+        replacement_tokens.append({
+            'token_id': int(token_id),
+            'token': tokenizer.decode([int(token_id)]),
+            'probability': None,
+            'rank': None,
+            'top_alternatives': candidate.get('top_alternatives', []) if candidate and idx == 0 else []
+        })
+    
+    return {
+        'replacement_tokens': replacement_tokens,
+        'reason': 'Static replacement text injected'
+    }
+
+
+def _rule_action_resample_other_model(rule, candidate, probabilities_row, tokenizer, rule_context):
+    """Use an alternate model to suggest the next token."""
+    replacement_ids = _sample_from_alternate_model(rule, rule_context, tokenizer)
+    if not replacement_ids:
+        return None
+    
+    rank_lookup = rule_context.get('rank_lookup') or {}
+    replacement_tokens = []
+    
+    rank_tensor = rule_context.get('rank_tensor')
+    
+    for idx, token_id in enumerate(replacement_ids):
+        token_id_int = int(token_id)
+        token_text = tokenizer.decode([token_id_int])
+        rank_value = None
+        if rank_tensor is not None:
+            matches = (rank_tensor == token_id_int).nonzero(as_tuple=True)
+            if matches and len(matches[0]) > 0:
+                rank_value = int(matches[0][0].item() + 1)
+        replacement_tokens.append({
+            'token_id': token_id_int,
+            'token': token_text,
+            'probability': float(probabilities_row[token_id_int].item()) if token_id_int < probabilities_row.size(0) else None,
+            'rank': rank_value or rank_lookup.get(token_id_int),
+            'top_alternatives': candidate.get('top_alternatives', []) if idx == 0 else []
+        })
+    
+    target_model = rule.get('action', {}).get('model') or 'alternate model'
+    return {
+        'replacement_tokens': replacement_tokens,
+        'reason': f"Borrowed token from {target_model}"
+    }
+
+
+def _sample_from_alternate_model(rule, rule_context, tokenizer):
+    """Sample a token from the specified alternate model and convert it into the base tokenizer space."""
+    import torch
+    
+    action_config = rule.get('action', {})
+    target_model_name = action_config.get('model')
+    if not target_model_name:
+        return []
+    
+    messages = rule_context.get('messages', [])
+    generated_text = rule_context.get('generated_text', '')
+    
+    alt_model, alt_tokenizer, alt_device = load_model_and_tokenizer(target_model_name)
+    
+    if hasattr(alt_tokenizer, 'apply_chat_template') and alt_tokenizer.chat_template:
+        formatted_prompt = alt_tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
+    else:
+        formatted_prompt = messages[-1]['content'] if messages else ''
+    
+    input_ids = alt_tokenizer.encode(formatted_prompt, return_tensors="pt").to(alt_device)
+    
+    if generated_text:
+        assistant_ids = alt_tokenizer.encode(generated_text, return_tensors="pt", add_special_tokens=False).to(alt_device)
+        if assistant_ids.size(1) > 0:
+            input_ids = torch.cat([input_ids, assistant_ids], dim=1)
+    
+    with torch.no_grad():
+        logits = alt_model(input_ids).logits[:, -1, :]
+    
+    strategy = action_config.get('strategy', 'greedy')
+    temperature = float(action_config.get('temperature', 0.7))
+    if temperature >= 0.01:
+        logits = logits / temperature
+    
+    probabilities = torch.softmax(logits, dim=-1)[0]
+    
+    top_k = int(action_config.get('top_k', 0) or 0)
+    if top_k > 0 and top_k < probabilities.size(0):
+        top_probs, top_indices = torch.topk(probabilities, top_k)
+        mask = torch.zeros_like(probabilities)
+        mask[top_indices] = probabilities[top_indices]
+        probabilities = mask
+        total = probabilities.sum()
+        if total > 0:
+            probabilities = probabilities / total
+    
+    if probabilities.sum() <= 0:
+        return []
+    
+    sampled_id = select_from_distribution(probabilities, strategy=strategy)
+    if sampled_id is None:
+        return []
+    
+    suggested_text = alt_tokenizer.decode([sampled_id])
+    token_ids = tokenizer.encode(suggested_text, add_special_tokens=False)
+    return token_ids
+
+
+def apply_rules_to_candidate(candidate, rules, probabilities_row, tokenizer, rule_context):
+    """Apply enabled rules to the current candidate token."""
+    if not rules:
+        return candidate, [], None
+    
+    pending_sequence = []
+    applied_info = None
+    iterations = 0
+    
+    while iterations < MAX_RULE_ITERATIONS:
+        triggered_rule = None
+        for rule in rules:
+            if rule_matches_candidate(rule, candidate):
+                triggered_rule = rule
+                break
+        
+        if triggered_rule is None:
+            break
+        
+        action_result = execute_rule_action(triggered_rule, candidate, probabilities_row, tokenizer, rule_context)
+        if not action_result:
+            break
+        
+        replacements = action_result.get('replacement_tokens') or []
+        if not replacements:
+            break
+        
+        candidate = replacements[0]
+        
+        if len(replacements) > 1:
+            for extra in replacements[1:]:
+                pending_sequence.append({
+                    'token_id': extra['token_id'],
+                    'token': extra.get('token')
+                })
+        
+        applied_info = {
+            'id': triggered_rule['id'],
+            'name': triggered_rule['name'],
+            'action': triggered_rule.get('action', {}).get('type'),
+            'reason': action_result.get('reason')
+        }
+        
+        if triggered_rule['criteria']['type'] == 'consecutive_probability_below':
+            triggered_rule['_state']['consecutive_hits'] = 0
+        
+        iterations += 1
+    
+    return candidate, pending_sequence, applied_info
+
+
 def load_model_and_tokenizer(model_name):
     """Load and cache model and tokenizer."""
     # Lazy import - only load these heavy libraries when needed
@@ -388,6 +783,10 @@ def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_
     
     prompt_len = prompt_ids.size(0)
     vocab_size = tokenizer.vocab_size
+    normalized_rules = sanitize_generation_rules(rules or [])
+    forced_token_queue = deque()
+    generated_text_parts = []
+    generated_text = ''
     token_data = []
     
     for i, token_id in enumerate(output_ids):
@@ -429,7 +828,9 @@ def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_
     return token_data, vocab_size
 
 
-def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=4, temperature=1.0, prefill=None, show_prompt_tokens=False):
+def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens=512, top_k=4,
+                              temperature=1.0, prefill=None, show_prompt_tokens=False,
+                              rules=None, model_name=None):
     """Generate tokens one at a time with probabilities using streaming.
     
     Args:
@@ -517,6 +918,11 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
                 "top_alternatives": top_alternatives,
                 "is_prefill_token": True
             }
+            generated_text_parts.append(decoded_token)
+            generated_text += decoded_token
+            if normalized_rules:
+                for rule in normalized_rules:
+                    update_rule_state_with_token(rule, decoded_token, token_prob)
         
         # Add prefill to input for generation
         input_ids = torch.cat([input_ids, prefill_ids], dim=1)
@@ -570,79 +976,118 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
     
     # Generate tokens one by one
     generated_ids = input_ids.clone()
+    generated_text = ''.join(generated_text_parts)
     
     for step_idx in range(max_new_tokens):
         with torch.no_grad():
             outputs = model(generated_ids)
-            logits = outputs.logits[:, -1, :]  # Get logits for the last token
-            
-            # Free intermediate tensors
-            del outputs
-            
-        # Sample next token based on temperature
+            logits = outputs.logits[:, -1, :]
+        del outputs
+        
         if temperature == 0 or temperature < 0.01:
-            # Greedy sampling (temperature 0 or near-zero)
-            # Don't apply temperature scaling for greedy - just take argmax
             probabilities = torch.softmax(logits, dim=-1)
-            next_token_id = torch.argmax(probabilities, dim=-1).item()
         else:
-            # Temperature sampling
-            # Apply temperature scaling before softmax
             logits = logits / temperature
             probabilities = torch.softmax(logits, dim=-1)
-            # Sample from the distribution
+        
+        prob_row = probabilities[0]
+        forced_entry = forced_token_queue.popleft() if forced_token_queue else None
+        
+        if forced_entry:
+            next_token_id = int(forced_entry['token_id'])
+        elif temperature == 0 or temperature < 0.01:
+            next_token_id = torch.argmax(probabilities, dim=-1).item()
+        else:
             next_token_id = torch.multinomial(probabilities, num_samples=1).item()
         
-        # Clear CUDA cache periodically to prevent memory buildup
         if device == 'cuda' and step_idx % 10 == 0:
             torch.cuda.empty_cache()
         
-        # Get probability and rank of selected token
-        token_prob = probabilities[0, next_token_id].item()
-        
-        # Debug: check for invalid probabilities
+        token_prob = prob_row[next_token_id].item()
         if token_prob == 0.0 or token_prob < 1e-10:
             print(f"WARNING: Very low probability detected: {token_prob} for token '{tokenizer.decode([next_token_id])}'")
-            print(f"  Logits shape: {outputs.logits.shape}, Probabilities shape: {probabilities.shape}")
+            print(f"  Logits shape: {logits.shape}, Probabilities shape: {probabilities.shape}")
             print(f"  Selected token ID: {next_token_id}, Temperature: {temperature}")
-            print(f"  Top 5 probabilities: {probabilities[0].topk(5)}")
+            print(f"  Top 5 probabilities: {prob_row.topk(5)}")
         
-        # Calculate rank
-        sorted_indices = torch.argsort(probabilities[0], descending=True)
-        token_rank = (sorted_indices == next_token_id).nonzero(as_tuple=True)[0].item() + 1
+        sorted_indices = torch.argsort(prob_row, descending=True)
+        rank_matches = (sorted_indices == next_token_id).nonzero(as_tuple=True)
+        if rank_matches and len(rank_matches[0]) > 0:
+            token_rank = int(rank_matches[0][0].item() + 1)
+        else:
+            token_rank = None
         
-        # Get top k alternatives
-        top_k_probs, top_k_indices = torch.topk(probabilities[0], top_k)
-        top_k_tokens = [
-            tokenizer.decode([idx.item()])
-            for idx in top_k_indices
-        ]
-        
+        top_k_probs, top_k_indices = torch.topk(prob_row, top_k)
+        top_k_tokens = [tokenizer.decode([idx.item()]) for idx in top_k_indices]
         top_alternatives = [
             {"token": token, "probability": prob.item(), "rank": idx + 1}
             for idx, (token, prob) in enumerate(zip(top_k_tokens, top_k_probs))
         ]
         
-        # Decode the token
-        token_str = tokenizer.decode([next_token_id])
-        
-        # Yield token data (including special tokens so user can see them)
-        yield {
-            "token": token_str,
+        token_str = forced_entry.get('token') if forced_entry and forced_entry.get('token') is not None else tokenizer.decode([next_token_id])
+        candidate_data = {
             "token_id": int(next_token_id),
-            "probability": token_prob,
+            "token": token_str,
+            "probability": float(token_prob),
             "rank": token_rank,
-            "vocab_size": vocab_size,
             "top_alternatives": top_alternatives
         }
         
-        # Check for EOS tokens AFTER yielding so they're visible
-        if next_token_id in eos_token_ids:
-            print(f"EOS token detected: {token_str} (id: {next_token_id})")
+        rule_applied_info = None
+        rule_context = {
+            'messages': messages,
+            'generated_text': generated_text,
+            'model_name': model_name,
+            'temperature': temperature,
+            'rank_tensor': sorted_indices,
+            'rank_lookup': {}
+        }
+        
+        if forced_entry:
+            rule_applied_info = forced_entry.get('rule_info')
+        elif normalized_rules:
+            candidate_data, pending_sequence, rule_applied_info = apply_rules_to_candidate(
+                candidate_data,
+                normalized_rules,
+                prob_row,
+                tokenizer,
+                rule_context
+            )
+            if pending_sequence:
+                for extra in reversed(pending_sequence):
+                    forced_id = int(extra['token_id'])
+                    queued = {
+                        'token_id': forced_id,
+                        'token': extra.get('token') or tokenizer.decode([forced_id]),
+                        'rule_info': rule_applied_info
+                    }
+                    forced_token_queue.appendleft(queued)
+        
+        generated_text_parts.append(candidate_data['token'])
+        generated_text += candidate_data['token']
+        
+        if normalized_rules:
+            for rule in normalized_rules:
+                update_rule_state_with_token(rule, candidate_data['token'], candidate_data['probability'])
+        
+        token_payload = {
+            "token": candidate_data['token'],
+            "token_id": int(candidate_data['token_id']),
+            "probability": candidate_data['probability'],
+            "rank": candidate_data['rank'],
+            "vocab_size": vocab_size,
+            "top_alternatives": candidate_data['top_alternatives']
+        }
+        if rule_applied_info:
+            token_payload['rule_applied'] = rule_applied_info
+        
+        yield token_payload
+        
+        if candidate_data['token_id'] in eos_token_ids:
+            print(f"EOS token detected: {candidate_data['token']} (id: {candidate_data['token_id']})")
             break
         
-        # Append to generated sequence
-        generated_ids = torch.cat([generated_ids, torch.tensor([[next_token_id]], device=device)], dim=1)
+        generated_ids = torch.cat([generated_ids, torch.tensor([[candidate_data['token_id']]], device=device)], dim=1)
     
     # Clean up memory after generation
     if device == 'cuda':
@@ -1437,6 +1882,7 @@ def stream():
         prefill = data.get('prefill', None)
         temperature = data.get('temperature', 1.0)
         show_prompt_tokens = data.get('show_prompt_tokens', False)
+        generation_rules = data.get('rules', [])
         
         if not messages:
             return Response("data: " + json.dumps({"type": "error", "message": "No messages provided"}) + "\n\n", mimetype='text/event-stream')
@@ -1448,7 +1894,17 @@ def stream():
                 
                 # Generate tokens with streaming
                 first_token = True
-                for token_data in generate_streaming_tokens(model, tokenizer, device, messages, temperature=temperature, prefill=prefill, show_prompt_tokens=show_prompt_tokens):
+                for token_data in generate_streaming_tokens(
+                    model,
+                    tokenizer,
+                    device,
+                    messages,
+                    temperature=temperature,
+                    prefill=prefill,
+                    show_prompt_tokens=show_prompt_tokens,
+                    rules=generation_rules,
+                    model_name=model_name
+                ):
                     # Mark first token so frontend can show special context
                     if first_token and token_data.get('type') != 'prompt_token':
                         token_data['is_first_token'] = True
