@@ -16,6 +16,13 @@ Scope is a research interface for reading language-model behavior through multip
 - **Temperature-scaled probabilities**: Accurate probability calculations with configurable temperature
 - **Highlight modes**: Toggle between probability-based and rank-based coloring (rank capped at 5)
 
+### 📝 **Text View**
+- **Plain text display**: View generated content without token highlighting or visual indicators
+- **Preserved whitespace**: Shows actual spaces, newlines, and tabs in the generated text
+- **Special token visibility**: Newlines (↵), tabs (→), and space sequences (␣) remain visible
+- **Consistent interaction**: Hover and click tokens to inspect details just like in Token View
+- **View persistence**: Your selected view (Token/Text/Diff) persists across page refreshes
+
 ### 🔀 **Diff View (DiffLens)**
 - **Cross-model comparison**: Compare token probabilities between two different models on the same conversation
 - **Probability diff highlighting**: Tokens colored by probability difference (green = generation model prefers, red = analysis model prefers)
@@ -40,6 +47,15 @@ Scope is a research interface for reading language-model behavior through multip
 - **Multi-model support**: Switch between models mid-conversation
 
 ### 🎛️ **Generation Controls**
+- **Sampling filters**: Top-K and Top-P (nucleus sampling) applied before token selection
+  - Filter token distribution to control randomness and quality
+  - Settings persist across sessions
+- **Automation rules**: Define rules that trigger during generation
+  - Criteria: probability threshold, consecutive low probability, text match
+  - Actions: resample from same model, borrow from another model, inject static text
+  - Track resampling chains with visual indicators
+  - Show original and replacement tokens in annotations
+- **System prompts**: Set conversation-wide context with persistent defaults
 - **Force Assistant Start**: Prefill the beginning of the assistant's response (with visual indicators)
 - **Temperature control**: Adjust sampling randomness (0 = greedy, higher = more random)
 - **Streaming generation**: Real-time token-by-token streaming with SSE
@@ -47,10 +63,11 @@ Scope is a research interface for reading language-model behavior through multip
 
 ### 🎨 **User Interface**
 - **Monochromatic design**: Clean, minimal black-and-white aesthetic with grid background
-- **Responsive layout**: Three-column layout (conversations sidebar, main chat, tools sidebar)
-- **Collapsible sections**: Organized tool categories (Conversation Settings, Views, Analysis Tools, Generation Tools)
+- **Responsive layout**: Three-column layout (conversations sidebar, main chat, inspector sidebar)
+- **Organized menu bar**: Logical grouping - File, View, Generation, Analysis
 - **Smart tooltips**: Auto-positioning to stay within viewport bounds
 - **Smooth animations**: Polished dropdown transitions and hover effects
+- **Persistent preferences**: View modes, sampling settings, and rules saved across sessions
 
 ---
 
@@ -144,8 +161,17 @@ To add more models, update the `<select>` elements in `templates/chat.html`.
 ### Basic Chat
 1. Select a model from the dropdown
 2. Set temperature (0 for deterministic, 1.0 for standard sampling)
-3. Type your message and press Enter or click Send
-4. Hover over any token to see its probability and alternatives
+3. Optionally configure sampling filters (Generation → Sampling)
+   - Top-K: Keep only top K most probable tokens
+   - Top-P: Cumulative probability threshold (nucleus sampling)
+4. Type your message and press Enter or click Send
+5. Hover over any token to see its probability and alternatives
+
+### View Modes
+- **Token View**: Color-coded tokens by probability or rank
+- **Text View**: Plain text display with special characters visible
+- **Diff View**: Compare token probabilities between two models
+- Switch between views using the View menu - your selection persists across refreshes
 
 ### Token Injection
 1. Click any token to open the interactive tooltip
@@ -161,22 +187,41 @@ To add more models, update the `<select>` elements in `templates/chat.html`.
 
 ### Model Comparison (DiffLens)
 1. Generate a conversation with one model (the "generation model")
-2. In the sidebar under "Analysis Tools", select a different model
-3. Click "Apply Analysis"
-4. Tokens are now colored by probability difference between models
-5. Toggle highlight mode to see probability diff vs. rank diff
+2. Enable DiffLens in Analysis menu
+3. Select a different analysis model
+4. Click "Apply Diff"
+5. Tokens are now colored by probability difference between models
+6. Toggle highlight mode in View menu to see probability diff vs. rank diff
+
+### Automation Rules
+1. Open Generation → Automation Rules
+2. Add rules that trigger during generation:
+   - **Criteria**: Probability below threshold, consecutive low probability, or text match
+   - **Actions**: Resample from same model, borrow from other model, or inject text
+3. Each rule shows enabled count badge in menu
+4. Rules apply in real-time during generation
+5. Tokens modified by rules show gear icon (⚙) and annotation with resampling chain
+
+### Sampling Configuration
+1. Open Generation → Sampling
+2. Configure filters applied before token selection:
+   - **Top-K**: Limit to top K most probable tokens (0 = disabled)
+   - **Top-P**: Cumulative probability threshold for nucleus sampling (1.0 = disabled)
+3. Settings save automatically and persist across sessions
 
 ### Force Assistant Start
-1. In the sidebar under "Generation Tools", enter text in "Force Assistant Start"
-2. This text will prefill the assistant's response
-3. Prefilled tokens are shown with dashed borders
-4. Useful for testing refusal bypasses, steering responses, or testing continuations
+1. Enable prefilling in Analysis menu
+2. Enter text in the prefill input box
+3. This text will prefill the assistant's response
+4. Prefilled tokens are shown with dashed borders
+5. Useful for testing refusal bypasses, steering responses, or testing continuations
 
 ### System Prompts
-1. In the sidebar under "Conversation Settings", enter a system prompt
-2. Click "Save as Default" to persist across sessions
-3. The system prompt appears as a collapsible bubble at the top of the conversation
-4. It's prepended to all API calls for context-setting
+1. Open Generation → System Prompt
+2. Enter your system prompt text
+3. Click "Save as Default" to persist across sessions
+4. The system prompt appears as a collapsible bubble at the top of the conversation
+5. It's prepended to all model calls for context-setting
 
 ---
 
@@ -202,9 +247,10 @@ To add more models, update the `<select>` elements in `templates/chat.html`.
 | 1 | Core chat UI, streaming tokens, tooltips | ✅ |
 | 2 | Logit Lens, DiffLens, branching conversations | ✅ |
 | 3 | System prompts, highlight modes, memory optimization | ✅ |
-| 4 | Export conversations, annotations, advanced filters | Planned |
-| 5 | Hallucination detection, calibration analysis | Planned |
-| 6 | TransformerLens integration, steering vectors | Planned |
+| 4 | Sampling filters, automation rules, text view | ✅ |
+| 5 | Export conversations, annotations, advanced filters | Planned |
+| 6 | Hallucination detection, calibration analysis | Planned |
+| 7 | TransformerLens integration, steering vectors | Planned |
 
 ---
 
@@ -230,16 +276,16 @@ Contributions are welcome! Areas of interest:
 
 ```
 Scope/
-├── app.py                    # Flask backend, model inference, streaming
+├── app.py                    # Flask backend, model inference, streaming, rules
 ├── requirements.txt          # Python dependencies
 ├── templates/
-│   ├── chat.html            # Main chat interface (3300+ lines)
+│   ├── chat.html            # Main chat interface (5200+ lines)
 │   └── index.html           # Legacy analysis interface
 ├── static/
-│   ├── chat.css             # Main stylesheet (1800+ lines)
+│   ├── chat.css             # Main stylesheet (2800+ lines)
 │   └── style.css            # Legacy styles
 ├── probability_monitor.py   # CLI probability inspection tool
-└── README.md               # This file
+└── README.md                # This file
 ```
 
 ---
