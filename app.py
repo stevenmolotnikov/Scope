@@ -444,7 +444,7 @@ def execute_rule_action(rule, candidate, probabilities_row, tokenizer, rule_cont
     if action_type == 'resample_same':
         return _rule_action_resample_same(rule, candidate, probabilities_row, tokenizer, rule_context)
     if action_type == 'replace_text':
-        return _rule_action_replace_text(rule, tokenizer, candidate)
+        return _rule_action_replace_text(rule, tokenizer, candidate, probabilities_row, rule_context)
     if action_type == 'resample_other_model':
         return _rule_action_resample_other_model(rule, candidate, probabilities_row, tokenizer, rule_context)
     
@@ -514,7 +514,7 @@ def _rule_action_resample_same(rule, candidate, probabilities_row, tokenizer, ru
     return None
 
 
-def _rule_action_replace_text(rule, tokenizer, candidate=None):
+def _rule_action_replace_text(rule, tokenizer, candidate=None, probabilities_row=None, rule_context=None):
     """Replace the current token with static user-provided text."""
     action_config = rule.get('action', {})
     replacement_text = action_config.get('text', '')
@@ -526,13 +526,34 @@ def _rule_action_replace_text(rule, tokenizer, candidate=None):
         return None
     
     replacement_tokens = []
-    rank_lookup = rule_context.get('rank_lookup') or {}
+    rank_lookup = (rule_context or {}).get('rank_lookup') or {}
+    rank_tensor = (rule_context or {}).get('rank_tensor')
+    
     for idx, token_id in enumerate(token_ids):
+        token_id_int = int(token_id)
+        token_text = tokenizer.decode([token_id_int])
+        
+        # Try to get probability and rank from probabilities_row if available
+        probability = None
+        rank = None
+        if probabilities_row is not None and token_id_int < probabilities_row.size(0):
+            probability = float(probabilities_row[token_id_int].item())
+            
+            # Calculate rank if we have rank_tensor
+            if rank_tensor is not None:
+                matches = (rank_tensor == token_id_int).nonzero(as_tuple=True)
+                if matches and len(matches[0]) > 0:
+                    rank = int(matches[0][0].item() + 1)
+            
+            # Fallback to rank_lookup if no rank_tensor
+            if rank is None:
+                rank = rank_lookup.get(token_id_int)
+        
         replacement_tokens.append({
-            'token_id': int(token_id),
-            'token': tokenizer.decode([int(token_id)]),
-            'probability': None,
-            'rank': None,
+            'token_id': token_id_int,
+            'token': token_text,
+            'probability': probability,
+            'rank': rank,
             'top_alternatives': candidate.get('top_alternatives', []) if candidate and idx == 0 else []
         })
     
@@ -646,6 +667,7 @@ def apply_rules_to_candidate(candidate, rules, probabilities_row, tokenizer, rul
     pending_sequence = []
     applied_info = None
     iterations = 0
+    original_token = candidate.get('token')  # Store the original token before any replacements
     
     while iterations < MAX_RULE_ITERATIONS:
         triggered_rule = None
@@ -678,7 +700,9 @@ def apply_rules_to_candidate(candidate, rules, probabilities_row, tokenizer, rul
             'id': triggered_rule['id'],
             'name': triggered_rule['name'],
             'action': triggered_rule.get('action', {}).get('type'),
-            'reason': action_result.get('reason')
+            'reason': action_result.get('reason'),
+            'original_token': original_token,  # Include the original token
+            'resampling_chain': action_result.get('resampling_chain', [])  # Include the full chain
         }
         
         if triggered_rule['criteria']['type'] == 'consecutive_probability_below':
@@ -864,6 +888,12 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
     original_prompt_length = input_ids.size(1)
     
     vocab_size = tokenizer.vocab_size
+    
+    # Initialize rule-related variables
+    normalized_rules = sanitize_generation_rules(rules or [])
+    forced_token_queue = deque()
+    generated_text_parts = []
+    generated_text = ''
     
     # If prefill is provided, calculate probabilities efficiently with single forward pass
     if prefill:
