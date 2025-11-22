@@ -51,20 +51,19 @@
                 </div>
             </div>
             <div class="menu-item">
-                <button class="menu-btn" onclick="toggleMenu('features-menu')">Features</button>
-                <div class="menu-dropdown" id="features-menu">
-                    <div class="menu-option-group">
-                        <label class="menu-checkbox-label">
-                            <input 
-                                type="checkbox" 
-                                id="enable-prefill-checkbox"
-                                onchange="togglePrefillInput()"
-                            />
-                            <span>Enable Prefilling</span>
-                        </label>
-                        <p class="menu-help">Adds a prefill input in the chatbox</p>
-                    </div>
-                    <div class="menu-divider"></div>
+                <button class="menu-btn" onclick="toggleMenu('generation-menu')">Generation</button>
+                <div class="menu-dropdown" id="generation-menu">
+                    <button class="menu-option" onclick="openSystemPromptModal(); closeAllMenus();">System Prompt</button>
+                    <button class="menu-option" onclick="openSamplingModal(); closeAllMenus();">Sampling</button>
+                    <button class="menu-option" onclick="openRulesModal(); closeAllMenus();">
+                        Automation Rules
+                        <span id="rules-count-badge-menu" class="rules-count-badge" style="display: none; margin-left: 8px;"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <button class="menu-btn" onclick="toggleMenu('analysis-menu')">Analysis</button>
+                <div class="menu-dropdown" id="analysis-menu">
                     <div class="menu-option-group">
                         <label class="menu-checkbox-label">
                             <input 
@@ -76,19 +75,19 @@
                         </label>
                         <p class="menu-help">Compare generation across models</p>
                     </div>
+                    <div class="menu-divider"></div>
+                    <div class="menu-option-group">
+                        <label class="menu-checkbox-label">
+                            <input 
+                                type="checkbox" 
+                                id="enable-prefill-checkbox"
+                                onchange="togglePrefillInput()"
+                            />
+                            <span>Enable Prefilling</span>
+                        </label>
+                        <p class="menu-help">Adds a prefill input in the chatbox</p>
+                    </div>
                 </div>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn" onclick="openSystemPromptModal()">System Prompt...</button>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn" onclick="openSamplingModal()">Sampling...</button>
-            </div>
-            <div class="menu-item">
-                <button class="menu-btn rules-menu-btn" onclick="openRulesModal()">
-                    Rules
-                    <span id="rules-count-badge" class="rules-count-badge" style="display: none;"></span>
-                </button>
             </div>
         </div>
         <button class="sidebar-toggle-btn" onclick="toggleRightSidebar()" title="Toggle Inspector">
@@ -1427,14 +1426,20 @@
 
         function updateRulesBadge() {
             const badge = document.getElementById('rules-count-badge');
-            if (!badge) return;
+            const badgeMenu = document.getElementById('rules-count-badge-menu');
             const enabledCount = generationRules.filter(rule => rule?.enabled !== false).length;
-            if (enabledCount > 0) {
-                badge.textContent = enabledCount;
-                badge.style.display = 'inline-flex';
-            } else {
-                badge.style.display = 'none';
-            }
+            
+            // Update both badge locations
+            [badge, badgeMenu].forEach(b => {
+                if (b) {
+                    if (enabledCount > 0) {
+                        b.textContent = enabledCount;
+                        b.style.display = 'inline-flex';
+                    } else {
+                        b.style.display = 'none';
+                    }
+                }
+            });
         }
 
         function openRulesModal() {
@@ -5211,4 +5216,5 @@
     </script>
 </body>
 </html>
+
 
