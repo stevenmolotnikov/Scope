@@ -18,8 +18,59 @@ DEFAULT_MAX_RANK_SCALING = 100
 DEFAULT_MIN_PROB_SCALING = 0.0
 DEFAULT_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 
-# Global model cache to avoid reloading
+# Global caches to avoid reloading
 MODEL_CACHE = {}
+TOKENIZER_CACHE = {}
+
+
+def _load_tokenizer_instance(model_name, log_details=False):
+    """Create a tokenizer instance with consistent settings."""
+    try:
+        from transformers import AutoTokenizer
+    except ImportError:
+        try:
+            # Some transformer builds expose AutoTokenizer from a nested module
+            from transformers.models.auto.tokenization_auto import AutoTokenizer
+        except Exception as e:
+            raise ImportError(
+                "Failed to import AutoTokenizer from transformers. "
+                "Please ensure the 'transformers' package is installed and up to date."
+            ) from e
+    
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    
+    # Ensure pad token exists for models that omit it
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+        if log_details:
+            print(f"Set pad_token to eos_token: {tokenizer.eos_token}")
+    
+    if log_details:
+        print(f"Tokenizer: {tokenizer.__class__.__name__}")
+        print(f"Has chat template: {tokenizer.chat_template is not None}")
+        if tokenizer.chat_template:
+            preview = tokenizer.chat_template[:120]
+            print(f"Chat template preview: {preview}...")
+        print(f"EOS token: {tokenizer.eos_token} (id: {tokenizer.eos_token_id})")
+        if hasattr(tokenizer, 'eos_token_ids'):
+            print(f"Multiple EOS token IDs: {tokenizer.eos_token_ids}")
+        if getattr(tokenizer, 'additional_special_tokens', None):
+            print(f"Additional special tokens (first 5): {tokenizer.additional_special_tokens[:5]}")
+    
+    return tokenizer
+
+
+def get_tokenizer(model_name, log_details=False):
+    """Retrieve a tokenizer from cache or load it if needed."""
+    if model_name in MODEL_CACHE:
+        return MODEL_CACHE[model_name][1]
+    
+    if model_name in TOKENIZER_CACHE:
+        return TOKENIZER_CACHE[model_name]
+    
+    tokenizer = _load_tokenizer_instance(model_name, log_details=log_details)
+    TOKENIZER_CACHE[model_name] = tokenizer
+    return tokenizer
 
 def get_color_for_prob(probability, min_prob_for_scaling=0.0):
     """Maps probability (0-1) to an HSL color string.
@@ -182,7 +233,11 @@ def process_token_data(token_input_list, vocab_size, threshold_mode, max_rank_fo
         
         # Process alternatives for HTML display
         processed_alternatives = [
-            {'token': format_token_for_html(alt.get('token', '')), 'probability': alt.get('probability')}
+            {
+                'token': format_token_for_html(alt.get('token', '')),
+                'probability': alt.get('probability'),
+                'rank': alt.get('rank')
+            }
             for alt in top_alternatives
         ]
         
@@ -243,34 +298,22 @@ def load_model_and_tokenizer(model_name):
     """Load and cache model and tokenizer."""
     # Lazy import - only load these heavy libraries when needed
     import torch
-    from transformers import AutoTokenizer, AutoModelForCausalLM
+    try:
+        from transformers import AutoModelForCausalLM
+    except ImportError:
+        try:
+            from transformers.models.auto.modeling_auto import AutoModelForCausalLM
+        except Exception as e:
+            raise ImportError(
+                "Failed to import AutoModelForCausalLM from transformers. "
+                "Please ensure the 'transformers' package is installed and up to date."
+            ) from e
     
     if model_name in MODEL_CACHE:
         return MODEL_CACHE[model_name]
     
     print(f"Loading model: {model_name}")
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    
-    # Ensure pad token is set (some models don't have it by default)
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
-        print(f"Set pad_token to eos_token: {tokenizer.eos_token}")
-    
-    # Print tokenizer info
-    print(f"Tokenizer: {tokenizer.__class__.__name__}")
-    print(f"Has chat template: {tokenizer.chat_template is not None}")
-    if tokenizer.chat_template:
-        print(f"Chat template preview: {tokenizer.chat_template[:100]}...")
-    
-    # Print EOS token info for debugging
-    print(f"EOS token: {tokenizer.eos_token} (id: {tokenizer.eos_token_id})")
-    
-    # Check for multiple EOS tokens (newer tokenizers)
-    if hasattr(tokenizer, 'eos_token_ids'):
-        print(f"Multiple EOS token IDs: {tokenizer.eos_token_ids}")
-    
-    if hasattr(tokenizer, 'additional_special_tokens') and tokenizer.additional_special_tokens:
-        print(f"Additional special tokens (first 5): {tokenizer.additional_special_tokens[:5]}")
+    tokenizer = get_tokenizer(model_name, log_details=True)
     
     # Determine device with detailed logging
     if torch.cuda.is_available():
@@ -320,6 +363,8 @@ def load_model_and_tokenizer(model_name):
         model.to(device)
     
     MODEL_CACHE[model_name] = (model, tokenizer, device)
+    # Remove duplicate tokenizer entry now that it's bundled with the model
+    TOKENIZER_CACHE.pop(model_name, None)
     return model, tokenizer, device
 
 
@@ -370,8 +415,8 @@ def calculate_token_probabilities(model, tokenizer, device, prompt, output, top_
         ]
         
         top_alternatives = [
-            {"token": token, "probability": prob.item()}
-            for token, prob in zip(top_k_tokens, top_k_probs)
+            {"token": token, "probability": prob.item(), "rank": idx + 1}
+            for idx, (token, prob) in enumerate(zip(top_k_tokens, top_k_probs))
         ]
         
         token_data.append({
@@ -454,14 +499,17 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
             top_k_probs, top_k_indices = torch.topk(probabilities, top_k)
             top_k_tokens = [tokenizer.decode([idx.item()]) for idx in top_k_indices]
             
+            # Decode the actual token consistently
+            decoded_token = tokenizer.decode([token_id_item])
+            
             top_alternatives = [
-                {"token": token, "probability": prob.item()}
-                for token, prob in zip(top_k_tokens, top_k_probs)
+                {"token": token, "probability": prob.item(), "rank": idx + 1}
+                for idx, (token, prob) in enumerate(zip(top_k_tokens, top_k_probs))
             ]
             
             # Yield prefill token with probabilities
             yield {
-                "token": tokenizer.decode([token_id_item]),
+                "token": decoded_token,
                 "token_id": int(token_id_item),
                 "probability": token_prob,
                 "rank": token_rank,
@@ -571,8 +619,8 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         ]
         
         top_alternatives = [
-            {"token": token, "probability": prob.item()}
-            for token, prob in zip(top_k_tokens, top_k_probs)
+            {"token": token, "probability": prob.item(), "rank": idx + 1}
+            for idx, (token, prob) in enumerate(zip(top_k_tokens, top_k_probs))
         ]
         
         # Decode the token
@@ -669,8 +717,6 @@ def manage_conversation(conversation_id):
 @app.route('/api/search-tokens', methods=['POST'])
 def search_tokens():
     """Search for tokens in the tokenizer vocabulary."""
-    import torch
-    
     try:
         data = request.get_json()
         query = data.get('query', '').strip()
@@ -683,8 +729,10 @@ def search_tokens():
         if not query:
             return json.dumps([])
         
-        # Load model and tokenizer
-        model, tokenizer, device = load_model_and_tokenizer(model_name)
+        # Load tokenizer (model only if needed later)
+        tokenizer = get_tokenizer(model_name, log_details=False)
+        model = None
+        device = 'cpu'
         
         # Search for matching tokens
         query_lower = query.lower()
@@ -719,7 +767,9 @@ def search_tokens():
         
         # Calculate probabilities if context is provided
         probabilities = {}
-        if context or prefix_tokens:
+        if (context or prefix_tokens) and model_name in MODEL_CACHE:
+            import torch
+            model, tokenizer, device = MODEL_CACHE[model_name]
             try:
                 # Build the context
                 if context and hasattr(tokenizer, 'apply_chat_template') and tokenizer.chat_template:
@@ -763,6 +813,8 @@ def search_tokens():
                 import traceback
                 traceback.print_exc()
                 # Continue without probabilities
+        elif context or prefix_tokens:
+            print("Skipping probability calculation for token search - model not loaded yet.")
         
         # Add probabilities to matches
         for match in matches:
@@ -865,8 +917,8 @@ def calculate_logprobs():
                 # Get top 3 alternatives (will filter current token in UI to show 2)
                 top_k_probs, top_k_indices = torch.topk(probabilities, 3)
                 top_alternatives = [
-                    {"token": tokenizer.decode([idx.item()]), "probability": p.item()}
-                    for idx, p in zip(top_k_indices, top_k_probs)
+                    {"token": tokenizer.decode([idx.item()]), "probability": p.item(), "rank": rank_idx + 1}
+                    for rank_idx, (idx, p) in enumerate(zip(top_k_indices, top_k_probs))
                 ]
             else:
                 # First token has no previous context
@@ -1014,8 +1066,12 @@ def analyze_difflens():
                     # Get top 3 (will filter current token in UI to show 2)
                     top_k_probs, top_k_indices = torch.topk(probabilities, min(3, vocab_size))
                     analysis_top_alternatives = [
-                        {'token': analysis_tokenizer.decode([int(idx)]), 'probability': float(prob)}
-                        for prob, idx in zip(top_k_probs.cpu().tolist(), top_k_indices.cpu().tolist())
+                        {
+                            'token': analysis_tokenizer.decode([int(idx)]),
+                            'probability': float(prob),
+                            'rank': rank_idx + 1
+                        }
+                        for rank_idx, (prob, idx) in enumerate(zip(top_k_probs.cpu().tolist(), top_k_indices.cpu().tolist()))
                     ]
                     
                     # Calculate differences (as percentages)
@@ -1082,8 +1138,12 @@ def analyze_difflens():
                             # Get top 3 alternatives
                             top_k_probs, top_k_indices = torch.topk(probabilities, min(3, vocab_size))
                             analysis_top_alternatives = [
-                                {'token': analysis_tokenizer.decode([int(idx)]), 'probability': float(prob)}
-                                for prob, idx in zip(top_k_probs.cpu().tolist(), top_k_indices.cpu().tolist())
+                                {
+                                    'token': analysis_tokenizer.decode([int(idx)]),
+                                    'probability': float(prob),
+                                    'rank': rank_idx + 1
+                                }
+                                for rank_idx, (prob, idx) in enumerate(zip(top_k_probs.cpu().tolist(), top_k_indices.cpu().tolist()))
                             ]
                             
                             # Calculate differences
