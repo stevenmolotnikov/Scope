@@ -38,7 +38,7 @@ instance/
 .webassets-cache
 
 # Conversations (user data)
-conversations/
+
 
 # Model cache
 models/

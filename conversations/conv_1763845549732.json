@@ -1,0 +1,3043 @@
+{
+  "id": "conv_1763845549732",
+  "title": "What is 2+2? Explain step by step.",
+  "timestamp": 1763845575158,
+  "messageTree": {
+    "07a92656-9ca3-4702-bba3-0f791ec5f2fe": {
+      "id": "07a92656-9ca3-4702-bba3-0f791ec5f2fe",
+      "parentId": null,
+      "childrenIds": [
+        "3e54369e-0899-42e2-9d2f-d5efa16a0aa3"
+      ],
+      "role": "user",
+      "content": "What is 2+2? Explain step by step.",
+      "timestamp": 1763845564026,
+      "lastSelectedChildId": "3e54369e-0899-42e2-9d2f-d5efa16a0aa3"
+    },
+    "3e54369e-0899-42e2-9d2f-d5efa16a0aa3": {
+      "id": "3e54369e-0899-42e2-9d2f-d5efa16a0aa3",
+      "parentId": "07a92656-9ca3-4702-bba3-0f791ec5f2fe",
+      "childrenIds": [],
+      "role": "assistant",
+      "content": "2+2=6!\n\nHere’s how to explain it step-by-step:\n\n1. **Start with the digits:** We have the numbers 2 and 2.\n2. **Add the digits:**  We add the digits together: 2 + 2 = 4\n3. **Write the answer:**  4.\n\nTherefore, 2 + 2 = 6.<end_of_turn>",
+      "tokens": [
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 0,
+          "rank": 236779,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "Okay",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "Absolutely",
+              "probability": 0.00013554096221923828,
+              "rank": 2
+            },
+            {
+              "token": "Let",
+              "probability": 5.143880844116211e-05,
+              "rank": 3
+            },
+            {
+              "token": "Here",
+              "probability": 2.6702880859375e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": true,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "+",
+          "token_id": 236862,
+          "probability": 1.0132789611816406e-05,
+          "rank": 3,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " +",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": " plus",
+              "probability": 2.2113323211669922e-05,
+              "rank": 2
+            },
+            {
+              "token": "+",
+              "probability": 1.0132789611816406e-05,
+              "rank": 3
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": true,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": true,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "=",
+          "token_id": 236784,
+          "probability": 0.000644683837890625,
+          "rank": 5,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " =",
+              "probability": 0.7177734375,
+              "rank": 1
+            },
+            {
+              "token": " is",
+              "probability": 0.2025146484375,
+              "rank": 2
+            },
+            {
+              "token": " equals",
+              "probability": 0.07220458984375,
+              "rank": 3
+            },
+            {
+              "token": " means",
+              "probability": 0.00640869140625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": true,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "6",
+          "token_id": 236825,
+          "probability": 5.960464477539063e-08,
+          "rank": 14,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "4",
+              "probability": 0.9892578125,
+              "rank": 1
+            },
+            {
+              "token": " ",
+              "probability": 0.01032257080078125,
+              "rank": 2
+            },
+            {
+              "token": "5",
+              "probability": 0.0005731582641601562,
+              "rank": 3
+            },
+            {
+              "token": "\n\n",
+              "probability": 8.821487426757812e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": true,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "!",
+          "token_id": 236888,
+          "probability": 0.00026106834411621094,
+          "rank": 3,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n\n",
+              "probability": 0.9990234375,
+              "rank": 1
+            },
+            {
+              "token": " ",
+              "probability": 0.0006771087646484375,
+              "rank": 2
+            },
+            {
+              "token": "!",
+              "probability": 0.00026106834411621094,
+              "rank": 3
+            },
+            {
+              "token": ".",
+              "probability": 5.733966827392578e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": true,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "\n\n",
+          "token_id": 108,
+          "probability": 0.98046875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n\n",
+              "probability": 0.98046875,
+              "rank": 1
+            },
+            {
+              "token": " Here",
+              "probability": 0.0131378173828125,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 0.006206512451171875,
+              "rank": 3
+            },
+            {
+              "token": " Let",
+              "probability": 0.00014150142669677734,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "Here",
+          "token_id": 8291,
+          "probability": 0.9970703125,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "Here",
+              "probability": 0.9970703125,
+              "rank": 1
+            },
+            {
+              "token": "Let",
+              "probability": 0.0011320114135742188,
+              "rank": 2
+            },
+            {
+              "token": "**",
+              "probability": 0.0008540153503417969,
+              "rank": 3
+            },
+            {
+              "token": "It",
+              "probability": 0.0007777214050292969,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "’",
+          "token_id": 236858,
+          "probability": 0.32763671875,
+          "rank": 2,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "'",
+              "probability": 0.67236328125,
+              "rank": 1
+            },
+            {
+              "token": "’",
+              "probability": 0.32763671875,
+              "rank": 2
+            },
+            {
+              "token": " is",
+              "probability": 1.1920928955078125e-07,
+              "rank": 3
+            },
+            {
+              "token": " are",
+              "probability": 1.1920928955078125e-07,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "s",
+          "token_id": 236751,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "s",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " how",
+          "token_id": 1217,
+          "probability": 0.86767578125,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " how",
+              "probability": 0.86767578125,
+              "rank": 1
+            },
+            {
+              "token": " the",
+              "probability": 0.073486328125,
+              "rank": 2
+            },
+            {
+              "token": " a",
+              "probability": 0.05902099609375,
+              "rank": 3
+            },
+            {
+              "token": " why",
+              "probability": 1.519918441772461e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " to",
+          "token_id": 531,
+          "probability": 0.25244140625,
+          "rank": 2,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " we",
+              "probability": 0.73046875,
+              "rank": 1
+            },
+            {
+              "token": " to",
+              "probability": 0.25244140625,
+              "rank": 2
+            },
+            {
+              "token": " you",
+              "probability": 0.01126861572265625,
+              "rank": 3
+            },
+            {
+              "token": " it",
+              "probability": 0.00492095947265625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " explain",
+          "token_id": 8082,
+          "probability": 0.87255859375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " explain",
+              "probability": 0.87255859375,
+              "rank": 1
+            },
+            {
+              "token": " break",
+              "probability": 0.121826171875,
+              "rank": 2
+            },
+            {
+              "token": " understand",
+              "probability": 0.002777099609375,
+              "rank": 3
+            },
+            {
+              "token": " think",
+              "probability": 0.0014410018920898438,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " it",
+          "token_id": 625,
+          "probability": 0.99853515625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " it",
+              "probability": 0.99853515625,
+              "rank": 1
+            },
+            {
+              "token": " that",
+              "probability": 0.001064300537109375,
+              "rank": 2
+            },
+            {
+              "token": " this",
+              "probability": 0.00022673606872558594,
+              "rank": 3
+            },
+            {
+              "token": " the",
+              "probability": 1.2040138244628906e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " step",
+          "token_id": 2918,
+          "probability": 0.9951171875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " step",
+              "probability": 0.9951171875,
+              "rank": 1
+            },
+            {
+              "token": ":",
+              "probability": 0.002246856689453125,
+              "rank": 2
+            },
+            {
+              "token": ",",
+              "probability": 0.002246856689453125,
+              "rank": 3
+            },
+            {
+              "token": " in",
+              "probability": 0.0002155303955078125,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "-",
+          "token_id": 236772,
+          "probability": 0.88427734375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "-",
+              "probability": 0.88427734375,
+              "rank": 1
+            },
+            {
+              "token": " by",
+              "probability": 0.115966796875,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "by",
+          "token_id": 2003,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "by",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "-",
+          "token_id": 236772,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "-",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "step",
+          "token_id": 9340,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "step",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ":",
+          "token_id": 236787,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ":",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": ",",
+              "probability": 3.647804260253906e-05,
+              "rank": 2
+            },
+            {
+              "token": " using",
+              "probability": 4.172325134277344e-06,
+              "rank": 3
+            },
+            {
+              "token": "\n\n",
+              "probability": 8.344650268554688e-07,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "\n\n",
+          "token_id": 108,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n\n",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "\n",
+              "probability": 5.245208740234375e-06,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 4.291534423828125e-06,
+              "rank": 3
+            },
+            {
+              "token": "\n\n\n",
+              "probability": 6.556510925292969e-07,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "1",
+          "token_id": 236770,
+          "probability": 0.9931640625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "1",
+              "probability": 0.9931640625,
+              "rank": 1
+            },
+            {
+              "token": "*",
+              "probability": 0.0059051513671875,
+              "rank": 2
+            },
+            {
+              "token": "**",
+              "probability": 0.0008640289306640625,
+              "rank": 3
+            },
+            {
+              "token": "We",
+              "probability": 4.76837158203125e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ".",
+          "token_id": 236761,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ".",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " **",
+          "token_id": 5213,
+          "probability": 0.99951171875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " **",
+              "probability": 0.99951171875,
+              "rank": 1
+            },
+            {
+              "token": "  ",
+              "probability": 0.00030541419982910156,
+              "rank": 2
+            },
+            {
+              "token": " We",
+              "probability": 5.960464477539063e-08,
+              "rank": 3
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "Start",
+          "token_id": 6302,
+          "probability": 0.9921875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "Start",
+              "probability": 0.9921875,
+              "rank": 1
+            },
+            {
+              "token": "What",
+              "probability": 0.004596710205078125,
+              "rank": 2
+            },
+            {
+              "token": "Understanding",
+              "probability": 0.0016908645629882812,
+              "rank": 3
+            },
+            {
+              "token": "Understand",
+              "probability": 0.0008769035339355469,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " with",
+          "token_id": 607,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " with",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": ":**",
+              "probability": 2.5093555450439453e-05,
+              "rank": 2
+            },
+            {
+              "token": " With",
+              "probability": 6.556510925292969e-07,
+              "rank": 3
+            },
+            {
+              "token": " at",
+              "probability": 5.960464477539063e-08,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " the",
+          "token_id": 506,
+          "probability": 0.9931640625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " the",
+              "probability": 0.9931640625,
+              "rank": 1
+            },
+            {
+              "token": " two",
+              "probability": 0.004390716552734375,
+              "rank": 2
+            },
+            {
+              "token": " a",
+              "probability": 0.0019178390502929688,
+              "rank": 3
+            },
+            {
+              "token": " what",
+              "probability": 0.0001989603042602539,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " digits",
+          "token_id": 26798,
+          "probability": 0.003448486328125,
+          "rank": 8,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " numbers",
+              "probability": 0.6572265625,
+              "rank": 1
+            },
+            {
+              "token": " number",
+              "probability": 0.238037109375,
+              "rank": 2
+            },
+            {
+              "token": " basics",
+              "probability": 0.0284271240234375,
+              "rank": 3
+            },
+            {
+              "token": " first",
+              "probability": 0.0189361572265625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ":**",
+          "token_id": 53121,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ":**",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": ".**",
+              "probability": 5.918741226196289e-05,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 4.26173210144043e-05,
+              "rank": 3
+            },
+            {
+              "token": " you",
+              "probability": 1.7762184143066406e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " We",
+          "token_id": 1191,
+          "probability": 0.48828125,
+          "rank": 2,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " You",
+              "probability": 0.50390625,
+              "rank": 1
+            },
+            {
+              "token": " We",
+              "probability": 0.48828125,
+              "rank": 2
+            },
+            {
+              "token": "  ",
+              "probability": 0.0061492919921875,
+              "rank": 3
+            },
+            {
+              "token": " The",
+              "probability": 0.0005288124084472656,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " have",
+          "token_id": 735,
+          "probability": 0.98046875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " have",
+              "probability": 0.98046875,
+              "rank": 1
+            },
+            {
+              "token": " are",
+              "probability": 0.0103912353515625,
+              "rank": 2
+            },
+            {
+              "token": "'",
+              "probability": 0.00640106201171875,
+              "rank": 3
+            },
+            {
+              "token": "’",
+              "probability": 0.0020465850830078125,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " the",
+          "token_id": 506,
+          "probability": 0.97509765625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " the",
+              "probability": 0.97509765625,
+              "rank": 1
+            },
+            {
+              "token": " two",
+              "probability": 0.0244140625,
+              "rank": 2
+            },
+            {
+              "token": " a",
+              "probability": 0.00019538402557373047,
+              "rank": 3
+            },
+            {
+              "token": " ",
+              "probability": 2.4437904357910156e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " numbers",
+          "token_id": 4945,
+          "probability": 0.86962890625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " numbers",
+              "probability": 0.86962890625,
+              "rank": 1
+            },
+            {
+              "token": " number",
+              "probability": 0.1292724609375,
+              "rank": 2
+            },
+            {
+              "token": " two",
+              "probability": 0.0005364418029785156,
+              "rank": 3
+            },
+            {
+              "token": " digits",
+              "probability": 0.0004246234893798828,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": " two",
+              "probability": 6.604194641113281e-05,
+              "rank": 2
+            },
+            {
+              "token": " \"",
+              "probability": 1.1861324310302734e-05,
+              "rank": 3
+            },
+            {
+              "token": " representing",
+              "probability": 2.2649765014648438e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "1",
+              "probability": 2.086162567138672e-06,
+              "rank": 2
+            },
+            {
+              "token": "0",
+              "probability": 1.1920928955078125e-07,
+              "rank": 3
+            },
+            {
+              "token": "3",
+              "probability": 5.960464477539063e-08,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " and",
+          "token_id": 532,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " and",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": " (",
+              "probability": 2.384185791015625e-06,
+              "rank": 2
+            },
+            {
+              "token": "  ",
+              "probability": 2.384185791015625e-07,
+              "rank": 3
+            },
+            {
+              "token": ",",
+              "probability": 2.384185791015625e-07,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": " the",
+              "probability": 1.7285346984863281e-06,
+              "rank": 2
+            },
+            {
+              "token": " then",
+              "probability": 1.4901161193847656e-06,
+              "rank": 3
+            },
+            {
+              "token": " another",
+              "probability": 2.384185791015625e-07,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "1",
+              "probability": 5.960464477539063e-08,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ".",
+          "token_id": 236761,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ".",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "\n\n",
+              "probability": 1.4960765838623047e-05,
+              "rank": 2
+            },
+            {
+              "token": "\n",
+              "probability": 5.841255187988281e-06,
+              "rank": 3
+            },
+            {
+              "token": ",",
+              "probability": 3.874301910400391e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "\n",
+          "token_id": 107,
+          "probability": 0.468017578125,
+          "rank": 2,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n\n",
+              "probability": 0.5302734375,
+              "rank": 1
+            },
+            {
+              "token": "\n",
+              "probability": 0.468017578125,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 0.0015363693237304688,
+              "rank": 3
+            },
+            {
+              "token": "  ",
+              "probability": 0.00012612342834472656,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "   ",
+              "probability": 3.5762786865234375e-06,
+              "rank": 2
+            },
+            {
+              "token": "    ",
+              "probability": 1.7881393432617188e-07,
+              "rank": 3
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ".",
+          "token_id": 236761,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ".",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " **",
+          "token_id": 5213,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " **",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "  ",
+              "probability": 4.589557647705078e-06,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "Add",
+          "token_id": 3218,
+          "probability": 0.90771484375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "Add",
+              "probability": 0.90771484375,
+              "rank": 1
+            },
+            {
+              "token": "Combine",
+              "probability": 0.07452392578125,
+              "rank": 2
+            },
+            {
+              "token": "Addition",
+              "probability": 0.00946807861328125,
+              "rank": 3
+            },
+            {
+              "token": "Understand",
+              "probability": 0.00461578369140625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " the",
+          "token_id": 506,
+          "probability": 0.869140625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " the",
+              "probability": 0.869140625,
+              "rank": 1
+            },
+            {
+              "token": " them",
+              "probability": 0.1292724609375,
+              "rank": 2
+            },
+            {
+              "token": ":**",
+              "probability": 0.001171112060546875,
+              "rank": 3
+            },
+            {
+              "token": " together",
+              "probability": 0.00016105175018310547,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " digits",
+          "token_id": 26798,
+          "probability": 0.8974609375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " digits",
+              "probability": 0.8974609375,
+              "rank": 1
+            },
+            {
+              "token": " numbers",
+              "probability": 0.10223388671875,
+              "rank": 2
+            },
+            {
+              "token": " ones",
+              "probability": 0.00020051002502441406,
+              "rank": 3
+            },
+            {
+              "token": " top",
+              "probability": 8.89897346496582e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ":**",
+          "token_id": 53121,
+          "probability": 0.99755859375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ":**",
+              "probability": 0.99755859375,
+              "rank": 1
+            },
+            {
+              "token": " together",
+              "probability": 0.0022869110107421875,
+              "rank": 2
+            },
+            {
+              "token": " in",
+              "probability": 1.1265277862548828e-05,
+              "rank": 3
+            },
+            {
+              "token": " (",
+              "probability": 8.761882781982422e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "  ",
+          "token_id": 138,
+          "probability": 0.41162109375,
+          "rank": 2,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 0.5625,
+              "rank": 1
+            },
+            {
+              "token": "  ",
+              "probability": 0.41162109375,
+              "rank": 2
+            },
+            {
+              "token": " Two",
+              "probability": 0.00952911376953125,
+              "rank": 3
+            },
+            {
+              "token": " We",
+              "probability": 0.00494384765625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "We",
+          "token_id": 1882,
+          "probability": 0.004955291748046875,
+          "rank": 4,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 0.958984375,
+              "rank": 1
+            },
+            {
+              "token": "Two",
+              "probability": 0.0208587646484375,
+              "rank": 2
+            },
+            {
+              "token": "The",
+              "probability": 0.00925445556640625,
+              "rank": 3
+            },
+            {
+              "token": "We",
+              "probability": 0.004955291748046875,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " add",
+          "token_id": 1138,
+          "probability": 0.8330078125,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " add",
+              "probability": 0.8330078125,
+              "rank": 1
+            },
+            {
+              "token": " simply",
+              "probability": 0.104248046875,
+              "rank": 2
+            },
+            {
+              "token": " combine",
+              "probability": 0.0455322265625,
+              "rank": 3
+            },
+            {
+              "token": " just",
+              "probability": 0.006069183349609375,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " the",
+          "token_id": 506,
+          "probability": 0.9990234375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " the",
+              "probability": 0.9990234375,
+              "rank": 1
+            },
+            {
+              "token": " them",
+              "probability": 0.0004875659942626953,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 0.00023031234741210938,
+              "rank": 3
+            },
+            {
+              "token": " their",
+              "probability": 0.0001176595687866211,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " digits",
+          "token_id": 26798,
+          "probability": 0.76806640625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " digits",
+              "probability": 0.76806640625,
+              "rank": 1
+            },
+            {
+              "token": " ones",
+              "probability": 0.11773681640625,
+              "rank": 2
+            },
+            {
+              "token": " numbers",
+              "probability": 0.0946044921875,
+              "rank": 3
+            },
+            {
+              "token": " top",
+              "probability": 0.005420684814453125,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " together",
+          "token_id": 3075,
+          "probability": 0.98388671875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " together",
+              "probability": 0.98388671875,
+              "rank": 1
+            },
+            {
+              "token": " of",
+              "probability": 0.00878143310546875,
+              "rank": 2
+            },
+            {
+              "token": ":",
+              "probability": 0.0064239501953125,
+              "rank": 3
+            },
+            {
+              "token": " in",
+              "probability": 0.0008559226989746094,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ":",
+          "token_id": 236787,
+          "probability": 0.98876953125,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ":",
+              "probability": 0.98876953125,
+              "rank": 1
+            },
+            {
+              "token": ".",
+              "probability": 0.00896453857421875,
+              "rank": 2
+            },
+            {
+              "token": " –",
+              "probability": 0.001850128173828125,
+              "rank": 3
+            },
+            {
+              "token": ",",
+              "probability": 0.00029277801513671875,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "  ",
+              "probability": 0.000110626220703125,
+              "rank": 2
+            },
+            {
+              "token": " Two",
+              "probability": 1.430511474609375e-05,
+              "rank": 3
+            },
+            {
+              "token": " \"",
+              "probability": 2.9206275939941406e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "1",
+              "probability": 1.7881393432617188e-07,
+              "rank": 2
+            },
+            {
+              "token": "0",
+              "probability": 5.960464477539063e-08,
+              "rank": 3
+            },
+            {
+              "token": "3",
+              "probability": 5.960464477539063e-08,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " +",
+          "token_id": 900,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " +",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": " and",
+              "probability": 2.390146255493164e-05,
+              "rank": 2
+            },
+            {
+              "token": " (",
+              "probability": 8.52346420288086e-06,
+              "rank": 3
+            },
+            {
+              "token": "+",
+              "probability": 3.4570693969726562e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "0",
+              "probability": 4.172325134277344e-07,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " =",
+          "token_id": 578,
+          "probability": 0.99951171875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " =",
+              "probability": 0.99951171875,
+              "rank": 1
+            },
+            {
+              "token": ".",
+              "probability": 0.00036263465881347656,
+              "rank": 2
+            },
+            {
+              "token": "  ",
+              "probability": 0.00012731552124023438,
+              "rank": 3
+            },
+            {
+              "token": "\n",
+              "probability": 1.615285873413086e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": " ?",
+              "probability": 1.1920928955078125e-07,
+              "rank": 2
+            },
+            {
+              "token": "  ",
+              "probability": 1.1920928955078125e-07,
+              "rank": 3
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "4",
+          "token_id": 236812,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "4",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "2",
+              "probability": 1.7881393432617188e-07,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "\n",
+          "token_id": 107,
+          "probability": 0.8466796875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n",
+              "probability": 0.8466796875,
+              "rank": 1
+            },
+            {
+              "token": ".",
+              "probability": 0.15185546875,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 0.0011234283447265625,
+              "rank": 3
+            },
+            {
+              "token": "\n\n",
+              "probability": 9.518861770629883e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "3",
+          "token_id": 236800,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "3",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "Therefore",
+              "probability": 2.282857894897461e-05,
+              "rank": 2
+            },
+            {
+              "token": "   ",
+              "probability": 1.4066696166992188e-05,
+              "rank": 3
+            },
+            {
+              "token": "    ",
+              "probability": 1.0132789611816406e-06,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ".",
+          "token_id": 236761,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ".",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": ".**",
+              "probability": 5.960464477539063e-08,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " **",
+          "token_id": 5213,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " **",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "  ",
+              "probability": 2.3245811462402344e-06,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 5.960464477539063e-08,
+              "rank": 3
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "Write",
+          "token_id": 6974,
+          "probability": 0.97412109375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "Write",
+              "probability": 0.97412109375,
+              "rank": 1
+            },
+            {
+              "token": "Recogn",
+              "probability": 0.01116180419921875,
+              "rank": 2
+            },
+            {
+              "token": "The",
+              "probability": 0.007671356201171875,
+              "rank": 3
+            },
+            {
+              "token": "Express",
+              "probability": 0.0023403167724609375,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " the",
+          "token_id": 506,
+          "probability": 0.99755859375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " the",
+              "probability": 0.99755859375,
+              "rank": 1
+            },
+            {
+              "token": " down",
+              "probability": 0.0020503997802734375,
+              "rank": 2
+            },
+            {
+              "token": " it",
+              "probability": 0.00027298927307128906,
+              "rank": 3
+            },
+            {
+              "token": " your",
+              "probability": 7.826089859008789e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " answer",
+          "token_id": 3890,
+          "probability": 0.87841796875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " answer",
+              "probability": 0.87841796875,
+              "rank": 1
+            },
+            {
+              "token": " result",
+              "probability": 0.1207275390625,
+              "rank": 2
+            },
+            {
+              "token": " number",
+              "probability": 0.0003609657287597656,
+              "rank": 3
+            },
+            {
+              "token": " final",
+              "probability": 0.0003497600555419922,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ":**",
+          "token_id": 53121,
+          "probability": 0.9990234375,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ":**",
+              "probability": 0.9990234375,
+              "rank": 1
+            },
+            {
+              "token": " as",
+              "probability": 0.0006260871887207031,
+              "rank": 2
+            },
+            {
+              "token": " with",
+              "probability": 0.00024127960205078125,
+              "rank": 3
+            },
+            {
+              "token": " in",
+              "probability": 8.338689804077148e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "  ",
+          "token_id": 138,
+          "probability": 0.327880859375,
+          "rank": 2,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 0.33837890625,
+              "rank": 1
+            },
+            {
+              "token": "  ",
+              "probability": 0.327880859375,
+              "rank": 2
+            },
+            {
+              "token": " Therefore",
+              "probability": 0.30322265625,
+              "rank": 3
+            },
+            {
+              "token": " The",
+              "probability": 0.0241241455078125,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "4",
+          "token_id": 236812,
+          "probability": 0.43994140625,
+          "rank": 2,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "Therefore",
+              "probability": 0.49853515625,
+              "rank": 1
+            },
+            {
+              "token": "4",
+              "probability": 0.43994140625,
+              "rank": 2
+            },
+            {
+              "token": "The",
+              "probability": 0.05682373046875,
+              "rank": 3
+            },
+            {
+              "token": "So",
+              "probability": 0.0022373199462890625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ".",
+          "token_id": 236761,
+          "probability": 0.009490966796875,
+          "rank": 3,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n\n",
+              "probability": 0.79052734375,
+              "rank": 1
+            },
+            {
+              "token": " is",
+              "probability": 0.187744140625,
+              "rank": 2
+            },
+            {
+              "token": ".",
+              "probability": 0.009490966796875,
+              "rank": 3
+            },
+            {
+              "token": " ",
+              "probability": 0.005756378173828125,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "\n\n",
+          "token_id": 108,
+          "probability": 0.9775390625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n\n",
+              "probability": 0.9775390625,
+              "rank": 1
+            },
+            {
+              "token": " ",
+              "probability": 0.0199737548828125,
+              "rank": 2
+            },
+            {
+              "token": "  ",
+              "probability": 0.0017728805541992188,
+              "rank": 3
+            },
+            {
+              "token": "\n",
+              "probability": 0.000354766845703125,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "Therefore",
+          "token_id": 20416,
+          "probability": 0.9716796875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "Therefore",
+              "probability": 0.9716796875,
+              "rank": 1
+            },
+            {
+              "token": "So",
+              "probability": 0.0284423828125,
+              "rank": 2
+            },
+            {
+              "token": "**",
+              "probability": 1.895427703857422e-05,
+              "rank": 3
+            },
+            {
+              "token": "<end_of_turn>",
+              "probability": 1.4781951904296875e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ",",
+          "token_id": 236764,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ",",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": ":",
+              "probability": 4.76837158203125e-07,
+              "rank": 2
+            },
+            {
+              "token": " ",
+              "probability": 2.384185791015625e-07,
+              "rank": 3
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": " **",
+              "probability": 1.519918441772461e-05,
+              "rank": 2
+            },
+            {
+              "token": "  ",
+              "probability": 6.973743438720703e-06,
+              "rank": 3
+            },
+            {
+              "token": " the",
+              "probability": 8.344650268554688e-07,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " +",
+          "token_id": 900,
+          "probability": 0.95654296875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " +",
+              "probability": 0.95654296875,
+              "rank": 1
+            },
+            {
+              "token": "+",
+              "probability": 0.043365478515625,
+              "rank": 2
+            },
+            {
+              "token": " plus",
+              "probability": 7.861852645874023e-05,
+              "rank": 3
+            },
+            {
+              "token": " and",
+              "probability": 5.960464477539063e-08,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "2",
+          "token_id": 236778,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "2",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "<bos>",
+              "probability": 0,
+              "rank": 2
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 3
+            },
+            {
+              "token": "<eos>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " =",
+          "token_id": 578,
+          "probability": 0.8388671875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " =",
+              "probability": 0.8388671875,
+              "rank": 1
+            },
+            {
+              "token": " equals",
+              "probability": 0.1600341796875,
+              "rank": 2
+            },
+            {
+              "token": " is",
+              "probability": 0.0012607574462890625,
+              "rank": 3
+            },
+            {
+              "token": "=",
+              "probability": 1.8537044525146484e-05,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": " ",
+          "token_id": 236743,
+          "probability": 0.99951171875,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": " ",
+              "probability": 0.99951171875,
+              "rank": 1
+            },
+            {
+              "token": " **",
+              "probability": 0.0003407001495361328,
+              "rank": 2
+            },
+            {
+              "token": "  ",
+              "probability": 3.5762786865234375e-07,
+              "rank": 3
+            },
+            {
+              "token": " $\\",
+              "probability": 1.7881393432617188e-07,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "6",
+          "token_id": 236825,
+          "probability": 1,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "6",
+              "probability": 1,
+              "rank": 1
+            },
+            {
+              "token": "4",
+              "probability": 0.0001442432403564453,
+              "rank": 2
+            },
+            {
+              "token": "2",
+              "probability": 1.7881393432617188e-07,
+              "rank": 3
+            },
+            {
+              "token": "<pad>",
+              "probability": 0,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": ".",
+          "token_id": 236761,
+          "probability": 0.9140625,
+          "rank": 1,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": ".",
+              "probability": 0.9140625,
+              "rank": 1
+            },
+            {
+              "token": "\n",
+              "probability": 0.05841064453125,
+              "rank": 2
+            },
+            {
+              "token": "\n\n",
+              "probability": 0.017547607421875,
+              "rank": 3
+            },
+            {
+              "token": " ",
+              "probability": 0.004367828369140625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        },
+        {
+          "token": "<end_of_turn>",
+          "token_id": 106,
+          "probability": 0.2125244140625,
+          "rank": 3,
+          "vocab_size": 262144,
+          "top_alternatives": [
+            {
+              "token": "\n\n",
+              "probability": 0.304443359375,
+              "rank": 1
+            },
+            {
+              "token": "\n",
+              "probability": 0.24462890625,
+              "rank": 2
+            },
+            {
+              "token": "<end_of_turn>",
+              "probability": 0.2125244140625,
+              "rank": 3
+            },
+            {
+              "token": " ",
+              "probability": 0.2125244140625,
+              "rank": 4
+            }
+          ],
+          "model": "google/gemma-3-1b-it",
+          "temperature": 1,
+          "is_prefill_token": false,
+          "is_prompt_token": false,
+          "is_injected": false,
+          "rule_applied": null
+        }
+      ],
+      "model": "google/gemma-3-1b-it",
+      "temperature": 1,
+      "timestamp": 1763845564028
+    }
+  },
+  "currentLeafId": "3e54369e-0899-42e2-9d2f-d5efa16a0aa3",
+  "model": "google/gemma-3-1b-it",
+  "systemPrompt": ""
+}
