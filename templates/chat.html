@@ -1817,8 +1817,14 @@
                 viewSelectMenu.value = view;
             }
             
-            // Save to localStorage
+            // Save to localStorage (global default)
             localStorage.setItem('tokenlens_current_view', view);
+            
+            // Save to current conversation
+            if (currentConversationId && conversations[currentConversationId]) {
+                conversations[currentConversationId].viewMode = view;
+                saveConversations();
+            }
             
             const appContainer = document.querySelector('.app-container');
             if (appContainer) {
@@ -3885,6 +3891,7 @@
             conversation.currentLeafId = currentLeafId;
             conversation.model = document.getElementById('model-select').value;
             conversation.systemPrompt = currentSystemPrompt;
+            conversation.viewMode = currentView;  // Save current view mode
             
             // Also save linear messages for backwards compatibility or preview
             // conversation.messages = getActiveThread(); 
@@ -3993,6 +4000,16 @@
                 systemPromptInput.value = currentSystemPrompt;
             }
             updateSystemPromptBubble();
+            
+            // Restore view mode for this conversation
+            if (conversation.viewMode) {
+                const viewSelect = document.getElementById('view-select');
+                const viewSelectMenu = document.getElementById('view-select-menu');
+                if (viewSelect) viewSelect.value = conversation.viewMode;
+                if (viewSelectMenu) viewSelectMenu.value = conversation.viewMode;
+                currentView = conversation.viewMode;
+                switchView();
+            }
             
             // Render messages
             renderActiveThread();

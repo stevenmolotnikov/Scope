@@ -3039,5 +3039,6 @@
   },
   "currentLeafId": "3e54369e-0899-42e2-9d2f-d5efa16a0aa3",
   "model": "google/gemma-3-1b-it",
-  "systemPrompt": ""
+  "systemPrompt": "",
+  "viewMode": "token"
 }
