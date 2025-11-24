@@ -251,7 +251,9 @@
                             class="inspector-inject-input"
                             rows="3"
                             placeholder="Type text to inject at this position..."
+                            oninput="updateInjectPreview()"
                         ></textarea>
+                        <div id="inject-preview" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; font-family: 'Courier New', monospace; white-space: pre-wrap; min-height: 1.2em;"></div>
                         <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Text will be inserted here and generation will continue from this point.</p>
             </div>
                     
@@ -1335,6 +1337,8 @@
             } 
             // Check if token is only spaces
             else if (token === ' ' || /^\s+$/.test(token)) {
+                const spaceCount = token.length;
+                displayToken = spaceCount === 1 ? '␣' : `␣×${spaceCount}`;
                 tokenSpan.classList.add('space-token');
                 isWhitespace = true;
             }
@@ -2721,6 +2725,8 @@
             const rank = tokenElement.dataset.rank;
             const vocabSize = tokenElement.dataset.vocabSize;
             const topAlternatives = tokenElement.dataset.topAlternatives ? JSON.parse(tokenElement.dataset.topAlternatives) : [];
+            const modelName = tokenElement.dataset.model || 'Unknown';
+            const temperature = parseFloat(tokenElement.dataset.temperature) || 1.0;
             
             // Check if we're in Diff view and have DiffLens data
             const inDiffView = currentView === 'diff';
@@ -2964,6 +2970,7 @@
                 alternativesDiv.appendChild(altComparisonDiv);
             } else {
                 // Token view mode: Show normal view
+                
                 const tokenRow = document.createElement('div');
                 tokenRow.style.cssText = 'display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;';
                 const tokenSpan = document.createElement('span');
@@ -2986,6 +2993,15 @@
                 
                 currentTokenDiv.appendChild(tokenRow);
                 currentTokenDiv.appendChild(statsRow);
+                
+                // Generation settings footer (small, below stats)
+                const settingsRow = document.createElement('div');
+                settingsRow.style.cssText = 'display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-secondary); font-family: var(--font-mono); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);';
+                settingsRow.innerHTML = `
+                    <span>${modelName}</span>
+                    <span>T=${temperature.toFixed(1)}</span>
+                `;
+                currentTokenDiv.appendChild(settingsRow);
                 
                 // Display alternatives
                 const alternativesDiv = document.getElementById('inspector-alternatives');
@@ -3147,6 +3163,7 @@
             const injectInput = document.getElementById('inspector-inject-input');
             if (injectInput) {
                 injectInput.value = token;
+                updateInjectPreview();
                 injectInput.focus();
             }
         }
@@ -3577,6 +3594,37 @@
             }
         }
         
+        function updateInjectPreview() {
+            const injectInput = document.getElementById('inspector-inject-input');
+            const previewDiv = document.getElementById('inject-preview');
+            
+            if (!injectInput || !previewDiv) return;
+            
+            const text = injectInput.value;
+            
+            if (text === '') {
+                previewDiv.textContent = '';
+                return;
+            }
+            
+            // Convert special characters to symbols
+            let preview = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (char === ' ') {
+                    preview += '␣';
+                } else if (char === '\n') {
+                    preview += '↵\n';
+                } else if (char === '\t') {
+                    preview += '→';
+                } else {
+                    preview += char;
+                }
+            }
+            
+            previewDiv.textContent = preview;
+        }
+        
         async function injectAndRegenerate() {
             if (!selectedTokenElement) {
                 alert('Please select a token first');
@@ -3584,9 +3632,9 @@
             }
             
             const injectInput = document.getElementById('inspector-inject-input');
-            const injectedText = injectInput ? injectInput.value.trim() : '';
+            const injectedText = injectInput ? injectInput.value : '';
             
-            if (!injectedText) {
+            if (injectedText === '') {
                 alert('Please enter text to inject');
                 return;
             }
@@ -3644,9 +3692,10 @@
             // Close inspector sidebar and persist state
             setInspectorCollapsedState(true);
             
-            // Clear the inject input
+            // Clear the inject input and preview
             if (injectInput) {
                 injectInput.value = '';
+                updateInjectPreview();
             }
             
             // Trigger generation with prefill

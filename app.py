@@ -1012,8 +1012,8 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         with torch.no_grad():
             outputs = model(generated_ids)
             logits = outputs.logits[:, -1, :]
-        del outputs
-        
+            del outputs
+            
         if temperature == 0 or temperature < 0.01:
             probabilities = torch.softmax(logits, dim=-1)
         else:
