@@ -1918,6 +1918,11 @@ body {
     color: var(--text-color);
     font-family: var(--font-mono);
     font-size: 0.8125rem;
+    min-height: 32px;
+    max-height: 120px;
+    resize: vertical;
+    line-height: 1.4;
+    field-sizing: content;
 }
 
 .prefill-input-field:focus {
