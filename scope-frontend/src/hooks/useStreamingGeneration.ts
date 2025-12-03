@@ -72,6 +72,7 @@ export function useStreamingGeneration() {
           if (!diffData) return token;
 
           const diff: TokenDiffData = {
+            analysis_model: response.analysis_model,
             analysis_prob: diffData.analysis_prob,
             analysis_rank: diffData.analysis_rank,
             analysis_top_alternatives: diffData.analysis_top_alternatives,

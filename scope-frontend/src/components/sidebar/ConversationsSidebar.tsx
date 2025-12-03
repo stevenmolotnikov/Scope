@@ -4,6 +4,14 @@ import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useUIStore } from '@/stores/uiStore';
+import { Button } from '@/components/ui/Button';
+import { cn, formatModelName } from '@/lib/utils';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Plus, 
+  Trash2 
+} from 'lucide-react';
 
 export function ConversationsSidebar() {
   const router = useRouter();
@@ -59,169 +67,73 @@ export function ConversationsSidebar() {
   // Collapsed state - just show toggle button
   if (leftSidebarCollapsed) {
     return (
-      <div style={{
-        width: '48px',
-        flexShrink: 0,
-        background: '#fff',
-        borderRight: '1px solid #e5e5e5',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingTop: '16px',
-      }}>
-        <button
+      <div className="w-[48px] shrink-0 bg-background border-r border-border flex flex-col items-center pt-4">
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleLeftSidebar}
-          style={{
-            width: '32px',
-            height: '32px',
-            border: '1px solid #e5e5e5',
-            borderRadius: '6px',
-            background: '#fff',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#666',
-          }}
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
           title="Expand sidebar"
         >
-          ▶
-        </button>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
     );
   }
 
   return (
-    <div style={{
-      width: '260px',
-      flexShrink: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      background: '#fff',
-      borderRight: '1px solid #e5e5e5',
-      height: '100%',
-    }}>
+    <div className="w-[260px] shrink-0 flex flex-col bg-background border-r border-border h-full">
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px 16px 12px 16px',
-        borderBottom: '1px solid #e5e5e5',
-      }}>
-        <button
+      <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleLeftSidebar}
-          style={{
-            width: '28px',
-            height: '28px',
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#666',
-            borderRadius: '4px',
-          }}
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
           title="Collapse sidebar"
         >
-          ◀
-        </button>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* New Chat Button */}
-      <div style={{ padding: '16px' }}>
-        <button
+      <div className="p-4">
+        <Button
           onClick={handleNewChat}
-          style={{
-            width: '100%',
-            padding: '10px 16px',
-            background: '#000',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: 500,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-          }}
+          className="w-full gap-2"
         >
-          <span style={{ fontSize: '16px' }}>+</span>
+          <Plus className="h-4 w-4" />
           New chat
-        </button>
+        </Button>
       </div>
 
       {/* Conversations List */}
-      <div style={{
-        flex: 1,
-        overflow: 'auto',
-        padding: '0 12px 16px 12px',
-      }}>
+      <div className="flex-1 overflow-auto px-3 pb-4">
         {sortedConversations.map((conv) => (
           <div
             key={conv.id}
             onClick={() => handleSelectConversation(conv.id)}
-            style={{
-              padding: '12px 12px',
-              marginBottom: '4px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              background: conv.id === currentConversationId ? '#f0f0f0' : 'transparent',
-              border: conv.id === currentConversationId ? '1px solid #e0e0e0' : '1px solid transparent',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '8px',
-              fontSize: '14px',
-              transition: 'background 0.1s',
-            }}
-            onMouseOver={(e) => {
-              if (conv.id !== currentConversationId) {
-                e.currentTarget.style.background = '#f5f5f5';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (conv.id !== currentConversationId) {
-                e.currentTarget.style.background = 'transparent';
-              }
-            }}
+            className={cn(
+              "group px-3 py-3 mb-1 rounded-md cursor-pointer flex items-center justify-between gap-2 text-sm transition-colors border",
+              conv.id === currentConversationId
+                ? "bg-accent/50 border-border font-medium text-foreground"
+                : "bg-transparent border-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            )}
           >
-            <span style={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              flex: 1,
-              fontWeight: conv.id === currentConversationId ? 500 : 400,
-              color: '#333',
-            }}>
-              {conv.title || 'New Chat'}
-            </span>
+            <div className="flex flex-col flex-1 min-w-0 gap-0.5">
+              <span className="truncate">
+                {conv.title || 'New Chat'}
+              </span>
+              <span className="text-[10px] text-muted-foreground/70 truncate font-mono">
+                {formatModelName(conv.model)}
+              </span>
+            </div>
             <button
               onClick={(e) => handleDeleteConversation(conv.id, e)}
-              style={{
-                padding: '4px 6px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#999',
-                borderRadius: '4px',
-                opacity: 0.5,
-                fontSize: '12px',
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.color = '#c00';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.opacity = '0.5';
-                e.currentTarget.style.color = '#999';
-              }}
+              className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
               title="Delete"
             >
-              ✕
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
         ))}

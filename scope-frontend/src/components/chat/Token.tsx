@@ -9,8 +9,10 @@ import {
   getColorForRank,
   formatProbability,
   cleanTokenizerArtifacts,
+  formatModelName,
 } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
+import { useConversationStore } from '@/stores/conversationStore';
 import type { Token as TokenType, SelectedTokenInfo, TokenAlternative } from '@/types';
 
 interface TokenProps {
@@ -45,6 +47,9 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
     selectToken,
     setHoveredToken,
   } = useUIStore();
+
+  const { getCurrentConversation } = useConversationStore();
+  const conversation = getCurrentConversation();
 
   const cleanToken = cleanTokenizerArtifacts(token.token);
   const tokenClass = determineTokenClass(token.token);
@@ -218,116 +223,76 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
           }}
         >
           <div 
-            className="font-mono"
-            style={{
-              background: '#fff',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              padding: '8px 12px',
-              minWidth: '180px',
-              maxWidth: '280px',
-              fontSize: '12px',
-            }}
+            className="font-mono bg-popover border border-border rounded-md shadow-lg p-2 min-w-[200px] max-w-[320px] text-xs"
           >
             {/* Token header */}
-            <div style={{
-              marginBottom: '6px',
-              paddingBottom: '6px',
-              borderBottom: '1px solid #eee',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <span style={{ fontWeight: 600 }}>"{tooltipDisplay}"</span>
-              <span style={{ color: '#666' }}>
-                {formatProbability(token.probability)}
-              </span>
+            <div className="mb-1.5 pb-1.5 border-b border-border flex justify-between items-center">
+              <span className="font-semibold">"{tooltipDisplay}"</span>
+              {/* Show diff badge in header for diff mode */}
+              {viewMode === 'diff' && token.diff_data ? (
+                <span className="font-semibold" style={{
+                  color: token.diff_data.prob_diff > 0 ? 'var(--success, #16a34a)' : token.diff_data.prob_diff < 0 ? 'var(--destructive, #dc2626)' : 'var(--muted-foreground)'
+                }}>
+                  {token.diff_data.prob_diff > 0 ? '+' : ''}{token.diff_data.prob_diff.toFixed(1)}%
+                </span>
+              ) : (
+                <span className="text-muted-foreground">
+                  {formatProbability(token.probability)}
+                </span>
+              )}
             </div>
 
-            {/* Diff info when in diff mode or has diff data */}
-            {token.diff_data && (
-              <div style={{
-                marginBottom: '6px',
-                paddingBottom: '6px',
-                borderBottom: '1px solid #eee',
-                fontSize: '11px',
-              }}>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  color: '#666',
-                  marginBottom: '2px',
-                }}>
-                  <span>Gen Model:</span>
-                  <span>{formatProbability(token.probability)}</span>
-                </div>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  color: '#666',
-                  marginBottom: '2px',
-                }}>
-                  <span>Analysis Model:</span>
-                  <span>{formatProbability(token.diff_data.analysis_prob)}</span>
-                </div>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  fontWeight: 600,
-                  color: token.diff_data.prob_diff > 0 ? '#16a34a' : token.diff_data.prob_diff < 0 ? '#dc2626' : '#666',
-                }}>
-                  <span>Diff:</span>
-                  <span>{token.diff_data.prob_diff > 0 ? '+' : ''}{token.diff_data.prob_diff.toFixed(1)}%</span>
-                </div>
-              </div>
-            )}
-
-            {/* Top alternatives - show both models if diff data exists */}
-            {token.diff_data ? (
-              <div style={{ fontSize: '11px' }}>
-                {/* Gen model alternatives */}
-                <div style={{ color: '#666', marginBottom: '6px' }}>
-                  <div style={{ fontWeight: 600, marginBottom: '4px', color: '#333' }}>Gen Model:</div>
+            {/* Diff view - two column layout with sections */}
+            {viewMode === 'diff' && token.diff_data ? (
+              <div className="text-[10px] grid grid-cols-2 gap-2">
+                {/* Generation section */}
+                <div>
+                  <div className="font-semibold text-[9px] uppercase tracking-wider text-muted-foreground mb-1">
+                    {formatModelName(conversation?.model || '')}
+                  </div>
+                  <div className="text-muted-foreground mb-1">
+                    {formatProbability(token.probability)}
+                  </div>
                   {token.top_alternatives.slice(0, 3).map((alt: TokenAlternative, idx: number) => (
-                    <div key={idx} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      padding: '2px 0',
-                    }}>
-                      <span>#{alt.rank} "{formatTokenForDisplay(alt.token)}"</span>
+                    <div key={idx} className="flex justify-between py-0.5 text-muted-foreground">
+                      <span className="truncate mr-1">#{alt.rank} "{formatTokenForDisplay(alt.token)}"</span>
                       <span>{formatProbability(alt.probability)}</span>
                     </div>
                   ))}
                 </div>
-                {/* Analysis model alternatives */}
-                <div style={{ color: '#666', paddingTop: '6px', borderTop: '1px solid #eee' }}>
-                  <div style={{ fontWeight: 600, marginBottom: '4px', color: '#333' }}>Analysis Model:</div>
+                {/* Analysis section */}
+                <div className="border-l border-border pl-2">
+                  <div className="font-semibold text-[9px] uppercase tracking-wider text-muted-foreground mb-1">
+                    {formatModelName(token.diff_data.analysis_model || '')}
+                  </div>
+                  <div className="text-muted-foreground mb-1">
+                    {formatProbability(token.diff_data.analysis_prob)}
+                  </div>
                   {token.diff_data.analysis_top_alternatives.slice(0, 3).map((alt: TokenAlternative, idx: number) => (
-                    <div key={idx} style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between',
-                      padding: '2px 0',
-                    }}>
-                      <span>#{alt.rank} "{formatTokenForDisplay(alt.token)}"</span>
+                    <div key={idx} className="flex justify-between py-0.5 text-muted-foreground">
+                      <span className="truncate mr-1">#{alt.rank} "{formatTokenForDisplay(alt.token)}"</span>
                       <span>{formatProbability(alt.probability)}</span>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div style={{ color: '#666', fontSize: '11px' }}>
-                {token.top_alternatives.slice(0, 3).map((alt: TokenAlternative, idx: number) => (
-                  <div key={idx} style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    padding: '2px 0',
-                  }}>
-                    <span>#{alt.rank} "{formatTokenForDisplay(alt.token)}"</span>
-                    <span>{formatProbability(alt.probability)}</span>
+              /* Standard view */
+              <>
+                {conversation && (
+                  <div className="text-[10px] text-muted-foreground mb-1">
+                    {formatModelName(conversation.model)}
                   </div>
-                ))}
-              </div>
+                )}
+                <div className="text-muted-foreground text-[11px]">
+                  {token.top_alternatives.slice(0, 3).map((alt: TokenAlternative, idx: number) => (
+                    <div key={idx} className="flex justify-between py-0.5">
+                      <span>#{alt.rank} "{formatTokenForDisplay(alt.token)}"</span>
+                      <span>{formatProbability(alt.probability)}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>,

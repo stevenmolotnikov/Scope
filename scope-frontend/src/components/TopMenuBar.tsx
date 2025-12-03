@@ -4,6 +4,8 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useUIStore } from '@/stores/uiStore';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Microscope } from 'lucide-react';
 
 type MenuId = 'file' | 'view' | 'generation' | 'analysis' | null;
 
@@ -92,22 +94,22 @@ export function TopMenuBar() {
     },
     { label: '', onClick: () => {}, divider: true },
     {
-      label: 'Token View',
+      label: 'Perplexity Lens',
       onClick: () => setViewMode('token'),
       radio: true,
       checked: viewMode === 'token',
     },
     {
-      label: 'Text View',
-      onClick: () => setViewMode('text'),
-      radio: true,
-      checked: viewMode === 'text',
-    },
-    {
-      label: 'Diff View',
+      label: 'Diff Lens',
       onClick: () => setViewMode('diff'),
       radio: true,
       checked: viewMode === 'diff',
+    },
+    {
+      label: 'Text Lens',
+      onClick: () => setViewMode('text'),
+      radio: true,
+      checked: viewMode === 'text',
     },
     { label: '', onClick: () => {}, divider: true },
     {
@@ -162,136 +164,67 @@ export function TopMenuBar() {
   return (
     <div
       ref={menuBarRef}
-      style={{
-        height: '40px',
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 12px',
-        background: '#fff',
-        borderBottom: '1px solid #e5e5e5',
-        gap: '2px',
-        position: 'relative',
-        zIndex: 100,
-        flexShrink: 0,
-      }}
+      className="h-10 flex items-center px-3 bg-background border-b border-border gap-0.5 relative z-10 shrink-0"
     >
       {/* Logo */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-        marginRight: '16px',
-        paddingRight: '16px',
-        borderRight: '1px solid #e5e5e5',
-      }}>
-        <span style={{
-          fontWeight: 700,
-          fontSize: '14px',
-          letterSpacing: '-0.01em',
-          color: '#000',
-        }}>
-          Scope
-        </span>
-        <span style={{
-          fontSize: '11px',
-          color: '#999',
-          fontWeight: 400,
-        }}>
-          by NDIF
-        </span>
+      <div className="flex items-center gap-2 mr-4 pr-4 border-r border-border">
+        <Microscope size={18} className="text-foreground" />
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-semibold text-sm tracking-tight text-foreground">
+            Scope
+          </span>
+          <span className="text-[10px] text-muted-foreground/70 font-normal">
+            by NDIF
+          </span>
+        </div>
       </div>
 
       {/* Menu Buttons */}
       {menus.map((menu) => (
-        <div key={menu.id} style={{ position: 'relative' }}>
+        <div key={menu.id} className="relative">
           <button
             onClick={() => toggleMenu(menu.id)}
             onMouseEnter={() => openMenu && setOpenMenu(menu.id)}
-            style={{
-              padding: '4px 10px',
-              background: openMenu === menu.id ? '#f0f0f0' : 'transparent',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 400,
-              color: '#333',
-            }}
+            className={cn(
+              "px-2.5 py-1 text-[13px] font-normal rounded cursor-pointer transition-colors border-none",
+              openMenu === menu.id
+                ? "bg-accent text-accent-foreground"
+                : "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground"
+            )}
           >
             {menu.label}
           </button>
 
           {/* Dropdown */}
           {openMenu === menu.id && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                marginTop: '2px',
-                background: '#fff',
-                border: '1px solid #e0e0e0',
-                borderRadius: '6px',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-                minWidth: '180px',
-                padding: '4px 0',
-                zIndex: 1000,
-              }}
-            >
+            <div className="absolute top-full left-0 mt-0.5 bg-popover border border-border rounded-md shadow-lg min-w-[180px] py-1 z-50">
               {menu.items.map((item, idx) =>
                 item.divider ? (
                   <div
                     key={idx}
-                    style={{
-                      height: '1px',
-                      background: '#eee',
-                      margin: '4px 0',
-                    }}
+                    className="h-px bg-border my-1"
                   />
                 ) : (
                   <button
                     key={idx}
                     onClick={() => handleMenuItemClick(item.onClick)}
                     disabled={item.disabled}
-                    style={{
-                      width: '100%',
-                      padding: '6px 12px 6px 28px',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: item.disabled ? 'default' : 'pointer',
-                      fontSize: '13px',
-                      textAlign: 'left',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      color: item.disabled ? '#999' : '#333',
-                      position: 'relative',
-                    }}
-                    onMouseOver={(e) => {
-                      if (!item.disabled) e.currentTarget.style.background = '#f5f5f5';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = 'transparent';
-                    }}
+                    className={cn(
+                      "w-full px-3 py-1.5 text-left text-[13px] flex justify-between items-center relative pl-7 border-none bg-transparent cursor-pointer transition-colors",
+                      item.disabled
+                        ? "opacity-50 pointer-events-none text-muted-foreground"
+                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                    )}
                   >
                     {/* Check/Radio indicator */}
                     {(item.checked !== undefined) && (
-                      <span style={{
-                        position: 'absolute',
-                        left: '8px',
-                        fontSize: '12px',
-                        color: '#333',
-                      }}>
+                      <span className="absolute left-2 text-xs text-foreground">
                         {item.checked ? (item.radio ? '●' : '✓') : ''}
                       </span>
                     )}
                     <span>{item.label}</span>
                     {item.shortcut && (
-                      <span style={{ 
-                        color: '#999', 
-                        fontSize: '11px',
-                        marginLeft: '20px',
-                      }}>
+                      <span className="text-muted-foreground text-[11px] ml-5">
                         {item.shortcut}
                       </span>
                     )}
@@ -304,94 +237,49 @@ export function TopMenuBar() {
       ))}
 
       {/* Spacer */}
-      <div style={{ flex: 1 }} />
+      <div className="flex-1" />
 
       {/* Right side controls */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-      }}>
+      <div className="flex items-center gap-2">
         {/* View mode pill */}
-        <div style={{
-          display: 'flex',
-          background: '#f5f5f5',
-          borderRadius: '6px',
-          padding: '2px',
-          gap: '2px',
-        }}>
+        <div className="flex items-center bg-muted rounded-md p-0.5 pl-2 gap-1">
+          <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wide pr-1.5 border-r border-border/50 mr-0.5">
+            Lenses
+          </span>
           <button
             onClick={() => setViewMode('token')}
-            style={{
-              padding: '4px 10px',
-              fontSize: '12px',
-              fontWeight: 500,
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              background: viewMode === 'token' ? '#fff' : 'transparent',
-              color: viewMode === 'token' ? '#000' : '#666',
-              boxShadow: viewMode === 'token' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-            }}
+            className={cn(
+              "px-2.5 py-1 text-xs font-medium border-none rounded-sm cursor-pointer transition-all",
+              viewMode === 'token'
+                ? "bg-background text-foreground shadow-sm"
+                : "bg-transparent text-muted-foreground hover:text-foreground"
+            )}
           >
-            Tokens
-          </button>
-          <button
-            onClick={() => setViewMode('text')}
-            style={{
-              padding: '4px 10px',
-              fontSize: '12px',
-              fontWeight: 500,
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              background: viewMode === 'text' ? '#fff' : 'transparent',
-              color: viewMode === 'text' ? '#000' : '#666',
-              boxShadow: viewMode === 'text' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-            }}
-          >
-            Text
+            Perplexity
           </button>
           <button
             onClick={() => setViewMode('diff')}
-            style={{
-              padding: '4px 10px',
-              fontSize: '12px',
-              fontWeight: 500,
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              background: viewMode === 'diff' ? '#fff' : 'transparent',
-              color: viewMode === 'diff' ? '#000' : '#666',
-              boxShadow: viewMode === 'diff' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-            }}
+            className={cn(
+              "px-2.5 py-1 text-xs font-medium border-none rounded-sm cursor-pointer transition-all",
+              viewMode === 'diff'
+                ? "bg-background text-foreground shadow-sm"
+                : "bg-transparent text-muted-foreground hover:text-foreground"
+            )}
           >
             Diff
           </button>
+          <button
+            onClick={() => setViewMode('text')}
+            className={cn(
+              "px-2.5 py-1 text-xs font-medium border-none rounded-sm cursor-pointer transition-all",
+              viewMode === 'text'
+                ? "bg-background text-foreground shadow-sm"
+                : "bg-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Text
+          </button>
         </div>
-
-        {/* Inspector toggle */}
-        <button
-          onClick={() => toggleRightSidebar()}
-          title="Toggle Inspector"
-          style={{
-            width: '28px',
-            height: '28px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: !rightSidebarCollapsed ? '#f0f0f0' : 'transparent',
-            border: '1px solid #e5e5e5',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            color: '#666',
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
-            <path d="M10 3V13" stroke="currentColor" strokeWidth="1.2" />
-          </svg>
-        </button>
       </div>
     </div>
   );

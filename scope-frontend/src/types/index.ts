@@ -18,6 +18,7 @@ export interface RuleAppliedInfo {
 }
 
 export interface TokenDiffData {
+  analysis_model: string;
   analysis_prob: number;
   analysis_rank: number | null;
   analysis_top_alternatives: TokenAlternative[];

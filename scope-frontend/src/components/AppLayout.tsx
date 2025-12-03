@@ -9,6 +9,7 @@ import { SamplingModal } from './modals/SamplingModal';
 import { RulesModal } from './modals/RulesModal';
 import { LogitLensModal } from './modals/LogitLensModal';
 import { useUIStore } from '@/stores/uiStore';
+import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -18,43 +19,26 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const { leftSidebarCollapsed } = useUIStore();
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      overflow: 'hidden',
-    }}>
+    <div className="flex flex-col h-screen overflow-hidden bg-background text-foreground">
       {/* Top Menu Bar */}
       <TopMenuBar />
 
       {/* Main Content Area */}
-      <div style={{
-        display: 'flex',
-        flex: 1,
-        overflow: 'hidden',
-      }}>
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
         <Suspense fallback={null}>
           <ConversationsSidebar />
         </Suspense>
 
         {/* Main Chat Area */}
-        <main style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          marginLeft: leftSidebarCollapsed ? '40px' : 0,
-          transition: 'margin-left 0.2s ease',
-        }}>
+        <main 
+          className={cn(
+            "flex flex-1 flex-col overflow-hidden transition-[margin] duration-200 ease-in-out",
+            leftSidebarCollapsed ? "ml-[40px]" : "ml-0"
+          )}
+        >
           <Suspense fallback={
-            <div style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#999',
-            }}>
+            <div className="flex flex-1 items-center justify-center text-muted-foreground">
               Loading...
             </div>
           }>
@@ -74,4 +58,3 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </div>
   );
 }
-
