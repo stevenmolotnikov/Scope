@@ -144,7 +144,7 @@ export function LogitLensModal() {
           justifyContent: 'space-between',
         }}>
           <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>
-            🔬 Logit Lens Analysis
+            🔬 LogitLens Analysis
           </h2>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -275,7 +275,7 @@ export function LogitLensModal() {
             }}>
               <p style={{ marginBottom: '8px' }}>Select tokens to analyze</p>
               <p style={{ fontSize: '13px' }}>
-                Click a token and use the Logit Lens button to see layer-by-layer predictions
+                Click a token and use the LogitLens button to see layer-by-layer predictions
               </p>
             </div>
           )}

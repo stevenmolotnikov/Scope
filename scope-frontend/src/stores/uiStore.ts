@@ -37,7 +37,7 @@ interface UIState {
   // Modal state
   modals: ModalState;
 
-  // Logit Lens state
+  // LogitLens state
   logitLensTokens: Token[];
   logitLensMessageId: string | null;
   logitLensTokenIndex: number;
@@ -160,7 +160,7 @@ export const useUIStore = create<UIState>()(
           },
         }),
 
-      // Logit Lens
+      // LogitLens
       setLogitLensContext: (tokens, messageId, tokenIndex) =>
         set({
           logitLensTokens: tokens,

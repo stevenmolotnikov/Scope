@@ -6,7 +6,7 @@ import { useConversationStore } from '@/stores/conversationStore';
 import { useStreamingGeneration } from '@/hooks/useStreamingGeneration';
 import { formatTokenForDisplay, formatProbability, formatModelName } from '@/lib/utils';
 import type { TokenAlternative, SelectedTokenInfo } from '@/types';
-import { X, Microscope } from 'lucide-react';
+import { X, Search } from 'lucide-react';
 
 // Section header component
 function SectionHeader({ children }: { children: React.ReactNode }) {
@@ -295,7 +295,7 @@ export function TokenInspector() {
                   />
                 )}
 
-                {/* Logit Lens Button */}
+                {/* LogitLens Button */}
                 <div style={{ padding: '8px 10px' }}>
                   <button
                     onClick={() => handleLogitLens()}
@@ -317,7 +317,7 @@ export function TokenInspector() {
                     onMouseOver={(e) => e.currentTarget.style.background = '#eee'}
                     onMouseOut={(e) => e.currentTarget.style.background = '#f5f5f5'}
                   >
-                    <Microscope size={12} /> Logit Lens
+                    <Search size={12} /> LogitLens
                   </button>
                 </div>
               </div>
@@ -368,7 +368,7 @@ export function TokenInspector() {
                   />
                 )}
 
-                {/* Logit Lens Button */}
+                {/* LogitLens Button */}
                 <div style={{ padding: '8px 10px' }}>
                   <button
                     onClick={() => handleLogitLens(conversation?.model)}
@@ -390,7 +390,7 @@ export function TokenInspector() {
                     onMouseOver={(e) => e.currentTarget.style.background = '#eee'}
                     onMouseOut={(e) => e.currentTarget.style.background = '#f5f5f5'}
                   >
-                    <Microscope size={12} /> Logit Lens
+                    <Search size={12} /> LogitLens
                   </button>
                 </div>
               </div>
@@ -441,7 +441,7 @@ export function TokenInspector() {
                   />
                 )}
 
-                {/* Logit Lens Button */}
+                {/* LogitLens Button */}
                 <div style={{ padding: '8px 10px' }}>
                   <button
                     onClick={() => handleLogitLens(token.diff_data?.analysis_model)}
@@ -463,7 +463,7 @@ export function TokenInspector() {
                     onMouseOver={(e) => e.currentTarget.style.background = '#eee'}
                     onMouseOut={(e) => e.currentTarget.style.background = '#f5f5f5'}
                   >
-                    <Microscope size={12} /> Logit Lens
+                    <Search size={12} /> LogitLens
                   </button>
                 </div>
               </div>

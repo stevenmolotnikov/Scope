@@ -214,7 +214,7 @@ export interface DiffLensResponse {
 }
 
 // ============================================================================
-// Logit Lens Types
+// LogitLens Types
 // ============================================================================
 
 export interface LogitLensRequest {
