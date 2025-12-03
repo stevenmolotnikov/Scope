@@ -38,6 +38,8 @@ export function TopMenuBar() {
     setPrefillEnabled,
     diffLensEnabled,
     setDiffLensEnabled,
+    theme,
+    setTheme,
   } = useUIStore();
 
   const { createNewChat, getCurrentConversation, saveConversation } = useConversationStore();
@@ -123,6 +125,25 @@ export function TopMenuBar() {
       onClick: () => setHighlightMode('rank'),
       radio: true,
       checked: highlightMode === 'rank',
+    },
+    { label: '', onClick: () => {}, divider: true },
+    {
+      label: 'Light Mode',
+      onClick: () => setTheme('light'),
+      radio: true,
+      checked: theme === 'light',
+    },
+    {
+      label: 'Dark Mode',
+      onClick: () => setTheme('dark'),
+      radio: true,
+      checked: theme === 'dark',
+    },
+    {
+      label: 'System Theme',
+      onClick: () => setTheme('system'),
+      radio: true,
+      checked: theme === 'system',
     },
   ];
 

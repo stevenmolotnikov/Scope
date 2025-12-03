@@ -50,6 +50,9 @@ interface UIState {
   prefillEnabled: boolean;
   prefillText: string;
 
+  // Theme state
+  theme: 'light' | 'dark' | 'system';
+
   // Actions
   toggleLeftSidebar: () => void;
   toggleRightSidebar: () => void;
@@ -78,6 +81,8 @@ interface UIState {
 
   setPrefillEnabled: (enabled: boolean) => void;
   setPrefillText: (text: string) => void;
+
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -107,6 +112,7 @@ export const useUIStore = create<UIState>()(
       diffLensEnabled: false,
       diffLensModel: '',
       prefillEnabled: false,
+      theme: 'system',
       prefillText: '',
 
       // Sidebar actions
@@ -190,6 +196,19 @@ export const useUIStore = create<UIState>()(
       setPrefillEnabled: (enabled: boolean) => set({ prefillEnabled: enabled }),
 
       setPrefillText: (text: string) => set({ prefillText: text }),
+
+      // Theme
+      setTheme: (theme: 'light' | 'dark' | 'system') => {
+        set({ theme });
+        // Apply theme to document
+        if (typeof window !== 'undefined') {
+          const root = document.documentElement;
+          root.classList.remove('light', 'dark');
+          if (theme !== 'system') {
+            root.classList.add(theme);
+          }
+        }
+      },
     }),
     {
       name: 'scope-ui',
@@ -202,6 +221,7 @@ export const useUIStore = create<UIState>()(
         diffLensModel: state.diffLensModel,
         prefillEnabled: state.prefillEnabled,
         persistedTokenRef: state.persistedTokenRef,
+        theme: state.theme,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
