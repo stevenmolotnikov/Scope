@@ -1,0 +1,10 @@
+{
+  "id": "conv_1764113900206",
+  "title": "New Chat",
+  "timestamp": 1764113900206,
+  "messageTree": {},
+  "currentLeafId": null,
+  "model": "google/gemma-3-1b-it",
+  "systemPrompt": "",
+  "viewMode": "diff"
+}

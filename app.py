@@ -1,4 +1,5 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, session, Response, stream_with_context, jsonify
+from flask import Flask, request, Response, stream_with_context, jsonify
+from flask_cors import CORS
 import json
 import os
 import math
@@ -10,6 +11,9 @@ from collections import deque
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
+
+# Enable CORS for Next.js frontend (allow all localhost ports)
+CORS(app)
 
 # Configuration
 OUTPUT_DATA_DIR = "probabilities"
@@ -1125,18 +1129,6 @@ def generate_streaming_tokens(model, tokenizer, device, messages, max_new_tokens
         torch.cuda.empty_cache()
 
 
-@app.route('/')
-def chat():
-    """Chat interface route."""
-    return render_template('chat.html')
-
-
-@app.route('/chat/<conversation_id>')
-def chat_with_id(conversation_id):
-    """Chat interface route with specific conversation ID."""
-    return render_template('chat.html', conversation_id=conversation_id)
-
-
 @app.route('/api/conversations', methods=['GET'])
 def get_conversations():
     """Get all conversations."""
@@ -1696,7 +1688,7 @@ def analyze_difflens():
 
 @app.route('/api/logit-lens', methods=['POST'])
 def logit_lens():
-    """Perform logit lens analysis on a specific token position."""
+    """Perform logit lens analysis - ONE forward pass for all positions."""
     import torch
     
     try:
@@ -1707,8 +1699,8 @@ def logit_lens():
         window_tokens = data.get('window_tokens', [])  # The tokens in the window
         top_k = data.get('top_k', 20)  # Top K tokens to track across layers
         
-        if not window_tokens or len(window_tokens) > 20:
-            return jsonify({'error': 'Invalid window tokens'}), 400
+        if not window_tokens:
+            return jsonify({'error': 'No window tokens provided'}), 400
         
         # Load model
         model, tokenizer, device = load_model_and_tokenizer(model_name)
@@ -1731,21 +1723,23 @@ def logit_lens():
         else:
             context_text_ids = torch.tensor([[]], dtype=torch.long).to(device)
         
-        # Combine chat context and text context
-        if context_ids.size(1) > 0 and context_text_ids.size(1) > 0:
-            base_ids = torch.cat([context_ids, context_text_ids], dim=1)
-        elif context_ids.size(1) > 0:
-            base_ids = context_ids
-        elif context_text_ids.size(1) > 0:
-            base_ids = context_text_ids
-        else:
-            base_ids = torch.tensor([[]], dtype=torch.long).to(device)
+        # Build full input: context + ALL window tokens
+        window_text = ''.join([t.get('token', '') for t in window_tokens])
+        window_ids = tokenizer.encode(window_text, return_tensors="pt", add_special_tokens=False).to(device)
+        
+        # Combine all parts
+        parts = [p for p in [context_ids, context_text_ids, window_ids] if p.size(1) > 0]
+        if not parts:
+            return jsonify({'error': 'No input tokens'}), 400
+        full_ids = torch.cat(parts, dim=1) if len(parts) > 1 else parts[0]
+        
+        # Calculate where window tokens start in full sequence
+        base_len = context_ids.size(1) + context_text_ids.size(1)
         
         # Get number of layers
         num_layers = len(model.model.layers) if hasattr(model, 'model') and hasattr(model.model, 'layers') else 0
         
         if num_layers == 0:
-            # Try alternative model structures
             if hasattr(model, 'transformer') and hasattr(model.transformer, 'h'):
                 num_layers = len(model.transformer.h)
             else:
@@ -1753,71 +1747,65 @@ def logit_lens():
         
         # Get model components
         if hasattr(model, 'model'):
-            embed_tokens = model.model.embed_tokens if hasattr(model.model, 'embed_tokens') else None
             norm = model.model.norm if hasattr(model.model, 'norm') else None
             lm_head = model.lm_head if hasattr(model, 'lm_head') else None
             layers = model.model.layers if hasattr(model.model, 'layers') else None
+            embed_tokens = model.model.embed_tokens if hasattr(model.model, 'embed_tokens') else None
         elif hasattr(model, 'transformer'):
-            embed_tokens = model.transformer.wte if hasattr(model.transformer, 'wte') else None
             norm = model.transformer.ln_f if hasattr(model.transformer, 'ln_f') else None
             lm_head = model.lm_head if hasattr(model, 'lm_head') else None
             layers = model.transformer.h if hasattr(model.transformer, 'h') else None
+            embed_tokens = model.transformer.wte if hasattr(model.transformer, 'wte') else None
         else:
             return jsonify({'error': 'Could not access model layers'}), 500
         
+        # Capture layer outputs with hooks - ONE forward pass
+        layer_hidden_states = {}
+        hooks = []
+        
+        def create_hook(layer_idx):
+            def hook(module, input, output):
+                if isinstance(output, tuple):
+                    hidden_states = output[0]
+                else:
+                    hidden_states = output
+                layer_hidden_states[layer_idx] = hidden_states.detach().clone()
+            return hook
+        
+        if layers:
+            for i, layer in enumerate(layers):
+                hook = layer.register_forward_hook(create_hook(i))
+                hooks.append(hook)
+        
+        # ONE forward pass for everything
+        with torch.no_grad():
+            outputs = model(full_ids, output_hidden_states=True)
+        
+        # Remove hooks
+        for hook in hooks:
+            hook.remove()
+        
+        # Now extract predictions for each window position
         positions_data = []
         
-        # Analyze each position in the window
         for pos_idx in range(len(window_tokens)):
-            # Build input: base_ids + tokens before this position
+            # Position in full sequence (predict token at pos_idx means look at position before it)
+            # For pos 0, we look at base_len - 1 (last context token)
+            # For pos 1, we look at base_len (first window token)
             if pos_idx == 0:
-                position_ids = base_ids
+                target_pos = base_len - 1 if base_len > 0 else 0
             else:
-                tokens_before = window_tokens[:pos_idx]
-                text_before = ''.join([t.get('token', '') for t in tokens_before])
-                tokens_before_ids = tokenizer.encode(text_before, return_tensors="pt", add_special_tokens=False).to(device)
-                
-                if base_ids.size(1) > 0:
-                    position_ids = torch.cat([base_ids, tokens_before_ids], dim=1)
-                else:
-                    position_ids = tokens_before_ids
+                target_pos = base_len + pos_idx - 1
             
-            if position_ids.size(1) == 0:
+            if target_pos < 0 or target_pos >= full_ids.size(1):
                 continue
             
-            # Capture layer outputs
-            layer_outputs = []
-            hooks = []
-            
-            def create_hook(layer_idx):
-                def hook(module, input, output):
-                    if isinstance(output, tuple):
-                        hidden_states = output[0]
-                    else:
-                        hidden_states = output
-                    layer_outputs.append((layer_idx, hidden_states.detach()))
-                return hook
-            
-            if layers:
-                for i, layer in enumerate(layers):
-                    hook = layer.register_forward_hook(create_hook(i))
-                    hooks.append(hook)
-            
-            # Forward pass
-            with torch.no_grad():
-                outputs = model(position_ids, output_hidden_states=True)
-            
-            # Remove hooks
-            for hook in hooks:
-                hook.remove()
-            
-            target_position = position_ids.size(1) - 1
-            
-            # Get predictions at each layer
             layer_predictions = []
             
-            for layer_idx, hidden_states in layer_outputs:
-                hidden_state = hidden_states[0, target_position, :]
+            # Get predictions at each layer
+            for layer_idx in sorted(layer_hidden_states.keys()):
+                hidden_states = layer_hidden_states[layer_idx]
+                hidden_state = hidden_states[0, target_pos, :]
                 
                 # Apply norm
                 if norm is not None:
@@ -1849,8 +1837,8 @@ def logit_lens():
                     'predictions': top_predictions
                 })
             
-            # Final layer (actual model output)
-            final_logits = outputs.logits[0, target_position, :]
+            # Final layer from actual output
+            final_logits = outputs.logits[0, target_pos, :]
             final_probs = torch.softmax(final_logits, dim=-1)
             top_k_probs, top_k_indices = torch.topk(final_probs, min(top_k, final_probs.size(-1)))
             
@@ -1873,7 +1861,8 @@ def logit_lens():
                 'layer_predictions': layer_predictions
             })
         
-        # Clean up memory after analysis
+        # Clean up
+        del layer_hidden_states
         if device == 'cuda':
             torch.cuda.empty_cache()
         
@@ -1978,149 +1967,6 @@ def stream():
     except Exception as e:
         print(f"Error parsing request: {e}")
         return Response("data: " + json.dumps({"type": "error", "message": f"Invalid request: {str(e)}"}) + "\n\n", mimetype='text/event-stream')
-
-
-@app.route('/old')
-def index():
-    """Main route for token probability visualization."""
-    # Parse request parameters
-    mode = request.args.get('mode', 'file')  # 'file' or 'direct'
-    selected_file = request.args.get('file')
-    prob_threshold = request.args.get('prob_threshold', default=DEFAULT_PROB_THRESHOLD, type=float)
-    threshold_mode = request.args.get('threshold_mode', default='probability', type=str)
-    rank_threshold = request.args.get('rank_threshold', default=DEFAULT_RANK_THRESHOLD, type=int)
-    max_rank_for_scaling = request.args.get('max_rank_for_scaling', default=DEFAULT_MAX_RANK_SCALING, type=int)
-    min_prob_for_scaling = request.args.get('min_prob_for_scaling', default=DEFAULT_MIN_PROB_SCALING, type=float)
-    
-    # Initialize variables
-    token_data = []
-    lowest_probs = []
-    prompt_text = None
-    error = None
-    token_input_list = []
-    vocab_size = None
-    model_name = None
-    
-    # Scan for available files
-    available_files, scan_error = scan_available_files()
-    if scan_error:
-        error = scan_error
-    
-    # Check if we have direct analysis data from session
-    if mode == 'direct' and 'analysis_data' in session:
-        analysis_data = session.get('analysis_data')
-        prompt_text = analysis_data.get('prompt')
-        token_input_list = analysis_data.get('tokens', [])
-        vocab_size = analysis_data.get('vocab_size')
-        model_name = analysis_data.get('model_name')
-    elif mode == 'file' or not session.get('analysis_data'):
-        # File mode - existing logic
-        if not error:
-            file_to_load, selected_file = determine_file_to_load(available_files, selected_file)
-            
-            if not file_to_load and selected_file:
-                error = f"Selected file '{selected_file}' not found in {OUTPUT_DATA_DIR}."
-            elif not file_to_load and not available_files:
-                error = f"No JSON files found in {OUTPUT_DATA_DIR}. Run probability_monitor.py first or use New Analysis."
-            elif not file_to_load:
-                error = None  # Allow showing the new analysis form
-            
-            # Load and process data if file is available
-            if not error and file_to_load:
-                prompt_text, token_input_list, vocab_size, model_name, load_error = load_token_data(file_to_load)
-                
-                if load_error:
-                    error = load_error
-    
-    # Process data if we have token input (from either file or direct analysis)
-    if token_input_list and vocab_size and not error:
-        # Process token data
-        token_data = process_token_data(token_input_list, vocab_size, threshold_mode, max_rank_for_scaling, min_prob_for_scaling)
-        
-        # Apply threshold filtering
-        token_data, lowest_probs = apply_threshold_filtering(
-            token_data, threshold_mode, prob_threshold, rank_threshold
-        )
-
-    return render_template('index.html', 
-                          token_data=token_data, 
-                          error=error,
-                          prompt_text=prompt_text,
-                          lowest_probs=lowest_probs,
-                          available_files=available_files,
-                          selected_file=selected_file,
-                          prob_threshold=prob_threshold,
-                          threshold_mode=threshold_mode,
-                          rank_threshold=rank_threshold,
-                          max_rank_for_scaling=max_rank_for_scaling,
-                          min_prob_for_scaling=min_prob_for_scaling,
-                          mode=mode,
-                          model_name=model_name,
-                          default_model=DEFAULT_MODEL)
-
-
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    """Process direct prompt and output analysis."""
-    try:
-        prompt = request.form.get('prompt', '').strip()
-        output = request.form.get('output', '').strip()
-        model_name = request.form.get('model_name', DEFAULT_MODEL).strip()
-        custom_filename = request.form.get('filename', '').strip()
-        
-        # Validation
-        if not prompt:
-            flash('Error: Prompt cannot be empty', 'error')
-            return redirect(url_for('index'))
-        
-        if not output:
-            flash('Error: Output cannot be empty', 'error')
-            return redirect(url_for('index'))
-        
-        # Load model and calculate probabilities
-        print(f'Loading model {model_name}...')
-        model, tokenizer, device = load_model_and_tokenizer(model_name)
-        
-        print('Calculating token probabilities...')
-        token_input_list, vocab_size = calculate_token_probabilities(model, tokenizer, device, prompt, output)
-        
-        # Use custom filename or generate timestamp-based one
-        if custom_filename:
-            # Sanitize filename
-            safe_filename = re.sub(r'[^\w\-_]', '_', custom_filename)
-            json_filename = f"{safe_filename}.json"
-        else:
-            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            json_filename = f"direct_analysis_{timestamp}.json"
-        
-        output_json_path = os.path.join(OUTPUT_DATA_DIR, json_filename)
-        
-        if not os.path.exists(OUTPUT_DATA_DIR):
-            os.makedirs(OUTPUT_DATA_DIR)
-        
-        with open(output_json_path, 'w', encoding='utf-8') as f:
-            output_container = {
-                "prompt": prompt,
-                "vocab_size": vocab_size,
-                "model_name": model_name,
-                "tokens": token_input_list
-            }
-            json.dump(output_container, f, ensure_ascii=False, indent=2)
-        
-        # Store in session for display
-        session['analysis_data'] = {
-            'prompt': prompt,
-            'vocab_size': vocab_size,
-            'model_name': model_name,
-            'tokens': token_input_list
-        }
-        
-        flash(f'Analysis complete! Saved as {json_filename}', 'success')
-        return redirect(url_for('index', mode='direct'))
-        
-    except Exception as e:
-        flash(f'Error during analysis: {str(e)}', 'error')
-        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

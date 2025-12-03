@@ -1,5 +1,6 @@
 accelerate
 Flask
+flask-cors
 transformers
 matplotlib
 # PyTorch with CUDA support - install separately:
