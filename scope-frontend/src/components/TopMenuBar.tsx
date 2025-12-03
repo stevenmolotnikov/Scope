@@ -5,7 +5,7 @@ import { useUIStore } from '@/stores/uiStore';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Microscope } from 'lucide-react';
+import { Microscope, Sun, Moon } from 'lucide-react';
 
 type MenuId = 'file' | 'view' | 'generation' | 'analysis' | null;
 
@@ -125,25 +125,6 @@ export function TopMenuBar() {
       onClick: () => setHighlightMode('rank'),
       radio: true,
       checked: highlightMode === 'rank',
-    },
-    { label: '', onClick: () => {}, divider: true },
-    {
-      label: 'Light Mode',
-      onClick: () => setTheme('light'),
-      radio: true,
-      checked: theme === 'light',
-    },
-    {
-      label: 'Dark Mode',
-      onClick: () => setTheme('dark'),
-      radio: true,
-      checked: theme === 'dark',
-    },
-    {
-      label: 'System Theme',
-      onClick: () => setTheme('system'),
-      radio: true,
-      checked: theme === 'system',
     },
   ];
 
@@ -301,6 +282,15 @@ export function TopMenuBar() {
             Text
           </button>
         </div>
+
+        {/* Theme toggle */}
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="p-1.5 rounded-md bg-muted text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
+        </button>
       </div>
     </div>
   );

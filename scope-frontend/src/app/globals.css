@@ -47,9 +47,8 @@
   --grid-size: 24px;
 }
 
-/* Dark mode - triggered by .dark class OR system preference */
-.dark,
-.dark :root {
+/* Dark mode via class toggle */
+.dark {
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
 
@@ -81,6 +80,7 @@
   --grid-color: rgba(255, 255, 255, 0.03);
 }
 
+/* Dark mode via system preference (only when not explicitly set to light) */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
     --background: 240 10% 3.9%;
@@ -172,6 +172,37 @@ body {
     linear-gradient(var(--grid-color) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
+}
+
+/* Custom Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Utility Classes */

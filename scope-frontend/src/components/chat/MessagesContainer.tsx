@@ -41,13 +41,7 @@ export function MessagesContainer() {
 
   if (!conversation) {
     return (
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#999',
-      }}>
+      <div className="flex-1 flex items-center justify-center text-muted-foreground">
         Select or create a conversation
       </div>
     );
@@ -56,33 +50,12 @@ export function MessagesContainer() {
   return (
     <div
       ref={containerRef}
-      style={{
-        flex: 1,
-        overflow: 'auto',
-        padding: '24px 32px',
-      }}
+      className="flex-1 overflow-auto px-8 py-6"
     >
       {/* Empty state */}
       {messagePath.length === 0 && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          color: '#999',
-          textAlign: 'center',
-        }}>
-          <div style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            background: 'rgba(0,0,0,0.03)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '16px',
-          }}>
+        <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center">
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
               <path
                 d="M8 10C8 8.89543 8.89543 8 10 8H22C23.1046 8 24 8.89543 24 10V18C24 19.1046 23.1046 20 22 20H14L10 24V20H10C8.89543 20 8 19.1046 8 18V10Z"
@@ -91,15 +64,15 @@ export function MessagesContainer() {
               />
             </svg>
           </div>
-          <p style={{ fontSize: '15px', fontWeight: 500 }}>Start a conversation</p>
-          <p style={{ fontSize: '13px', marginTop: '4px' }}>
+          <p className="text-[15px] font-medium text-foreground">Start a conversation</p>
+          <p className="text-[13px] mt-1">
             Type a message below to begin
           </p>
         </div>
       )}
 
       {/* Messages */}
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div className="max-w-[900px] mx-auto">
         {messagePath.map((message, index) => {
           const { siblingCount, siblingIndex } = getSiblingInfo(message, index);
           return (

@@ -90,24 +90,17 @@ function HomeContent() {
   ]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <div className="flex flex-col h-screen overflow-hidden bg-background text-foreground">
       {/* Top Menu Bar */}
       <TopMenuBar />
 
       {/* Main Content */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar - Conversations */}
         <ConversationsSidebar />
 
         {/* Chat Area */}
-        <main style={{
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-          minWidth: 0,
-          background: '#fff',
-          overflow: 'hidden',
-        }}>
+        <main className="flex flex-col flex-1 min-w-0 bg-background overflow-hidden">
           <MessagesContainer />
           <ChatInput />
         </main>
@@ -128,13 +121,7 @@ function HomeContent() {
 export default function HomePage() {
   return (
     <Suspense fallback={
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        color: '#999',
-      }}>
+      <div className="flex items-center justify-center h-screen text-muted-foreground">
         Loading...
       </div>
     }>

@@ -103,87 +103,41 @@ export function LogitLensModal() {
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 1000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center">
       {/* Backdrop */}
       <div 
         onClick={handleClose}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(0,0,0,0.5)',
-        }}
+        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
       />
 
       {/* Modal */}
-      <div style={{
-        position: 'relative',
-        width: '90vw',
-        maxWidth: '1200px',
-        height: '80vh',
-        background: '#fff',
-        borderRadius: '12px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
+      <div className="relative w-[90vw] max-w-[1200px] h-[80vh] bg-background border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div style={{
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e5e5',
-          background: '#fafafa',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>
+        <div className="px-6 py-4 border-b border-border bg-muted flex items-center justify-between">
+          <h2 className="m-0 text-base font-semibold">
             🔬 LogitLens Analysis
           </h2>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="flex items-center gap-3">
             {/* View toggle */}
-            <div style={{
-              display: 'flex',
-              gap: '4px',
-              background: '#fff',
-              padding: '4px',
-              borderRadius: '8px',
-              border: '1px solid #e5e5e5',
-            }}>
+            <div className="flex gap-1 bg-background p-1 rounded-lg border border-border">
               <button
                 onClick={() => setView('heatmap')}
-                style={{
-                  padding: '6px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  borderRadius: '6px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: view === 'heatmap' ? '#000' : 'transparent',
-                  color: view === 'heatmap' ? '#fff' : '#666',
-                }}
+                className={`px-3 py-1.5 text-[13px] font-medium rounded-md border-none cursor-pointer transition-colors ${
+                  view === 'heatmap' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-transparent text-muted-foreground hover:text-foreground'
+                }`}
               >
                 Heatmap
               </button>
               <button
                 onClick={() => setView('chart')}
-                style={{
-                  padding: '6px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  borderRadius: '6px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: view === 'chart' ? '#000' : 'transparent',
-                  color: view === 'chart' ? '#fff' : '#666',
-                }}
+                className={`px-3 py-1.5 text-[13px] font-medium rounded-md border-none cursor-pointer transition-colors ${
+                  view === 'chart' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-transparent text-muted-foreground hover:text-foreground'
+                }`}
               >
                 Chart
               </button>
@@ -191,19 +145,7 @@ export function LogitLensModal() {
 
             <button
               onClick={handleClose}
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '6px',
-                border: 'none',
-                background: '#f5f5f5',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-                color: '#666',
-              }}
+              className="w-8 h-8 rounded-md border-none bg-muted cursor-pointer flex items-center justify-center text-base text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >
               ✕
             </button>
@@ -211,44 +153,16 @@ export function LogitLensModal() {
         </div>
 
         {/* Body */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
+        <div className="flex-1 overflow-auto p-5">
           {isLoading && (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              gap: '16px',
-              color: '#666',
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '3px solid #e5e5e5',
-                borderTopColor: '#000',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-              }} />
+            <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground">
+              <div className="w-10 h-10 border-[3px] border-border border-t-primary rounded-full animate-spin" />
               <p>Analyzing layers...</p>
-              <style>{`
-                @keyframes spin {
-                  to { transform: rotate(360deg); }
-                }
-              `}</style>
             </div>
           )}
 
           {error && (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              gap: '16px',
-              color: '#c00',
-            }}>
+            <div className="flex flex-col items-center justify-center h-full gap-4 text-destructive">
               <p>Error: {error}</p>
               <Button variant="secondary" onClick={handleClose}>
                 Close
@@ -257,24 +171,16 @@ export function LogitLensModal() {
           )}
 
           {!isLoading && !error && data && (
-            <div style={{ height: '100%' }}>
+            <div className="h-full">
               {view === 'heatmap' && <HeatmapView data={data} windowTokens={windowTokens} />}
               {view === 'chart' && <ChartView data={data} windowTokens={windowTokens} />}
             </div>
           )}
 
           {!isLoading && !error && !data && logitLensTokens.length === 0 && (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              color: '#999',
-              textAlign: 'center',
-            }}>
-              <p style={{ marginBottom: '8px' }}>Select tokens to analyze</p>
-              <p style={{ fontSize: '13px' }}>
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center">
+              <p className="mb-2">Select tokens to analyze</p>
+              <p className="text-[13px]">
                 Click a token and use the LogitLens button to see layer-by-layer predictions
               </p>
             </div>
@@ -291,7 +197,7 @@ function HeatmapView({ data, windowTokens }: { data: LogitLensResponse; windowTo
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   if (!data.positions || data.positions.length === 0) {
-    return <div style={{ color: '#999', textAlign: 'center', padding: '40px' }}>No data available</div>;
+    return <div className="text-muted-foreground text-center p-10">No data available</div>;
   }
 
   const numLayers = data.num_layers;
@@ -335,36 +241,16 @@ function HeatmapView({ data, windowTokens }: { data: LogitLensResponse; windowTo
         )}
       </div>
 
-      <table style={{ 
-        borderCollapse: 'collapse', 
-        width: '100%',
-        fontSize: '12px',
-      }}>
+      <table className="border-collapse w-full text-xs">
         <thead>
           <tr>
-            <th style={{ 
-              padding: '8px', 
-              textAlign: 'left',
-              borderBottom: '2px solid #e5e5e5',
-              background: '#fff',
-              fontWeight: 600,
-              position: 'sticky',
-              left: 0,
-              zIndex: 2,
-            }}>
+            <th className="p-2 text-left border-b-2 border-border bg-background font-semibold sticky left-0 z-[2]">
               Layer
             </th>
             {positions.map((pos, idx) => (
               <th 
                 key={idx}
-                className="font-mono"
-                style={{ 
-                  padding: '8px', 
-                  textAlign: 'center',
-                  borderBottom: '2px solid #e5e5e5',
-                  fontWeight: 600,
-                  minWidth: '80px',
-                }}
+                className="font-mono p-2 text-center border-b-2 border-border font-semibold min-w-[80px]"
                 title={windowTokens[idx]?.token || `Position ${pos.position}`}
               >
                 {windowTokens[idx] 
@@ -377,15 +263,7 @@ function HeatmapView({ data, windowTokens }: { data: LogitLensResponse; windowTo
         <tbody>
           {displayLayers.map((layerIdx) => (
             <tr key={layerIdx}>
-              <td style={{ 
-                padding: '6px 8px',
-                borderBottom: '1px solid #eee',
-                background: '#fff',
-                fontWeight: 500,
-                position: 'sticky',
-                left: 0,
-                zIndex: 1,
-              }}>
+              <td className="px-2 py-1.5 border-b border-border/50 bg-background font-medium sticky left-0 z-[1]">
                 {layerIdx}
               </td>
               {positions.map((pos, posIdx) => {
@@ -396,7 +274,7 @@ function HeatmapView({ data, windowTokens }: { data: LogitLensResponse; windowTo
                 return (
                   <td 
                     key={posIdx}
-                    className="font-mono"
+                    className="font-mono px-2 py-1 text-center border-b border-border/50 whitespace-nowrap cursor-default relative"
                     onMouseEnter={(e) => {
                       setHoveredCell({ layer: layerIdx, pos: posIdx });
                       const rect = e.currentTarget.getBoundingClientRect();
@@ -404,14 +282,8 @@ function HeatmapView({ data, windowTokens }: { data: LogitLensResponse; windowTo
                     }}
                     onMouseLeave={() => setHoveredCell(null)}
                     style={{ 
-                      padding: '4px 8px',
-                      textAlign: 'center',
-                      borderBottom: '1px solid #eee',
-                      background: topPred ? getColorForProbability(topPred.probability) : '#f5f5f5',
-                      whiteSpace: 'nowrap',
-                      cursor: 'default',
-                      position: 'relative',
-                      outline: isHovered ? '2px solid #333' : 'none',
+                      background: topPred ? getColorForProbability(topPred.probability) : 'hsl(var(--muted))',
+                      outline: isHovered ? '2px solid hsl(var(--foreground))' : 'none',
                       outlineOffset: '-1px',
                     }}
                   >

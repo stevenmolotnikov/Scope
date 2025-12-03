@@ -6,7 +6,7 @@ import { useConversationStore } from '@/stores/conversationStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useStreamingGeneration } from '@/hooks/useStreamingGeneration';
 import { Button } from '@/components/ui/Button';
-import { X, ArrowUp } from 'lucide-react';
+import { X, ArrowUp, Pencil, RotateCcw } from 'lucide-react';
 import type { Message } from '@/types';
 
 const AVAILABLE_MODELS = [
@@ -123,14 +123,14 @@ export function MessageBubble({ message, siblingCount, siblingIndex }: MessageBu
       {/* Edit mode - Full width input matching ChatInput styling */}
       {isEditing && conversation ? (
         <div className="border border-border rounded-xl bg-background overflow-hidden shadow-sm focus-within:ring-1 focus-within:ring-ring focus-within:border-ring transition-all">
-          <textarea
+            <textarea
             ref={editTextareaRef}
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
             onKeyDown={handleEditKeyDown}
             className="w-full px-4 py-3 border-none text-sm resize-none min-h-[60px] max-h-[200px] bg-transparent focus:outline-none placeholder:text-muted-foreground"
-            autoFocus
-          />
+              autoFocus
+            />
           
           {/* Bottom toolbar */}
           <div className="flex flex-col gap-3 px-3 py-2 border-t border-border bg-muted/30">
@@ -182,13 +182,13 @@ export function MessageBubble({ message, siblingCount, siblingIndex }: MessageBu
               {/* Right side: Actions */}
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={handleCancelEdit}
+                onClick={handleCancelEdit}
                   variant="ghost"
                   size="sm"
                   className="h-7 px-2 text-xs"
                 >
                   <X className="h-3.5 w-3.5 mr-1" />
-                  Cancel
+                Cancel
                 </Button>
                 <Button
                   onClick={handleSubmitEdit}
@@ -251,46 +251,46 @@ export function MessageBubble({ message, siblingCount, siblingIndex }: MessageBu
             {/* Message content */}
             {isUser ? (
               <div className="bg-background/85 backdrop-blur-sm text-foreground border border-border px-4 py-3 rounded-[18px_18px_4px_18px] whitespace-pre-wrap break-words text-sm leading-relaxed shadow-sm">
-                {message.content}
-              </div>
-            ) : isAssistant ? (
+            {message.content}
+          </div>
+        ) : isAssistant ? (
               <div className="bg-muted/80 backdrop-blur-sm p-4 rounded-[18px_18px_18px_4px] border border-border/50 text-sm leading-7 whitespace-pre-wrap break-words shadow-sm">
-                {message.tokens && message.tokens.length > 0 ? (
-                  <TokenizedMessage tokens={message.tokens} messageId={message.id} />
-                ) : (
+            {message.tokens && message.tokens.length > 0 ? (
+              <TokenizedMessage tokens={message.tokens} messageId={message.id} />
+            ) : (
                   <span className="text-muted-foreground">{message.content || 'Generating...'}</span>
-                )}
-              </div>
-            ) : null}
+            )}
+          </div>
+        ) : null}
 
-            {/* Message controls */}
-            <div
+        {/* Message controls */}
+        <div
               className={`flex items-center gap-2 mt-1 h-6 transition-opacity duration-150 ${
                 showControls ? 'opacity-100' : 'opacity-0'
               } ${isUser ? 'justify-end' : 'justify-start'}`}
-            >
-              {/* Sibling navigation */}
-              {hasMultipleSiblings && (
+        >
+          {/* Sibling navigation */}
+          {hasMultipleSiblings && (
                 <div className="flex items-center gap-0.5 text-[11px] text-muted-foreground bg-background border border-border rounded px-1 py-0.5 font-mono">
-                  <button
-                    onClick={() => handleNavigate('prev')}
-                    disabled={siblingIndex === 0}
+              <button
+                onClick={() => handleNavigate('prev')}
+                disabled={siblingIndex === 0}
                     className="px-1.5 py-0.5 bg-transparent border-none cursor-pointer disabled:cursor-default disabled:opacity-30 rounded-sm hover:bg-muted"
-                  >
-                    ‹
-                  </button>
+              >
+                ‹
+              </button>
                   <span className="min-w-[32px] text-center">
-                    {siblingIndex + 1}/{siblingCount}
-                  </span>
-                  <button
-                    onClick={() => handleNavigate('next')}
-                    disabled={siblingIndex === siblingCount - 1}
+                {siblingIndex + 1}/{siblingCount}
+              </span>
+              <button
+                onClick={() => handleNavigate('next')}
+                disabled={siblingIndex === siblingCount - 1}
                     className="px-1.5 py-0.5 bg-transparent border-none cursor-pointer disabled:cursor-default disabled:opacity-30 rounded-sm hover:bg-muted"
-                  >
-                    ›
-                  </button>
-                </div>
-              )}
+              >
+                ›
+              </button>
+            </div>
+          )}
 
               {/* Edit button (user messages) */}
               {isUser && (
@@ -299,15 +299,7 @@ export function MessageBubble({ message, siblingCount, siblingIndex }: MessageBu
                   className="p-1 bg-transparent border-none cursor-pointer text-muted-foreground rounded hover:bg-muted hover:text-foreground transition-colors"
                   title="Edit message"
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path
-                      d="M10 2L12 4L5 11H3V9L10 2Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Pencil size={14} />
                 </button>
               )}
 
@@ -319,19 +311,11 @@ export function MessageBubble({ message, siblingCount, siblingIndex }: MessageBu
                   className="p-1 bg-transparent border-none cursor-pointer text-muted-foreground rounded hover:bg-muted hover:text-foreground transition-colors disabled:cursor-default disabled:opacity-50"
                   title="Regenerate"
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path
-                      d="M1 7C1 10.3137 3.68629 13 7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C4.5 1 2.5 2.5 1.5 4.5M1 1V5H5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <RotateCcw size={14} />
                 </button>
               )}
-            </div>
-          </div>
+        </div>
+      </div>
         </div>
       )}
     </div>

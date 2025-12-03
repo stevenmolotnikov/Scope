@@ -119,16 +119,16 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
             cursor: 'pointer',
             whiteSpace: 'pre',
             borderRadius: '2px',
-            border: isSelected ? '1px solid #000' : '1px solid transparent',
+            border: isSelected ? '1px solid hsl(var(--foreground))' : '1px solid transparent',
             padding: '0 1px',
             margin: '0 -1px',
-            background: isSelected ? 'rgba(0,0,0,0.05)' : 'transparent',
+            background: isSelected ? 'hsl(var(--foreground) / 0.05)' : 'transparent',
             transition: 'border-color 0.1s, background 0.1s',
           }}
           onMouseOver={(e) => {
             if (!isSelected) {
-              e.currentTarget.style.borderColor = '#999';
-              e.currentTarget.style.background = 'rgba(0,0,0,0.03)';
+              e.currentTarget.style.borderColor = 'hsl(var(--muted-foreground))';
+              e.currentTarget.style.background = 'hsl(var(--foreground) / 0.03)';
             }
           }}
           onMouseOut={(e) => {
@@ -162,11 +162,11 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
           backgroundColor,
           cursor: 'pointer',
           border: isSelected 
-            ? '1px solid #000' 
+            ? '1px solid hsl(var(--foreground))' 
             : token.rule_applied 
-            ? '1px dashed #666' 
+            ? '1px dashed hsl(var(--muted-foreground))' 
             : '1px solid transparent',
-          boxShadow: isSelected ? '0 0 0 1px rgba(0,0,0,0.15)' : undefined,
+          boxShadow: isSelected ? '0 0 0 1px hsl(var(--foreground) / 0.15)' : undefined,
           fontSize: '13px',
           lineHeight: '1.5',
           whiteSpace: 'pre',
@@ -176,13 +176,13 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
         }}
         onMouseOver={(e) => {
           if (!isSelected) {
-            e.currentTarget.style.borderColor = '#000';
-            e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.1)';
+            e.currentTarget.style.borderColor = 'hsl(var(--foreground))';
+            e.currentTarget.style.boxShadow = '0 1px 4px hsl(var(--foreground) / 0.1)';
           }
         }}
         onMouseOut={(e) => {
           if (!isSelected) {
-            e.currentTarget.style.borderColor = token.rule_applied ? '#666' : 'transparent';
+            e.currentTarget.style.borderColor = token.rule_applied ? 'hsl(var(--muted-foreground))' : 'transparent';
             e.currentTarget.style.boxShadow = 'none';
           }
         }}
@@ -196,9 +196,9 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
             top: '-4px',
             right: '-4px',
             fontSize: '8px',
-            background: '#fff',
+            background: 'hsl(var(--background))',
             borderRadius: '50%',
-            border: '1px solid #ccc',
+            border: '1px solid hsl(var(--border))',
             width: '12px',
             height: '12px',
             display: 'flex',

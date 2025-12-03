@@ -11,17 +11,7 @@ import { X, Search } from 'lucide-react';
 // Section header component
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{
-      fontSize: '10px',
-      fontWeight: 600,
-      textTransform: 'uppercase',
-      letterSpacing: '0.05em',
-      color: '#666',
-      padding: '8px 10px',
-      borderBottom: '1px solid #e5e5e5',
-      background: '#fafafa',
-      fontFamily: 'monospace',
-    }}>
+    <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2.5 py-2 border-b border-border bg-muted font-mono">
       {children}
     </div>
   );
@@ -40,7 +30,7 @@ function AlternativesList({
   indexOffset?: number;
 }) {
   return (
-    <div style={{ borderBottom: '1px solid #e5e5e5' }}>
+    <div className="border-b border-border">
       {alternatives.slice(0, 3).map((alt, idx) => {
         const actualIndex = idx + indexOffset;
         const isSelected = selectedIndex === actualIndex;
@@ -48,29 +38,15 @@ function AlternativesList({
           <div
             key={idx}
             onClick={() => onSelect(alt, actualIndex)}
-            className="font-mono"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '6px 10px',
-              background: isSelected ? '#e0e0e0' : '#fff',
-              fontSize: '11px',
-              cursor: 'pointer',
-              borderBottom: idx < 2 ? '1px solid #f0f0f0' : 'none',
-            }}
-            onMouseOver={(e) => {
-              if (!isSelected) e.currentTarget.style.background = '#f5f5f5';
-            }}
-            onMouseOut={(e) => {
-              if (!isSelected) e.currentTarget.style.background = '#fff';
-            }}
+            className={`font-mono flex items-center justify-between px-2.5 py-1.5 text-[11px] cursor-pointer transition-colors ${
+              isSelected ? 'bg-accent' : 'bg-background hover:bg-muted'
+            } ${idx < 2 ? 'border-b border-border/50' : ''}`}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: '#999', fontSize: '9px', width: '18px' }}>#{alt.rank}</span>
-              <span style={{ fontWeight: isSelected ? 600 : 400 }}>"{formatTokenForDisplay(alt.token)}"</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground text-[9px] w-4">#{alt.rank}</span>
+              <span className={isSelected ? 'font-semibold' : ''}>"{formatTokenForDisplay(alt.token)}"</span>
             </div>
-            <span style={{ color: '#666' }}>{formatProbability(alt.probability)}</span>
+            <span className="text-muted-foreground">{formatProbability(alt.probability)}</span>
           </div>
         );
       })}
@@ -147,103 +123,48 @@ export function TokenInspector() {
   }
 
   return (
-    <div style={{
-      width: '300px',
-      flexShrink: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      background: '#fff',
-      borderLeft: '1px solid #e5e5e5',
-      height: '100%',
-    }}>
+    <div className="w-[300px] shrink-0 flex flex-col bg-background border-l border-border h-full">
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '12px 16px',
-        borderBottom: '1px solid #e5e5e5',
-      }}>
-        <h3 style={{
-          fontSize: '12px',
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          color: '#666',
-          margin: 0,
-        }}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground m-0">
           Inspector
         </h3>
         <button
           onClick={toggleRightSidebar}
-          style={{
-            padding: '4px',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: '#999',
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="p-1 bg-transparent border-none cursor-pointer text-muted-foreground rounded hover:text-foreground hover:bg-muted transition-colors"
         >
           <X size={16} />
         </button>
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
+      <div className="flex-1 overflow-auto p-4">
         {!token ? (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '200px',
-            color: '#999',
-            textAlign: 'center',
-          }}>
-            <p style={{ fontSize: '13px' }}>Click any token to inspect</p>
+          <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground text-center">
+            <p className="text-[13px]">Click any token to inspect</p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="flex flex-col gap-3">
             
             {/* ==================== TOKEN BOX ==================== */}
-            <div style={{
-              background: '#f8f8f8',
-              border: '1px solid #e5e5e5',
-              borderRadius: '8px',
-              padding: '16px',
-              textAlign: 'center',
-            }}>
+            <div className="bg-muted border border-border rounded-lg p-4 text-center">
               {/* Token Display */}
-              <div className="font-mono" style={{
-                fontSize: '22px',
-                fontWeight: 600,
-                wordBreak: 'break-all',
-                marginBottom: '12px',
-              }}>
+              <div className="font-mono text-[22px] font-semibold break-all mb-3">
                 "{formatTokenForDisplay(token.token)}"
               </div>
 
               {/* Standard View: Show Prob + Rank */}
               {!isDiffView && (
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '8px',
-                  fontSize: '12px',
-                }}>
+                <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <div style={{ color: '#999', fontSize: '10px', marginBottom: '2px' }}>Probability</div>
-                    <div className="font-mono" style={{ fontWeight: 600 }}>
+                    <div className="text-muted-foreground text-[10px] mb-0.5">Probability</div>
+                    <div className="font-mono font-semibold">
                       {formatProbability(token.probability)}
                     </div>
                   </div>
                   <div>
-                    <div style={{ color: '#999', fontSize: '10px', marginBottom: '2px' }}>Rank</div>
-                    <div className="font-mono" style={{ fontWeight: 600 }}>
+                    <div className="text-muted-foreground text-[10px] mb-0.5">Rank</div>
+                    <div className="font-mono font-semibold">
                       #{token.rank ?? 'N/A'}
                     </div>
                   </div>
@@ -252,21 +173,17 @@ export function TokenInspector() {
 
               {/* Diff View: Show Diff Badge */}
               {isDiffView && token.diff_data && (
-                <div style={{
-                  padding: '10px 16px',
-                  borderRadius: '6px',
-                  background: token.diff_data.prob_diff > 0 ? '#dcfce7' : token.diff_data.prob_diff < 0 ? '#fee2e2' : '#f5f5f5',
-                  border: `1px solid ${token.diff_data.prob_diff > 0 ? '#86efac' : token.diff_data.prob_diff < 0 ? '#fca5a5' : '#e5e5e5'}`,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                  <span style={{ fontSize: '12px', color: '#666' }}>Diff</span>
-                  <span className="font-mono" style={{ 
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: token.diff_data.prob_diff > 0 ? '#16a34a' : token.diff_data.prob_diff < 0 ? '#dc2626' : '#666',
-                  }}>
+                <div className={`px-4 py-2.5 rounded-md flex justify-between items-center ${
+                  token.diff_data.prob_diff > 0 
+                    ? 'bg-green-100 border border-green-300 dark:bg-green-950 dark:border-green-800' 
+                    : token.diff_data.prob_diff < 0 
+                    ? 'bg-red-100 border border-red-300 dark:bg-red-950 dark:border-red-800' 
+                    : 'bg-muted border border-border'
+                }`}>
+                  <span className="text-xs text-muted-foreground">Diff</span>
+                  <span className={`font-mono text-sm font-semibold ${
+                    token.diff_data.prob_diff > 0 ? 'text-green-600 dark:text-green-400' : token.diff_data.prob_diff < 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'
+                  }`}>
                     {token.diff_data.prob_diff > 0 ? '+' : ''}{token.diff_data.prob_diff.toFixed(1)}%
                   </span>
                 </div>
@@ -275,11 +192,7 @@ export function TokenInspector() {
 
             {/* ==================== STANDARD VIEW: MODEL BOX ==================== */}
             {!isDiffView && (
-              <div style={{
-                border: '1px solid #e5e5e5',
-                borderRadius: '8px',
-                overflow: 'hidden',
-              }}>
+              <div className="border border-border rounded-lg overflow-hidden">
                 {/* Model Header */}
                 <SectionHeader>
                   {formatModelName(conversation?.model || '')}
@@ -296,26 +209,10 @@ export function TokenInspector() {
                 )}
 
                 {/* LogitLens Button */}
-                <div style={{ padding: '8px 10px' }}>
+                <div className="p-2">
                   <button
                     onClick={() => handleLogitLens()}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      background: '#f5f5f5',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      fontSize: '11px',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      color: '#555',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.background = '#eee'}
-                    onMouseOut={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                    className="w-full p-2 bg-muted border border-border rounded text-[11px] font-medium cursor-pointer text-muted-foreground flex items-center justify-center gap-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
                   >
                     <Search size={12} /> LogitLens
                   </button>
@@ -325,34 +222,23 @@ export function TokenInspector() {
 
             {/* ==================== DIFF VIEW: GENERATION BOX ==================== */}
             {isDiffView && (
-              <div style={{
-                border: '1px solid #e5e5e5',
-                borderRadius: '8px',
-                overflow: 'hidden',
-              }}>
+              <div className="border border-border rounded-lg overflow-hidden">
                 {/* Header */}
                 <SectionHeader>
                   Generation · {formatModelName(conversation?.model || '')}
                 </SectionHeader>
 
                 {/* Stats */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '8px',
-                  padding: '10px',
-                  borderBottom: '1px solid #e5e5e5',
-                  fontSize: '11px',
-                }}>
+                <div className="grid grid-cols-2 gap-2 p-2.5 border-b border-border text-[11px]">
                   <div>
-                    <div style={{ color: '#999', fontSize: '9px', marginBottom: '2px' }}>Probability</div>
-                    <div className="font-mono" style={{ fontWeight: 600 }}>
+                    <div className="text-muted-foreground text-[9px] mb-0.5">Probability</div>
+                    <div className="font-mono font-semibold">
                       {formatProbability(token.probability)}
                     </div>
                   </div>
                   <div>
-                    <div style={{ color: '#999', fontSize: '9px', marginBottom: '2px' }}>Rank</div>
-                    <div className="font-mono" style={{ fontWeight: 600 }}>
+                    <div className="text-muted-foreground text-[9px] mb-0.5">Rank</div>
+                    <div className="font-mono font-semibold">
                       #{token.rank ?? 'N/A'}
                     </div>
                   </div>
@@ -369,26 +255,10 @@ export function TokenInspector() {
                 )}
 
                 {/* LogitLens Button */}
-                <div style={{ padding: '8px 10px' }}>
+                <div className="p-2">
                   <button
                     onClick={() => handleLogitLens(conversation?.model)}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      background: '#f5f5f5',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      fontSize: '11px',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      color: '#555',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.background = '#eee'}
-                    onMouseOut={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                    className="w-full p-2 bg-muted border border-border rounded text-[11px] font-medium cursor-pointer text-muted-foreground flex items-center justify-center gap-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
                   >
                     <Search size={12} /> LogitLens
                   </button>
@@ -398,34 +268,23 @@ export function TokenInspector() {
 
             {/* ==================== DIFF VIEW: ANALYSIS BOX ==================== */}
             {isDiffView && token.diff_data && (
-              <div style={{
-                border: '1px solid #e5e5e5',
-                borderRadius: '8px',
-                overflow: 'hidden',
-              }}>
+              <div className="border border-border rounded-lg overflow-hidden">
                 {/* Header */}
                 <SectionHeader>
                   Analysis · {formatModelName(token.diff_data.analysis_model || '')}
                 </SectionHeader>
 
                 {/* Stats */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '8px',
-                  padding: '10px',
-                  borderBottom: '1px solid #e5e5e5',
-                  fontSize: '11px',
-                }}>
+                <div className="grid grid-cols-2 gap-2 p-2.5 border-b border-border text-[11px]">
                   <div>
-                    <div style={{ color: '#999', fontSize: '9px', marginBottom: '2px' }}>Probability</div>
-                    <div className="font-mono" style={{ fontWeight: 600 }}>
+                    <div className="text-muted-foreground text-[9px] mb-0.5">Probability</div>
+                    <div className="font-mono font-semibold">
                       {formatProbability(token.diff_data.analysis_prob)}
                     </div>
                   </div>
                   <div>
-                    <div style={{ color: '#999', fontSize: '9px', marginBottom: '2px' }}>Rank</div>
-                    <div className="font-mono" style={{ fontWeight: 600 }}>
+                    <div className="text-muted-foreground text-[9px] mb-0.5">Rank</div>
+                    <div className="font-mono font-semibold">
                       #{token.diff_data.analysis_rank ?? 'N/A'}
                     </div>
                   </div>
@@ -442,26 +301,10 @@ export function TokenInspector() {
                 )}
 
                 {/* LogitLens Button */}
-                <div style={{ padding: '8px 10px' }}>
+                <div className="p-2">
                   <button
                     onClick={() => handleLogitLens(token.diff_data?.analysis_model)}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      background: '#f5f5f5',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      fontSize: '11px',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      color: '#555',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.background = '#eee'}
-                    onMouseOut={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                    className="w-full p-2 bg-muted border border-border rounded text-[11px] font-medium cursor-pointer text-muted-foreground flex items-center justify-center gap-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
                   >
                     <Search size={12} /> LogitLens
                   </button>
@@ -471,28 +314,18 @@ export function TokenInspector() {
 
             {/* ==================== RULE APPLIED ==================== */}
             {token.rule_applied && (
-              <div style={{
-                background: '#fff8e0',
-                border: '1px solid #f0d860',
-                borderRadius: '8px',
-                padding: '10px',
-                fontSize: '11px',
-              }}>
-                <div style={{ fontWeight: 600, marginBottom: '4px' }}>
+              <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-300 dark:border-yellow-800 rounded-lg p-2.5 text-[11px]">
+                <div className="font-semibold mb-1">
                   ⚙ {token.rule_applied.name}
                 </div>
-                <div style={{ color: '#666' }}>{token.rule_applied.reason}</div>
+                <div className="text-muted-foreground">{token.rule_applied.reason}</div>
               </div>
             )}
 
             {/* ==================== INJECT ==================== */}
-            <div style={{
-              border: '1px solid #e5e5e5',
-              borderRadius: '8px',
-              overflow: 'hidden',
-            }}>
+            <div className="border border-border rounded-lg overflow-hidden">
               <SectionHeader>Inject</SectionHeader>
-              <div style={{ padding: '10px', display: 'flex', gap: '6px' }}>
+              <div className="p-2.5 flex gap-1.5">
                 <input
                   type="text"
                   value={injectionText}
@@ -501,14 +334,7 @@ export function TokenInspector() {
                     setSelectedAltIndex(null);
                   }}
                   placeholder="Text to inject..."
-                  className="font-mono"
-                  style={{
-                    flex: 1,
-                    padding: '8px 10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                  }}
+                  className="font-mono flex-1 px-2.5 py-2 border border-input rounded text-xs bg-background focus:outline-none focus:ring-1 focus:ring-ring"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleInject();
                   }}
@@ -516,16 +342,11 @@ export function TokenInspector() {
                 <button
                   onClick={handleInject}
                   disabled={!injectionText.trim()}
-                  style={{
-                    padding: '8px 12px',
-                    background: injectionText.trim() ? '#000' : '#e5e5e5',
-                    color: injectionText.trim() ? '#fff' : '#999',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    cursor: injectionText.trim() ? 'pointer' : 'default',
-                  }}
+                  className={`px-3 py-2 border-none rounded text-xs font-medium ${
+                    injectionText.trim() 
+                      ? 'bg-primary text-primary-foreground cursor-pointer hover:bg-primary/90' 
+                      : 'bg-muted text-muted-foreground cursor-default'
+                  }`}
                 >
                   Go
                 </button>
