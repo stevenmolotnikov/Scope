@@ -25,7 +25,7 @@ export function TokenizedMessage({ tokens, messageId }: TokenizedMessageProps) {
   if (viewMode === 'text') {
     const fullText = tokens.map(t => cleanTokenizerArtifacts(t.token)).join('');
     return (
-      <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed">
+      <div className="prose prose-sm max-w-none leading-relaxed text-foreground prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-code:text-foreground prose-a:text-primary">
         <ReactMarkdown>{fullText}</ReactMarkdown>
       </div>
     );
