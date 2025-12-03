@@ -7,7 +7,14 @@ import datetime
 import re
 import secrets
 import time
+import sys
+import io
 from collections import deque
+
+# Force UTF-8 for stdout/stderr to handle emojis on Windows
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -1908,6 +1915,9 @@ def stream():
         
         def generate():
             try:
+                # Yield a ping event immediately to force Flask to send headers
+                yield f"data: {json.dumps({'type': 'ping'})}\n\n"
+                
                 # Load model
                 model, tokenizer, device = load_model_and_tokenizer(model_name)
                 
@@ -1930,6 +1940,8 @@ def stream():
                         first_token = False
                     
                     # Send token data as SSE immediately (no buffering)
+                    # Use default ensure_ascii=True (default) to escape Unicode to ASCII safe \uXXXX
+                    # This avoids encoding errors on systems with limited charsets
                     yield f"data: {json.dumps({'type': 'token', **token_data})}\n\n"
                 
                 # Send completion signal
@@ -1962,6 +1974,8 @@ def stream():
         # Disable buffering for immediate streaming
         response.headers['Cache-Control'] = 'no-cache'
         response.headers['X-Accel-Buffering'] = 'no'
+        # Explicitly set UTF-8 charset
+        response.headers['Content-Type'] = 'text/event-stream; charset=utf-8'
         return response
     
     except Exception as e:
