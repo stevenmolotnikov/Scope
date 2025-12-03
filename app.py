@@ -1799,8 +1799,10 @@ def logit_lens():
             # Position in full sequence (predict token at pos_idx means look at position before it)
             # For pos 0, we look at base_len - 1 (last context token)
             # For pos 1, we look at base_len (first window token)
+            # Note: if base_len = 0 and pos_idx = 0, target_pos = -1, which we skip
+            # (can't predict first token without any preceding context)
             if pos_idx == 0:
-                target_pos = base_len - 1 if base_len > 0 else 0
+                target_pos = base_len - 1
             else:
                 target_pos = base_len + pos_idx - 1
             
