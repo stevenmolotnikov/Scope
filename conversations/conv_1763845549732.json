@@ -58,26 +58,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.026885986328125,
+            "analysis_prob": 0.0465087890625,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.962890625,
+                "probability": 0.91943359375,
                 "rank": 1,
                 "token": "Here"
               },
               {
-                "probability": 0.026885986328125,
+                "probability": 0.0465087890625,
                 "rank": 2,
                 "token": "2"
               },
               {
-                "probability": 0.0022411346435546875,
+                "probability": 0.00586700439453125,
                 "rank": 3,
                 "token": "Adding"
               }
             ],
-            "prob_diff": -2.6885986328125,
+            "prob_diff": -4.65087890625,
             "rank_diff": -236777
           }
         },
@@ -116,26 +116,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.0106201171875,
+            "analysis_prob": 0.0220794677734375,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.98583984375,
+                "probability": 0.96875,
                 "rank": 1,
                 "token": " +"
               },
               {
-                "probability": 0.0106201171875,
+                "probability": 0.0220794677734375,
                 "rank": 2,
                 "token": "+"
               },
               {
-                "probability": 0.00321197509765625,
+                "probability": 0.00812530517578125,
                 "rank": 3,
                 "token": " plus"
               }
             ],
-            "prob_diff": -1.0609984397888184,
+            "prob_diff": -2.2069334983825684,
             "rank_diff": -1
           }
         },
@@ -174,26 +174,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99951171875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99951171875,
                 "rank": 1,
                 "token": "2"
               },
               {
-                "probability": 4.5418739318847656e-05,
+                "probability": 0.0002396106719970703,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 1.9073486328125e-06,
+                "probability": 1.6987323760986328e-05,
                 "rank": 3,
                 "token": "**"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.048828125,
             "rank_diff": 0
           }
         },
@@ -232,26 +232,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.001918792724609375,
+            "analysis_prob": 0.004001617431640625,
             "analysis_rank": 13,
             "analysis_top_alternatives": [
               {
-                "probability": 0.365478515625,
+                "probability": 0.31787109375,
                 "rank": 1,
                 "token": " means"
               },
               {
-                "probability": 0.338134765625,
+                "probability": 0.298583984375,
                 "rank": 2,
                 "token": " is"
               },
               {
-                "probability": 0.1243896484375,
+                "probability": 0.1295166015625,
                 "rank": 3,
                 "token": " can"
               }
             ],
-            "prob_diff": -0.127410888671875,
+            "prob_diff": -0.335693359375,
             "rank_diff": 8
           }
         },
@@ -290,26 +290,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 4.0650367736816406e-05,
+            "analysis_prob": 0.00019657611846923828,
             "analysis_rank": 22,
             "analysis_top_alternatives": [
               {
-                "probability": 0.86767578125,
+                "probability": 0.79736328125,
                 "rank": 1,
                 "token": "4"
               },
               {
-                "probability": 0.11199951171875,
+                "probability": 0.1441650390625,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.0113525390625,
+                "probability": 0.02142333984375,
                 "rank": 3,
                 "token": " **"
               }
             ],
-            "prob_diff": -0.0040590763092041016,
+            "prob_diff": -0.01965165138244629,
             "rank_diff": 8
           }
         },
@@ -348,26 +348,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.004543304443359375,
+            "analysis_prob": 0.0073394775390625,
             "analysis_rank": 14,
             "analysis_top_alternatives": [
               {
-                "probability": 0.341552734375,
+                "probability": 0.26904296875,
                 "rank": 1,
                 "token": "\n\n"
               },
               {
-                "probability": 0.2071533203125,
+                "probability": 0.1763916015625,
                 "rank": 2,
                 "token": " is"
               },
               {
-                "probability": 0.11993408203125,
+                "probability": 0.11212158203125,
                 "rank": 3,
                 "token": "."
               }
             ],
-            "prob_diff": -0.4282236099243164,
+            "prob_diff": -0.7078409194946289,
             "rank_diff": 11
           }
         },
@@ -406,26 +406,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.1976318359375,
+            "analysis_prob": 0.1754150390625,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.301513671875,
+                "probability": 0.249267578125,
                 "rank": 1,
                 "token": " Here"
               },
               {
-                "probability": 0.27880859375,
+                "probability": 0.232421875,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.1976318359375,
+                "probability": 0.1754150390625,
                 "rank": 3,
                 "token": "\n\n"
               }
             ],
-            "prob_diff": 78.28369140625,
+            "prob_diff": 80.50537109375,
             "rank_diff": 2
           }
         },
@@ -464,26 +464,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.81689453125,
+            "analysis_prob": 0.66650390625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.81689453125,
+                "probability": 0.66650390625,
                 "rank": 1,
                 "token": "Here"
               },
               {
-                "probability": 0.0692138671875,
+                "probability": 0.0860595703125,
                 "rank": 2,
                 "token": "**"
               },
               {
-                "probability": 0.0201416015625,
+                "probability": 0.03070068359375,
                 "rank": 3,
                 "token": "Let"
               }
             ],
-            "prob_diff": 18.017578125,
+            "prob_diff": 33.056640625,
             "rank_diff": 0
           }
         },
@@ -522,26 +522,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.00785064697265625,
+            "analysis_prob": 0.01641845703125,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.921875,
+                "probability": 0.869140625,
                 "rank": 1,
                 "token": "'"
               },
               {
-                "probability": 0.058929443359375,
+                "probability": 0.08807373046875,
                 "rank": 2,
                 "token": " is"
               },
               {
-                "probability": 0.00992584228515625,
+                "probability": 0.01995849609375,
                 "rank": 3,
                 "token": " are"
               }
             ],
-            "prob_diff": 31.978607177734375,
+            "prob_diff": 31.121826171875,
             "rank_diff": 2
           }
         },
@@ -580,26 +580,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99951171875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99951171875,
                 "rank": 1,
                 "token": "s"
               },
               {
-                "probability": 9.655952453613281e-06,
+                "probability": 6.604194641113281e-05,
                 "rank": 2,
                 "token": " s"
               },
               {
-                "probability": 4.410743713378906e-06,
+                "probability": 3.451108932495117e-05,
                 "rank": 3,
                 "token": "*"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.048828125,
             "rank_diff": 0
           }
         },
@@ -638,26 +638,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.6982421875,
+            "analysis_prob": 0.62255859375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.6982421875,
+                "probability": 0.62255859375,
                 "rank": 1,
                 "token": " how"
               },
               {
-                "probability": 0.1710205078125,
+                "probability": 0.19287109375,
                 "rank": 2,
                 "token": " a"
               },
               {
-                "probability": 0.07952880859375,
+                "probability": 0.1024169921875,
                 "rank": 3,
                 "token": " the"
               }
             ],
-            "prob_diff": 16.943359375,
+            "prob_diff": 24.51171875,
             "rank_diff": 0
           }
         },
@@ -696,26 +696,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.41943359375,
+            "analysis_prob": 0.377197265625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.41943359375,
+                "probability": 0.377197265625,
                 "rank": 1,
                 "token": " to"
               },
               {
-                "probability": 0.2388916015625,
+                "probability": 0.236083984375,
                 "rank": 2,
                 "token": " we"
               },
               {
-                "probability": 0.195068359375,
+                "probability": 0.19873046875,
                 "rank": 3,
                 "token": " it"
               }
             ],
-            "prob_diff": -16.69921875,
+            "prob_diff": -12.4755859375,
             "rank_diff": -1
           }
         },
@@ -754,26 +754,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.061126708984375,
+            "analysis_prob": 0.0654296875,
             "analysis_rank": 5,
             "analysis_top_alternatives": [
               {
-                "probability": 0.296142578125,
+                "probability": 0.2451171875,
                 "rank": 1,
                 "token": " understand"
               },
               {
-                "probability": 0.2166748046875,
+                "probability": 0.1878662109375,
                 "rank": 2,
                 "token": " solve"
               },
               {
-                "probability": 0.1253662109375,
+                "probability": 0.11944580078125,
                 "rank": 3,
                 "token": " think"
               }
             ],
-            "prob_diff": 81.1431884765625,
+            "prob_diff": 80.712890625,
             "rank_diff": 4
           }
         },
@@ -812,26 +812,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.74853515625,
+            "analysis_prob": 0.6474609375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.74853515625,
+                "probability": 0.6474609375,
                 "rank": 1,
                 "token": " it"
               },
               {
-                "probability": 0.1385498046875,
+                "probability": 0.15869140625,
                 "rank": 2,
                 "token": " that"
               },
               {
-                "probability": 0.06146240234375,
+                "probability": 0.08038330078125,
                 "rank": 3,
                 "token": " the"
               }
             ],
-            "prob_diff": 25,
+            "prob_diff": 35.107421875,
             "rank_diff": 0
           }
         },
@@ -870,26 +870,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.5537109375,
+            "analysis_prob": 0.487060546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.5537109375,
+                "probability": 0.487060546875,
                 "rank": 1,
                 "token": " step"
               },
               {
-                "probability": 0.346435546875,
+                "probability": 0.32958984375,
                 "rank": 2,
                 "token": ":"
               },
               {
-                "probability": 0.035400390625,
+                "probability": 0.049346923828125,
                 "rank": 3,
                 "token": ","
               }
             ],
-            "prob_diff": 44.140625,
+            "prob_diff": 50.8056640625,
             "rank_diff": 0
           }
         },
@@ -928,26 +928,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.79296875,
+            "analysis_prob": 0.751953125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.79296875,
+                "probability": 0.751953125,
                 "rank": 1,
                 "token": "-"
               },
               {
-                "probability": 0.206787109375,
+                "probability": 0.2459716796875,
                 "rank": 2,
                 "token": " by"
               },
               {
-                "probability": 3.2782554626464844e-05,
+                "probability": 0.00016736984252929688,
                 "rank": 3,
                 "token": "by"
               }
             ],
-            "prob_diff": 9.130859375,
+            "prob_diff": 13.232421875,
             "rank_diff": 0
           }
         },
@@ -986,26 +986,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9990234375,
+            "analysis_prob": 0.99609375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9990234375,
+                "probability": 0.99609375,
                 "rank": 1,
                 "token": "by"
               },
               {
-                "probability": 0.00045800209045410156,
+                "probability": 0.0016326904296875,
                 "rank": 2,
                 "token": "wise"
               },
               {
-                "probability": 0.0004303455352783203,
+                "probability": 0.001544952392578125,
                 "rank": 3,
                 "token": "step"
               }
             ],
-            "prob_diff": 0.09765625,
+            "prob_diff": 0.390625,
             "rank_diff": 0
           }
         },
@@ -1044,26 +1044,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9990234375,
+            "analysis_prob": 0.99755859375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9990234375,
+                "probability": 0.99755859375,
                 "rank": 1,
                 "token": "-"
               },
               {
-                "probability": 0.0007266998291015625,
+                "probability": 0.0023956298828125,
                 "rank": 2,
                 "token": " step"
               },
               {
-                "probability": 4.5299530029296875e-06,
+                "probability": 3.49879264831543e-05,
                 "rank": 3,
                 "token": " -"
               }
             ],
-            "prob_diff": 0.09765625,
+            "prob_diff": 0.244140625,
             "rank_diff": 0
           }
         },
@@ -1102,26 +1102,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9990234375,
+            "analysis_prob": 0.9970703125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9990234375,
+                "probability": 0.9970703125,
                 "rank": 1,
                 "token": "step"
               },
               {
-                "probability": 0.000720977783203125,
+                "probability": 0.002414703369140625,
                 "rank": 2,
                 "token": "Step"
               },
               {
-                "probability": 9.161233901977539e-05,
+                "probability": 0.00043272972106933594,
                 "rank": 3,
                 "token": " step"
               }
             ],
-            "prob_diff": 0.09765625,
+            "prob_diff": 0.29296875,
             "rank_diff": 0
           }
         },
@@ -1160,26 +1160,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.7392578125,
+            "analysis_prob": 0.625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.7392578125,
+                "probability": 0.625,
                 "rank": 1,
                 "token": ":"
               },
               {
-                "probability": 0.084228515625,
+                "probability": 0.10205078125,
                 "rank": 2,
                 "token": ","
               },
               {
-                "probability": 0.08294677734375,
+                "probability": 0.1004638671875,
                 "rank": 3,
                 "token": " using"
               }
             ],
-            "prob_diff": 26.07421875,
+            "prob_diff": 37.5,
             "rank_diff": 0
           }
         },
@@ -1218,26 +1218,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9736328125,
+            "analysis_prob": 0.94287109375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9736328125,
+                "probability": 0.94287109375,
                 "rank": 1,
                 "token": "\n\n"
               },
               {
-                "probability": 0.0205230712890625,
+                "probability": 0.0377197265625,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.002651214599609375,
+                "probability": 0.006870269775390625,
                 "rank": 3,
                 "token": "\n"
               }
             ],
-            "prob_diff": 2.63671875,
+            "prob_diff": 5.712890625,
             "rank_diff": 0
           }
         },
@@ -1276,26 +1276,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.08197021484375,
+            "analysis_prob": 0.10699462890625,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.697265625,
+                "probability": 0.63525390625,
                 "rank": 1,
                 "token": "**"
               },
               {
-                "probability": 0.216064453125,
+                "probability": 0.2410888671875,
                 "rank": 2,
                 "token": "*"
               },
               {
-                "probability": 0.08197021484375,
+                "probability": 0.10699462890625,
                 "rank": 3,
                 "token": "1"
               }
             ],
-            "prob_diff": 91.119384765625,
+            "prob_diff": 88.616943359375,
             "rank_diff": 2
           }
         },
@@ -1334,26 +1334,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.99853515625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.99853515625,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.00021147727966308594,
+                "probability": 0.00086212158203125,
                 "rank": 2,
                 "token": ".**"
               },
               {
-                "probability": 2.0444393157958984e-05,
+                "probability": 0.0001232624053955078,
                 "rank": 3,
                 "token": " **"
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.146484375,
             "rank_diff": 0
           }
         },
@@ -1392,26 +1392,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9951171875,
+            "analysis_prob": 0.98583984375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9951171875,
+                "probability": 0.98583984375,
                 "rank": 1,
                 "token": " **"
               },
               {
-                "probability": 0.0036449432373046875,
+                "probability": 0.00914764404296875,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.0005588531494140625,
+                "probability": 0.0019178390502929688,
                 "rank": 3,
                 "token": " You"
               }
             ],
-            "prob_diff": 0.439453125,
+            "prob_diff": 1.3671875,
             "rank_diff": 0
           }
         },
@@ -1450,26 +1450,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.29541015625,
+            "analysis_prob": 0.220947265625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.29541015625,
+                "probability": 0.220947265625,
                 "rank": 1,
                 "token": "Start"
               },
               {
-                "probability": 0.2607421875,
+                "probability": 0.201171875,
                 "rank": 2,
                 "token": "Understanding"
               },
               {
-                "probability": 0.06195068359375,
+                "probability": 0.060394287109375,
                 "rank": 3,
                 "token": "Understand"
               }
             ],
-            "prob_diff": 69.677734375,
+            "prob_diff": 77.1240234375,
             "rank_diff": 0
           }
         },
@@ -1508,26 +1508,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9970703125,
+            "analysis_prob": 0.9892578125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9970703125,
+                "probability": 0.9892578125,
                 "rank": 1,
                 "token": " with"
               },
               {
-                "probability": 0.0015840530395507812,
+                "probability": 0.0046539306640625,
                 "rank": 2,
                 "token": " by"
               },
               {
-                "probability": 0.0005183219909667969,
+                "probability": 0.0018224716186523438,
                 "rank": 3,
                 "token": ":**"
               }
             ],
-            "prob_diff": 0.29296875,
+            "prob_diff": 1.07421875,
             "rank_diff": 0
           }
         },
@@ -1566,26 +1566,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.91259765625,
+            "analysis_prob": 0.81591796875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.91259765625,
+                "probability": 0.81591796875,
                 "rank": 1,
                 "token": " the"
               },
               {
-                "probability": 0.027130126953125,
+                "probability": 0.043243408203125,
                 "rank": 2,
                 "token": " two"
               },
               {
-                "probability": 0.024322509765625,
+                "probability": 0.039703369140625,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 8.056640625,
+            "prob_diff": 17.724609375,
             "rank_diff": 0
           }
         },
@@ -1624,26 +1624,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.00780487060546875,
+            "analysis_prob": 0.01139068603515625,
             "analysis_rank": 12,
             "analysis_top_alternatives": [
               {
-                "probability": 0.432861328125,
+                "probability": 0.3251953125,
                 "rank": 1,
                 "token": " numbers"
               },
               {
-                "probability": 0.1749267578125,
+                "probability": 0.1512451171875,
                 "rank": 2,
                 "token": " problem"
               },
               {
-                "probability": 0.11468505859375,
+                "probability": 0.10723876953125,
                 "rank": 3,
                 "token": " number"
               }
             ],
-            "prob_diff": -0.435638427734375,
+            "prob_diff": -0.794219970703125,
             "rank_diff": 4
           }
         },
@@ -1682,26 +1682,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9443359375,
+            "analysis_prob": 0.86962890625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9443359375,
+                "probability": 0.86962890625,
                 "rank": 1,
                 "token": ":**"
               },
               {
-                "probability": 0.01226043701171875,
+                "probability": 0.0231781005859375,
                 "rank": 2,
                 "token": " you"
               },
               {
-                "probability": 0.00984954833984375,
+                "probability": 0.0193634033203125,
                 "rank": 3,
                 "token": "**:"
               }
             ],
-            "prob_diff": 5.56640625,
+            "prob_diff": 13.037109375,
             "rank_diff": 0
           }
         },
@@ -1740,26 +1740,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.280029296875,
+            "analysis_prob": 0.26611328125,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.413818359375,
+                "probability": 0.369384765625,
                 "rank": 1,
                 "token": " You"
               },
               {
-                "probability": 0.280029296875,
+                "probability": 0.26611328125,
                 "rank": 2,
                 "token": " We"
               },
               {
-                "probability": 0.232177734375,
+                "probability": 0.2275390625,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 20.8251953125,
+            "prob_diff": 22.216796875,
             "rank_diff": 0
           }
         },
@@ -1798,26 +1798,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.8671875,
+            "analysis_prob": 0.7705078125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.8671875,
+                "probability": 0.7705078125,
                 "rank": 1,
                 "token": " have"
               },
               {
-                "probability": 0.0496826171875,
+                "probability": 0.070556640625,
                 "rank": 2,
                 "token": " are"
               },
               {
-                "probability": 0.0296783447265625,
+                "probability": 0.045928955078125,
                 "rank": 3,
                 "token": "'"
               }
             ],
-            "prob_diff": 11.328125,
+            "prob_diff": 20.99609375,
             "rank_diff": 0
           }
         },
@@ -1856,26 +1856,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.434326171875,
+            "analysis_prob": 0.420654296875,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.491943359375,
+                "probability": 0.4658203125,
                 "rank": 1,
                 "token": " two"
               },
               {
-                "probability": 0.434326171875,
+                "probability": 0.420654296875,
                 "rank": 2,
                 "token": " the"
               },
               {
-                "probability": 0.06353759765625,
+                "probability": 0.0848388671875,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 54.0771484375,
+            "prob_diff": 55.4443359375,
             "rank_diff": 1
           }
         },
@@ -1914,26 +1914,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.8056640625,
+            "analysis_prob": 0.73193359375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.8056640625,
+                "probability": 0.73193359375,
                 "rank": 1,
                 "token": " numbers"
               },
               {
-                "probability": 0.1490478515625,
+                "probability": 0.179443359375,
                 "rank": 2,
                 "token": " number"
               },
               {
-                "probability": 0.0251007080078125,
+                "probability": 0.0406494140625,
                 "rank": 3,
                 "token": " digits"
               }
             ],
-            "prob_diff": 6.396484375,
+            "prob_diff": 13.76953125,
             "rank_diff": 0
           }
         },
@@ -1972,26 +1972,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.92529296875,
+            "analysis_prob": 0.86474609375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.92529296875,
+                "probability": 0.86474609375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.0439453125,
+                "probability": 0.0682373046875,
                 "rank": 2,
                 "token": " \""
               },
               {
-                "probability": 0.018035888671875,
+                "probability": 0.032501220703125,
                 "rank": 3,
                 "token": " '"
               }
             ],
-            "prob_diff": 7.470703125,
+            "prob_diff": 13.525390625,
             "rank_diff": 0
           }
         },
@@ -2030,26 +2030,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99951171875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99951171875,
                 "rank": 1,
                 "token": "2"
               },
               {
-                "probability": 3.5643577575683594e-05,
+                "probability": 0.00019550323486328125,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 2.9742717742919922e-05,
+                "probability": 0.0001685619354248047,
                 "rank": 3,
                 "token": "1"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.048828125,
             "rank_diff": 0
           }
         },
@@ -2088,26 +2088,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.8798828125,
+            "analysis_prob": 0.78955078125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.8798828125,
+                "probability": 0.78955078125,
                 "rank": 1,
                 "token": " and"
               },
               {
-                "probability": 0.07220458984375,
+                "probability": 0.09881591796875,
                 "rank": 2,
                 "token": "."
               },
               {
-                "probability": 0.015380859375,
+                "probability": 0.0272369384765625,
                 "rank": 3,
                 "token": " in"
               }
             ],
-            "prob_diff": 12.01171875,
+            "prob_diff": 21.044921875,
             "rank_diff": 0
           }
         },
@@ -2146,26 +2146,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9921875,
+            "analysis_prob": 0.970703125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9921875,
+                "probability": 0.970703125,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.0024585723876953125,
+                "probability": 0.006542205810546875,
                 "rank": 2,
                 "token": " then"
               },
               {
-                "probability": 0.0009555816650390625,
+                "probability": 0.002971649169921875,
                 "rank": 3,
                 "token": " another"
               }
             ],
-            "prob_diff": 0.78125,
+            "prob_diff": 2.9296875,
             "rank_diff": 0
           }
         },
@@ -2204,26 +2204,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.998046875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.998046875,
                 "rank": 1,
                 "token": "2"
               },
               {
-                "probability": 0.00017535686492919922,
+                "probability": 0.0007429122924804688,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 4.470348358154297e-05,
+                "probability": 0.00023746490478515625,
                 "rank": 3,
                 "token": "\n\n"
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.1953125,
             "rank_diff": 0
           }
         },
@@ -2262,26 +2262,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9375,
+            "analysis_prob": 0.8564453125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9375,
+                "probability": 0.8564453125,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.01058197021484375,
+                "probability": 0.0203094482421875,
                 "rank": 2,
                 "token": " written"
               },
               {
-                "probability": 0.0097808837890625,
+                "probability": 0.019073486328125,
                 "rank": 3,
                 "token": " in"
               }
             ],
-            "prob_diff": 6.25,
+            "prob_diff": 14.35546875,
             "rank_diff": 0
           }
         },
@@ -2320,26 +2320,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.638671875,
+            "analysis_prob": 0.560546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.638671875,
+                "probability": 0.560546875,
                 "rank": 1,
                 "token": "\n"
               },
               {
-                "probability": 0.1829833984375,
+                "probability": 0.1982421875,
                 "rank": 2,
                 "token": "\n\n"
               },
               {
-                "probability": 0.135986328125,
+                "probability": 0.1544189453125,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": -17.0654296875,
+            "prob_diff": -9.2529296875,
             "rank_diff": -1
           }
         },
@@ -2378,26 +2378,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.994140625,
+            "analysis_prob": 0.98193359375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.994140625,
+                "probability": 0.98193359375,
                 "rank": 1,
                 "token": "2"
               },
               {
-                "probability": 0.002727508544921875,
+                "probability": 0.00726318359375,
                 "rank": 2,
                 "token": "   "
               },
               {
-                "probability": 0.0018596649169921875,
+                "probability": 0.005275726318359375,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 0.5859375,
+            "prob_diff": 1.806640625,
             "rank_diff": 0
           }
         },
@@ -2436,26 +2436,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.99755859375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.99755859375,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.0006823539733886719,
+                "probability": 0.0022869110107421875,
                 "rank": 2,
                 "token": ".**"
               },
               {
-                "probability": 2.467632293701172e-05,
+                "probability": 0.00014388561248779297,
                 "rank": 3,
                 "token": " **"
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.244140625,
             "rank_diff": 0
           }
         },
@@ -2494,26 +2494,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.99755859375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.99755859375,
                 "rank": 1,
                 "token": " **"
               },
               {
-                "probability": 0.0006260871887207031,
+                "probability": 0.0021152496337890625,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 3.874301910400391e-06,
+                "probability": 3.0875205993652344e-05,
                 "rank": 3,
                 "token": " +"
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.244140625,
             "rank_diff": 0
           }
         },
@@ -2552,26 +2552,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.272705078125,
+            "analysis_prob": 0.1962890625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.272705078125,
+                "probability": 0.1962890625,
                 "rank": 1,
                 "token": "Add"
               },
               {
-                "probability": 0.26025390625,
+                "probability": 0.187255859375,
                 "rank": 2,
                 "token": "Addition"
               },
               {
-                "probability": 0.0562744140625,
+                "probability": 0.05242919921875,
                 "rank": 3,
                 "token": "Group"
               }
             ],
-            "prob_diff": 63.5009765625,
+            "prob_diff": 71.142578125,
             "rank_diff": 0
           }
         },
@@ -2610,26 +2610,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.408203125,
+            "analysis_prob": 0.369384765625,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.5,
+                "probability": 0.4384765625,
                 "rank": 1,
                 "token": " them"
               },
               {
-                "probability": 0.408203125,
+                "probability": 0.369384765625,
                 "rank": 2,
                 "token": " the"
               },
               {
-                "probability": 0.02911376953125,
+                "probability": 0.040802001953125,
                 "rank": 3,
                 "token": ":**"
               }
             ],
-            "prob_diff": 46.09375,
+            "prob_diff": 49.9755859375,
             "rank_diff": 1
           }
         },
@@ -2668,26 +2668,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.12744140625,
+            "analysis_prob": 0.1214599609375,
             "analysis_rank": 5,
             "analysis_top_alternatives": [
               {
-                "probability": 0.261474609375,
+                "probability": 0.2216796875,
                 "rank": 1,
                 "token": " first"
               },
               {
-                "probability": 0.1883544921875,
+                "probability": 0.1685791015625,
                 "rank": 2,
                 "token": " units"
               },
               {
-                "probability": 0.1513671875,
+                "probability": 0.140869140625,
                 "rank": 3,
                 "token": " ones"
               }
             ],
-            "prob_diff": 77.001953125,
+            "prob_diff": 77.60009765625,
             "rank_diff": 4
           }
         },
@@ -2726,26 +2726,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.51416015625,
+            "analysis_prob": 0.42431640625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.51416015625,
+                "probability": 0.42431640625,
                 "rank": 1,
                 "token": ":**"
               },
               {
-                "probability": 0.288330078125,
+                "probability": 0.263427734375,
                 "rank": 2,
                 "token": " together"
               },
               {
-                "probability": 0.0906982421875,
+                "probability": 0.0999755859375,
                 "rank": 3,
                 "token": " in"
               }
             ],
-            "prob_diff": 48.33984375,
+            "prob_diff": 57.32421875,
             "rank_diff": 0
           }
         },
@@ -2784,26 +2784,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.37744140625,
+            "analysis_prob": 0.302978515625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.37744140625,
+                "probability": 0.302978515625,
                 "rank": 1,
                 "token": "  "
               },
               {
-                "probability": 0.24365234375,
+                "probability": 0.2099609375,
                 "rank": 2,
                 "token": " We"
               },
               {
-                "probability": 0.1187744140625,
+                "probability": 0.11590576171875,
                 "rank": 3,
                 "token": " You"
               }
             ],
-            "prob_diff": 3.41796875,
+            "prob_diff": 10.8642578125,
             "rank_diff": -1
           }
         },
@@ -2842,26 +2842,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.347900390625,
+            "analysis_prob": 0.267578125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.347900390625,
+                "probability": 0.267578125,
                 "rank": 1,
                 "token": "We"
               },
               {
-                "probability": 0.258544921875,
+                "probability": 0.2099609375,
                 "rank": 2,
                 "token": "You"
               },
               {
-                "probability": 0.07403564453125,
+                "probability": 0.07373046875,
                 "rank": 3,
                 "token": "This"
               }
             ],
-            "prob_diff": -34.29450988769531,
+            "prob_diff": -26.262283325195312,
             "rank_diff": -3
           }
         },
@@ -2900,26 +2900,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.213134765625,
+            "analysis_prob": 0.1768798828125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.213134765625,
+                "probability": 0.1768798828125,
                 "rank": 1,
                 "token": " add"
               },
               {
-                "probability": 0.144287109375,
+                "probability": 0.12841796875,
                 "rank": 2,
                 "token": "'"
               },
               {
-                "probability": 0.1419677734375,
+                "probability": 0.12646484375,
                 "rank": 3,
                 "token": " are"
               }
             ],
-            "prob_diff": 61.9873046875,
+            "prob_diff": 65.61279296875,
             "rank_diff": 0
           }
         },
@@ -2958,26 +2958,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.56396484375,
+            "analysis_prob": 0.482177734375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.56396484375,
+                "probability": 0.482177734375,
                 "rank": 1,
                 "token": " the"
               },
               {
-                "probability": 0.18017578125,
+                "probability": 0.1873779296875,
                 "rank": 2,
                 "token": " these"
               },
               {
-                "probability": 0.1470947265625,
+                "probability": 0.15771484375,
                 "rank": 3,
                 "token": " them"
               }
             ],
-            "prob_diff": 43.505859375,
+            "prob_diff": 51.6845703125,
             "rank_diff": 0
           }
         },
@@ -3016,26 +3016,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.0243682861328125,
+            "analysis_prob": 0.0291290283203125,
             "analysis_rank": 10,
             "analysis_top_alternatives": [
               {
-                "probability": 0.28759765625,
+                "probability": 0.227294921875,
                 "rank": 1,
                 "token": " first"
               },
               {
-                "probability": 0.1717529296875,
+                "probability": 0.14794921875,
                 "rank": 2,
                 "token": " two"
               },
               {
-                "probability": 0.11810302734375,
+                "probability": 0.10821533203125,
                 "rank": 3,
                 "token": " numbers"
               }
             ],
-            "prob_diff": 74.36981201171875,
+            "prob_diff": 73.89373779296875,
             "rank_diff": 9
           }
         },
@@ -3074,26 +3074,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.6904296875,
+            "analysis_prob": 0.5439453125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.6904296875,
+                "probability": 0.5439453125,
                 "rank": 1,
                 "token": " together"
               },
               {
-                "probability": 0.0762939453125,
+                "probability": 0.08673095703125,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.05242919921875,
+                "probability": 0.06341552734375,
                 "rank": 3,
                 "token": " in"
               }
             ],
-            "prob_diff": 29.345703125,
+            "prob_diff": 43.994140625,
             "rank_diff": 0
           }
         },
@@ -3132,26 +3132,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.158935546875,
+            "analysis_prob": 0.1519775390625,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.38720703125,
+                "probability": 0.3193359375,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.283447265625,
+                "probability": 0.2447509765625,
                 "rank": 2,
                 "token": ","
               },
               {
-                "probability": 0.158935546875,
+                "probability": 0.1519775390625,
                 "rank": 3,
                 "token": ":"
               }
             ],
-            "prob_diff": 82.9833984375,
+            "prob_diff": 83.67919921875,
             "rank_diff": 2
           }
         },
@@ -3190,26 +3190,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.89697265625,
+            "analysis_prob": 0.810546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.89697265625,
+                "probability": 0.810546875,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.04608154296875,
+                "probability": 0.068115234375,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 0.038787841796875,
+                "probability": 0.059173583984375,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 10.302734375,
+            "prob_diff": 18.9453125,
             "rank_diff": 0
           }
         },
@@ -3248,26 +3248,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.958984375,
+            "analysis_prob": 0.9287109375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.958984375,
+                "probability": 0.9287109375,
                 "rank": 1,
                 "token": "2"
               },
               {
-                "probability": 0.039886474609375,
+                "probability": 0.065185546875,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 0.0005517005920410156,
+                "probability": 0.001850128173828125,
                 "rank": 3,
                 "token": "\n\n"
               }
             ],
-            "prob_diff": 4.1015625,
+            "prob_diff": 7.12890625,
             "rank_diff": 0
           }
         },
@@ -3306,26 +3306,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.93994140625,
+            "analysis_prob": 0.8662109375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.93994140625,
+                "probability": 0.8662109375,
                 "rank": 1,
                 "token": " +"
               },
               {
-                "probability": 0.020294189453125,
+                "probability": 0.035491943359375,
                 "rank": 2,
                 "token": " ("
               },
               {
-                "probability": 0.010772705078125,
+                "probability": 0.0208587646484375,
                 "rank": 3,
                 "token": " plus"
               }
             ],
-            "prob_diff": 6.005859375,
+            "prob_diff": 13.37890625,
             "rank_diff": 0
           }
         },
@@ -3364,26 +3364,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.9990234375,
+            "analysis_prob": 0.99560546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9990234375,
+                "probability": 0.99560546875,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.0004875659942626953,
+                "probability": 0.001735687255859375,
                 "rank": 2,
                 "token": "2"
               },
               {
-                "probability": 0.0002130270004272461,
+                "probability": 0.0008730888366699219,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 0.09765625,
+            "prob_diff": 0.439453125,
             "rank_diff": 0
           }
         },
@@ -3422,26 +3422,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99853515625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99853515625,
                 "rank": 1,
                 "token": "2"
               },
               {
-                "probability": 0.00014770030975341797,
+                "probability": 0.0006456375122070312,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 3.319978713989258e-05,
+                "probability": 0.0001857280731201172,
                 "rank": 3,
                 "token": "1"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.146484375,
             "rank_diff": 0
           }
         },
@@ -3480,26 +3480,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.06982421875,
+            "analysis_prob": 0.0897216796875,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.6728515625,
+                "probability": 0.59423828125,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.18115234375,
+                "probability": 0.198974609375,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 0.06982421875,
+                "probability": 0.0897216796875,
                 "rank": 3,
                 "token": " ="
               }
             ],
-            "prob_diff": 92.96875,
+            "prob_diff": 90.97900390625,
             "rank_diff": 2
           }
         },
@@ -3538,26 +3538,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.89208984375,
+            "analysis_prob": 0.8037109375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.89208984375,
+                "probability": 0.8037109375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.046539306640625,
+                "probability": 0.068603515625,
                 "rank": 2,
                 "token": " ?"
               },
               {
-                "probability": 0.0300445556640625,
+                "probability": 0.047515869140625,
                 "rank": 3,
                 "token": "\n"
               }
             ],
-            "prob_diff": 10.791015625,
+            "prob_diff": 19.62890625,
             "rank_diff": 0
           }
         },
@@ -3596,26 +3596,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.93701171875,
+            "analysis_prob": 0.89892578125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.93701171875,
+                "probability": 0.89892578125,
                 "rank": 1,
                 "token": "4"
               },
               {
-                "probability": 0.061309814453125,
+                "probability": 0.09326171875,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 0.0007596015930175781,
+                "probability": 0.0023899078369140625,
                 "rank": 3,
                 "token": "2"
               }
             ],
-            "prob_diff": 6.298828125,
+            "prob_diff": 10.107421875,
             "rank_diff": 0
           }
         },
@@ -3654,26 +3654,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.31640625,
+            "analysis_prob": 0.31494140625,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.59130859375,
+                "probability": 0.52783203125,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.31640625,
+                "probability": 0.31494140625,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 0.056732177734375,
+                "probability": 0.0748291015625,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 53.02734375,
+            "prob_diff": 53.173828125,
             "rank_diff": 1
           }
         },
@@ -3712,26 +3712,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.94140625,
+            "analysis_prob": 0.8818359375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.94140625,
+                "probability": 0.8818359375,
                 "rank": 1,
                 "token": "3"
               },
               {
-                "probability": 0.04071044921875,
+                "probability": 0.06439208984375,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.00701904296875,
+                "probability": 0.0149383544921875,
                 "rank": 3,
                 "token": "   "
               }
             ],
-            "prob_diff": 5.859375,
+            "prob_diff": 11.81640625,
             "rank_diff": 0
           }
         },
@@ -3770,26 +3770,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.998046875,
+            "analysis_prob": 0.99267578125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.998046875,
+                "probability": 0.99267578125,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.0012836456298828125,
+                "probability": 0.0038700103759765625,
                 "rank": 2,
                 "token": ".**"
               },
               {
-                "probability": 0.0003619194030761719,
+                "probability": 0.0013475418090820312,
                 "rank": 3,
                 "token": " **"
               }
             ],
-            "prob_diff": 0.1953125,
+            "prob_diff": 0.732421875,
             "rank_diff": 0
           }
         },
@@ -3828,26 +3828,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.98681640625,
+            "analysis_prob": 0.9658203125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.98681640625,
+                "probability": 0.9658203125,
                 "rank": 1,
                 "token": " **"
               },
               {
-                "probability": 0.0102996826171875,
+                "probability": 0.0214996337890625,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.0006232261657714844,
+                "probability": 0.0020809173583984375,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 1.318359375,
+            "prob_diff": 3.41796875,
             "rank_diff": 0
           }
         },
@@ -3886,26 +3886,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.01261138916015625,
+            "analysis_prob": 0.0135650634765625,
             "analysis_rank": 11,
             "analysis_top_alternatives": [
               {
-                "probability": 0.2235107421875,
+                "probability": 0.1492919921875,
                 "rank": 1,
                 "token": "The"
               },
               {
-                "probability": 0.1661376953125,
+                "probability": 0.11627197265625,
                 "rank": 2,
                 "token": "Combine"
               },
               {
-                "probability": 0.086181640625,
+                "probability": 0.06732177734375,
                 "rank": 3,
                 "token": "Result"
               }
             ],
-            "prob_diff": 96.15097045898438,
+            "prob_diff": 96.05560302734375,
             "rank_diff": 10
           }
         },
@@ -3944,26 +3944,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.951171875,
+            "analysis_prob": 0.89453125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.951171875,
+                "probability": 0.89453125,
                 "rank": 1,
                 "token": " the"
               },
               {
-                "probability": 0.02783203125,
+                "probability": 0.04705810546875,
                 "rank": 2,
                 "token": " down"
               },
               {
-                "probability": 0.0088958740234375,
+                "probability": 0.018280029296875,
                 "rank": 3,
                 "token": " out"
               }
             ],
-            "prob_diff": 4.638671875,
+            "prob_diff": 10.302734375,
             "rank_diff": 0
           }
         },
@@ -4002,26 +4002,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.375,
+            "analysis_prob": 0.33935546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.375,
+                "probability": 0.33935546875,
                 "rank": 1,
                 "token": " answer"
               },
               {
-                "probability": 0.330810546875,
+                "probability": 0.306640625,
                 "rank": 2,
                 "token": " sum"
               },
               {
-                "probability": 0.2420654296875,
+                "probability": 0.2369384765625,
                 "rank": 3,
                 "token": " result"
               }
             ],
-            "prob_diff": 50.341796875,
+            "prob_diff": 53.90625,
             "rank_diff": 0
           }
         },
@@ -4060,26 +4060,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.98828125,
+            "analysis_prob": 0.958984375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.98828125,
+                "probability": 0.958984375,
                 "rank": 1,
                 "token": ":**"
               },
               {
-                "probability": 0.0024700164794921875,
+                "probability": 0.006511688232421875,
                 "rank": 2,
                 "token": " as"
               },
               {
-                "probability": 0.0016574859619140625,
+                "probability": 0.004688262939453125,
                 "rank": 3,
                 "token": ":"
               }
             ],
-            "prob_diff": 1.07421875,
+            "prob_diff": 4.00390625,
             "rank_diff": 0
           }
         },
@@ -4118,26 +4118,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.26171875,
+            "analysis_prob": 0.2198486328125,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.35205078125,
+                "probability": 0.2822265625,
                 "rank": 1,
                 "token": " The"
               },
               {
-                "probability": 0.26171875,
+                "probability": 0.2198486328125,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.1336669921875,
+                "probability": 0.125244140625,
                 "rank": 3,
                 "token": " We"
               }
             ],
-            "prob_diff": 6.6162109375,
+            "prob_diff": 10.80322265625,
             "rank_diff": 0
           }
         },
@@ -4176,26 +4176,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.040771484375,
+            "analysis_prob": 0.045257568359375,
             "analysis_rank": 5,
             "analysis_top_alternatives": [
               {
-                "probability": 0.466552734375,
+                "probability": 0.344970703125,
                 "rank": 1,
                 "token": "The"
               },
               {
-                "probability": 0.1612548828125,
+                "probability": 0.1416015625,
                 "rank": 2,
                 "token": "We"
               },
               {
-                "probability": 0.058380126953125,
+                "probability": 0.0609130859375,
                 "rank": 3,
                 "token": "Therefore"
               }
             ],
-            "prob_diff": 39.9169921875,
+            "prob_diff": 39.4683837890625,
             "rank_diff": 3
           }
         },
@@ -4234,26 +4234,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.040863037109375,
+            "analysis_prob": 0.04840087890625,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.64892578125,
+                "probability": 0.48486328125,
                 "rank": 1,
                 "token": " is"
               },
               {
-                "probability": 0.0662841796875,
+                "probability": 0.0726318359375,
                 "rank": 2,
                 "token": " represents"
               },
               {
-                "probability": 0.05084228515625,
+                "probability": 0.058380126953125,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": -3.13720703125,
+            "prob_diff": -3.8909912109375,
             "rank_diff": 1
           }
         },
@@ -4292,26 +4292,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.205810546875,
+            "analysis_prob": 0.177001953125,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.333984375,
+                "probability": 0.265625,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.205810546875,
+                "probability": 0.177001953125,
                 "rank": 2,
                 "token": "\n\n"
               },
               {
-                "probability": 0.1602783203125,
+                "probability": 0.143310546875,
                 "rank": 3,
                 "token": "\n\n\n"
               }
             ],
-            "prob_diff": 77.1728515625,
+            "prob_diff": 80.0537109375,
             "rank_diff": 1
           }
         },
@@ -4350,26 +4350,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.0943603515625,
+            "analysis_prob": 0.08062744140625,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.268798828125,
+                "probability": 0.19189453125,
                 "rank": 1,
                 "token": "**"
               },
               {
-                "probability": 0.1790771484375,
+                "probability": 0.1370849609375,
                 "rank": 2,
                 "token": "Let"
               },
               {
-                "probability": 0.0943603515625,
+                "probability": 0.08062744140625,
                 "rank": 3,
                 "token": "Therefore"
               }
             ],
-            "prob_diff": 87.73193359375,
+            "prob_diff": 89.105224609375,
             "rank_diff": 2
           }
         },
@@ -4408,26 +4408,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.96875,
+            "analysis_prob": 0.931640625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.96875,
+                "probability": 0.931640625,
                 "rank": 1,
                 "token": ","
               },
               {
-                "probability": 0.018585205078125,
+                "probability": 0.03472900390625,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.0105133056640625,
+                "probability": 0.021575927734375,
                 "rank": 3,
                 "token": ":"
               }
             ],
-            "prob_diff": 3.125,
+            "prob_diff": 6.8359375,
             "rank_diff": 0
           }
         },
@@ -4466,26 +4466,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.95263671875,
+            "analysis_prob": 0.890625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.95263671875,
+                "probability": 0.890625,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.0236663818359375,
+                "probability": 0.041015625,
                 "rank": 2,
                 "token": " the"
               },
               {
-                "probability": 0.010101318359375,
+                "probability": 0.0201416015625,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 4.736328125,
+            "prob_diff": 10.9375,
             "rank_diff": 0
           }
         },
@@ -4524,26 +4524,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.9970703125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.9970703125,
                 "rank": 1,
                 "token": "2"
               },
               {
-                "probability": 0.000209808349609375,
+                "probability": 0.0008606910705566406,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 0.00013971328735351562,
+                "probability": 0.0006127357482910156,
                 "rank": 3,
                 "token": "4"
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.29296875,
             "rank_diff": 0
           }
         },
@@ -4582,26 +4582,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.916015625,
+            "analysis_prob": 0.8662109375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.916015625,
+                "probability": 0.8662109375,
                 "rank": 1,
                 "token": " +"
               },
               {
-                "probability": 0.070068359375,
+                "probability": 0.10186767578125,
                 "rank": 2,
                 "token": "+"
               },
               {
-                "probability": 0.01218414306640625,
+                "probability": 0.0236358642578125,
                 "rank": 3,
                 "token": " plus"
               }
             ],
-            "prob_diff": 4.052734375,
+            "prob_diff": 9.033203125,
             "rank_diff": 0
           }
         },
@@ -4640,26 +4640,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.99755859375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.99755859375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.0004878044128417969,
+                "probability": 0.0017261505126953125,
                 "rank": 2,
                 "token": "2"
               },
               {
-                "probability": 4.0650367736816406e-05,
+                "probability": 0.0002186298370361328,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.244140625,
             "rank_diff": 0
           }
         },
@@ -4707,12 +4707,12 @@
                 "token": "2"
               },
               {
-                "probability": 1.0371208190917969e-05,
+                "probability": 7.033348083496094e-05,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 5.602836608886719e-06,
+                "probability": 4.214048385620117e-05,
                 "rank": 3,
                 "token": "4"
               }
@@ -4756,26 +4756,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.70361328125,
+            "analysis_prob": 0.63427734375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.70361328125,
+                "probability": 0.63427734375,
                 "rank": 1,
                 "token": " ="
               },
               {
-                "probability": 0.2320556640625,
+                "probability": 0.25244140625,
                 "rank": 2,
                 "token": " equals"
               },
               {
-                "probability": 0.050567626953125,
+                "probability": 0.07061767578125,
                 "rank": 3,
                 "token": " is"
               }
             ],
-            "prob_diff": 13.525390625,
+            "prob_diff": 20.458984375,
             "rank_diff": 0
           }
         },
@@ -4814,26 +4814,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.97802734375,
+            "analysis_prob": 0.95068359375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.97802734375,
+                "probability": 0.95068359375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.0189208984375,
+                "probability": 0.03546142578125,
                 "rank": 2,
                 "token": " **"
               },
               {
-                "probability": 0.0015773773193359375,
+                "probability": 0.004505157470703125,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 2.1484375,
+            "prob_diff": 4.8828125,
             "rank_diff": 0
           }
         },
@@ -4872,26 +4872,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.00888824462890625,
+            "analysis_prob": 0.0192108154296875,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.98779296875,
+                "probability": 0.97021484375,
                 "rank": 1,
                 "token": "4"
               },
               {
-                "probability": 0.00888824462890625,
+                "probability": 0.0192108154296875,
                 "rank": 2,
                 "token": "6"
               },
               {
-                "probability": 0.002796173095703125,
+                "probability": 0.007293701171875,
                 "rank": 3,
                 "token": "2"
               }
             ],
-            "prob_diff": 99.11117553710938,
+            "prob_diff": 98.07891845703125,
             "rank_diff": 1
           }
         },
@@ -4930,26 +4930,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.493408203125,
+            "analysis_prob": 0.38427734375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.493408203125,
+                "probability": 0.38427734375,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.15283203125,
+                "probability": 0.1446533203125,
                 "rank": 2,
                 "token": "!"
               },
               {
-                "probability": 0.15283203125,
+                "probability": 0.1446533203125,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 42.0654296875,
+            "prob_diff": 52.978515625,
             "rank_diff": 0
           }
         },
@@ -4988,26 +4988,26 @@
           "is_injected": false,
           "rule_applied": null,
           "diff_data": {
-            "analysis_prob": 0.02044677734375,
+            "analysis_prob": 0.0285186767578125,
             "analysis_rank": 6,
             "analysis_top_alternatives": [
               {
-                "probability": 0.66650390625,
+                "probability": 0.521484375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.06597900390625,
+                "probability": 0.07574462890625,
                 "rank": 2,
                 "token": "\n\n"
               },
               {
-                "probability": 0.06396484375,
+                "probability": 0.073974609375,
                 "rank": 3,
                 "token": "\n"
               }
             ],
-            "prob_diff": 19.207763671875,
+            "prob_diff": 18.40057373046875,
             "rank_diff": 3
           }
         }
@@ -5063,26 +5063,26 @@
           ],
           "is_first_token": true,
           "diff_data": {
-            "analysis_prob": 0.01751708984375,
+            "analysis_prob": 0.0274200439453125,
             "analysis_rank": 6,
             "analysis_top_alternatives": [
               {
-                "probability": 0.76904296875,
+                "probability": 0.64404296875,
                 "rank": 1,
                 "token": "Please"
               },
               {
-                "probability": 0.07855224609375,
+                "probability": 0.095703125,
                 "rank": 2,
                 "token": "You"
               },
               {
-                "probability": 0.0440673828125,
+                "probability": 0.0589599609375,
                 "rank": 3,
                 "token": "Let"
               }
             ],
-            "prob_diff": 93.658447265625,
+            "prob_diff": 92.66815185546875,
             "rank_diff": 5
           }
         },
@@ -5115,26 +5115,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.640625,
+            "analysis_prob": 0.6162109375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.640625,
+                "probability": 0.6162109375,
                 "rank": 1,
                 "token": ","
               },
               {
-                "probability": 0.359375,
+                "probability": 0.3828125,
                 "rank": 2,
                 "token": "!"
               },
               {
-                "probability": 2.753734588623047e-05,
+                "probability": 0.00014209747314453125,
                 "rank": 3,
                 "token": " I"
               }
             ],
-            "prob_diff": 33.69140625,
+            "prob_diff": 36.1328125,
             "rank_diff": 0
           }
         },
@@ -5167,26 +5167,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.173583984375,
+            "analysis_prob": 0.1656494140625,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.46435546875,
+                "probability": 0.376220703125,
                 "rank": 1,
                 "token": " I"
               },
               {
-                "probability": 0.173583984375,
+                "probability": 0.1656494140625,
                 "rank": 2,
                 "token": " let"
               },
               {
-                "probability": 0.0872802734375,
+                "probability": 0.0936279296875,
                 "rank": 3,
                 "token": " you"
               }
             ],
-            "prob_diff": 82.3486328125,
+            "prob_diff": 83.14208984375,
             "rank_diff": 1
           }
         },
@@ -5219,26 +5219,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0006322860717773438,
+            "analysis_prob": 0.0019989013671875,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.849609375,
+                "probability": 0.80615234375,
                 "rank": 1,
                 "token": "'"
               },
               {
-                "probability": 0.14990234375,
+                "probability": 0.1915283203125,
                 "rank": 2,
                 "token": " me"
               },
               {
-                "probability": 0.0006322860717773438,
+                "probability": 0.0019989013671875,
                 "rank": 3,
                 "token": "’"
               }
             ],
-            "prob_diff": 74.25317764282227,
+            "prob_diff": 74.11651611328125,
             "rank_diff": 2
           }
         },
@@ -5280,14 +5280,14 @@
                 "token": "s"
               },
               {
-                "probability": 5.364418029785156e-07,
+                "probability": 6.139278411865234e-06,
                 "rank": 2,
                 "token": " s"
               },
               {
-                "probability": 1.1920928955078125e-07,
+                "probability": 2.0265579223632812e-06,
                 "rank": 3,
-                "token": "ll"
+                "token": "a"
               }
             ],
             "prob_diff": 0,
@@ -5323,26 +5323,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.1201171875,
+            "analysis_prob": 0.11279296875,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.34765625,
+                "probability": 0.272705078125,
                 "rank": 1,
                 "token": " test"
               },
               {
-                "probability": 0.16162109375,
+                "probability": 0.1448974609375,
                 "rank": 2,
                 "token": " play"
               },
               {
-                "probability": 0.1201171875,
+                "probability": 0.11279296875,
                 "rank": 3,
                 "token": " do"
               }
             ],
-            "prob_diff": 66.455078125,
+            "prob_diff": 67.1875,
             "rank_diff": 2
           }
         },
@@ -5375,26 +5375,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.27099609375,
+            "analysis_prob": 0.288818359375,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.69189453125,
+                "probability": 0.630859375,
                 "rank": 1,
                 "token": " some"
               },
               {
-                "probability": 0.27099609375,
+                "probability": 0.288818359375,
                 "rank": 2,
                 "token": " a"
               },
               {
-                "probability": 0.01092529296875,
+                "probability": 0.019805908203125,
                 "rank": 3,
                 "token": " something"
               }
             ],
-            "prob_diff": 28.955078125,
+            "prob_diff": 27.1728515625,
             "rank_diff": 1
           }
         },
@@ -5427,26 +5427,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.01250457763671875,
+            "analysis_prob": 0.020599365234375,
             "analysis_rank": 5,
             "analysis_top_alternatives": [
               {
-                "probability": 0.755859375,
+                "probability": 0.630859375,
                 "rank": 1,
                 "token": " test"
               },
               {
-                "probability": 0.0888671875,
+                "probability": 0.10546875,
                 "rank": 2,
                 "token": " little"
               },
               {
-                "probability": 0.060150146484375,
+                "probability": 0.0765380859375,
                 "rank": 3,
                 "token": " few"
               }
             ],
-            "prob_diff": 60.810089111328125,
+            "prob_diff": 60.0006103515625,
             "rank_diff": 4
           }
         },
@@ -5479,26 +5479,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.9072265625,
+            "analysis_prob": 0.80419921875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9072265625,
+                "probability": 0.80419921875,
                 "rank": 1,
                 "token": " test"
               },
               {
-                "probability": 0.033050537109375,
+                "probability": 0.050628662109375,
                 "rank": 2,
                 "token": " \""
               },
               {
-                "probability": 0.0227203369140625,
+                "probability": 0.03704833984375,
                 "rank": 3,
                 "token": " “"
               }
             ],
-            "prob_diff": -10.546875,
+            "prob_diff": -0.244140625,
             "rank_diff": 0
           }
         },
@@ -5531,26 +5531,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.93994140625,
+            "analysis_prob": 0.86962890625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.93994140625,
+                "probability": 0.86962890625,
                 "rank": 1,
                 "token": "!"
               },
               {
-                "probability": 0.03070068359375,
+                "probability": 0.050201416015625,
                 "rank": 2,
                 "token": "."
               },
               {
-                "probability": 0.0080718994140625,
+                "probability": 0.0164337158203125,
                 "rank": 3,
                 "token": " to"
               }
             ],
-            "prob_diff": 5.6640625,
+            "prob_diff": 12.6953125,
             "rank_diff": 0
           }
         },
@@ -5583,26 +5583,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.04986572265625,
+            "analysis_prob": 0.057586669921875,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.3984375,
+                "probability": 0.32373046875,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.29150390625,
+                "probability": 0.251953125,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.0660400390625,
+                "probability": 0.07275390625,
                 "rank": 3,
                 "token": " What"
               }
             ],
-            "prob_diff": 84.271240234375,
+            "prob_diff": 83.4991455078125,
             "rank_diff": 3
           }
         },
@@ -5635,26 +5635,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.2041015625,
+            "analysis_prob": 0.1943359375,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.52099609375,
+                "probability": 0.424560546875,
                 "rank": 1,
                 "token": "**"
               },
               {
-                "probability": 0.2041015625,
+                "probability": 0.1943359375,
                 "rank": 2,
                 "token": "What"
               },
               {
-                "probability": 0.0811767578125,
+                "probability": 0.09039306640625,
                 "rank": 3,
                 "token": "To"
               }
             ],
-            "prob_diff": 11.81640625,
+            "prob_diff": 12.79296875,
             "rank_diff": 1
           }
         },
@@ -5687,26 +5687,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0994873046875,
+            "analysis_prob": 0.09075927734375,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.2313232421875,
+                "probability": 0.183349609375,
                 "rank": 1,
                 "token": " would"
               },
               {
-                "probability": 0.154052734375,
+                "probability": 0.132080078125,
                 "rank": 2,
                 "token": " do"
               },
               {
-                "probability": 0.0994873046875,
+                "probability": 0.09075927734375,
                 "rank": 3,
                 "token": " is"
               }
             ],
-            "prob_diff": 90.00244140625,
+            "prob_diff": 90.875244140625,
             "rank_diff": 2
           }
         },
@@ -5739,26 +5739,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.259033203125,
+            "analysis_prob": 0.2457275390625,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.37109375,
+                "probability": 0.330810546875,
                 "rank": 1,
                 "token": " the"
               },
               {
-                "probability": 0.298095703125,
+                "probability": 0.2763671875,
                 "rank": 2,
                 "token": " your"
               },
               {
-                "probability": 0.259033203125,
+                "probability": 0.2457275390625,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 74.0966796875,
+            "prob_diff": 75.42724609375,
             "rank_diff": 2
           }
         },
@@ -5791,26 +5791,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.082275390625,
+            "analysis_prob": 0.09619140625,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.5712890625,
+                "probability": 0.484619140625,
                 "rank": 1,
                 "token": "5"
               },
               {
-                "probability": 0.1561279296875,
+                "probability": 0.1636962890625,
                 "rank": 2,
                 "token": "7"
               },
               {
-                "probability": 0.10400390625,
+                "probability": 0.116943359375,
                 "rank": 3,
                 "token": "1"
               }
             ],
-            "prob_diff": 12.92724609375,
+            "prob_diff": 11.53564453125,
             "rank_diff": 2
           }
         },
@@ -5843,26 +5843,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.09033203125,
+            "analysis_prob": 0.10284423828125,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.67822265625,
+                "probability": 0.5517578125,
                 "rank": 1,
                 "token": " x"
               },
               {
-                "probability": 0.09033203125,
+                "probability": 0.10284423828125,
                 "rank": 2,
                 "token": " +"
               },
               {
-                "probability": 0.06927490234375,
+                "probability": 0.08197021484375,
                 "rank": 3,
                 "token": " *"
               }
             ],
-            "prob_diff": 90.8203125,
+            "prob_diff": 89.569091796875,
             "rank_diff": 1
           }
         },
@@ -5895,26 +5895,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.99609375,
+            "analysis_prob": 0.9833984375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99609375,
+                "probability": 0.9833984375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.0011386871337890625,
+                "probability": 0.003490447998046875,
                 "rank": 2,
                 "token": " ("
               },
               {
-                "probability": 0.0010786056518554688,
+                "probability": 0.0033321380615234375,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 0.390625,
+            "prob_diff": 1.66015625,
             "rank_diff": 0
           }
         },
@@ -5947,26 +5947,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0048980712890625,
+            "analysis_prob": 0.01019287109375,
             "analysis_rank": 6,
             "analysis_top_alternatives": [
               {
-                "probability": 0.76171875,
+                "probability": 0.68212890625,
                 "rank": 1,
                 "token": "5"
               },
               {
-                "probability": 0.1453857421875,
+                "probability": 0.1724853515625,
                 "rank": 2,
                 "token": "4"
               },
               {
-                "probability": 0.067626953125,
+                "probability": 0.09088134765625,
                 "rank": 3,
                 "token": "7"
               }
             ],
-            "prob_diff": 60.35003662109375,
+            "prob_diff": 59.820556640625,
             "rank_diff": 5
           }
         },
@@ -5999,26 +5999,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.853515625,
+            "analysis_prob": 0.740234375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.853515625,
+                "probability": 0.740234375,
                 "rank": 1,
                 "token": "?"
               },
               {
-                "probability": 0.052886962890625,
+                "probability": 0.07275390625,
                 "rank": 2,
                 "token": " x"
               },
               {
-                "probability": 0.027862548828125,
+                "probability": 0.042755126953125,
                 "rank": 3,
                 "token": " ?"
               }
             ],
-            "prob_diff": 14.6484375,
+            "prob_diff": 25.9765625,
             "rank_diff": 0
           }
         },
@@ -6051,26 +6051,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.51025390625,
+            "analysis_prob": 0.41357421875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.51025390625,
+                "probability": 0.41357421875,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.1710205078125,
+                "probability": 0.1671142578125,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.091552734375,
+                "probability": 0.0989990234375,
                 "rank": 3,
                 "token": "\n\n"
               }
             ],
-            "prob_diff": -17.3095703125,
+            "prob_diff": -7.6416015625,
             "rank_diff": -1
           }
         },
@@ -6103,26 +6103,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.83544921875,
+            "analysis_prob": 0.7158203125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.83544921875,
+                "probability": 0.7158203125,
                 "rank": 1,
                 "token": "\n\n"
               },
               {
-                "probability": 0.064453125,
+                "probability": 0.08416748046875,
                 "rank": 2,
                 "token": "🧮"
               },
               {
-                "probability": 0.0435791015625,
+                "probability": 0.060638427734375,
                 "rank": 3,
                 "token": "\n"
               }
             ],
-            "prob_diff": 16.357421875,
+            "prob_diff": 28.3203125,
             "rank_diff": 0
           }
         },
@@ -6155,26 +6155,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.2061767578125,
+            "analysis_prob": 0.1510009765625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.2061767578125,
+                "probability": 0.1510009765625,
                 "rank": 1,
                 "token": "Let"
               },
               {
-                "probability": 0.1212158203125,
+                "probability": 0.09747314453125,
                 "rank": 2,
                 "token": "I"
               },
               {
-                "probability": 0.07586669921875,
+                "probability": 0.06597900390625,
                 "rank": 3,
                 "token": "Give"
               }
             ],
-            "prob_diff": 74.01123046875,
+            "prob_diff": 79.52880859375,
             "rank_diff": 0
           }
         },
@@ -6207,26 +6207,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.890625,
+            "analysis_prob": 0.84228515625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.890625,
+                "probability": 0.84228515625,
                 "rank": 1,
                 "token": " me"
               },
               {
-                "probability": 0.0953369140625,
+                "probability": 0.130126953125,
                 "rank": 2,
                 "token": "'"
               },
               {
-                "probability": 0.01374053955078125,
+                "probability": 0.026031494140625,
                 "rank": 3,
                 "token": "’"
               }
             ],
-            "prob_diff": -82.659912109375,
+            "prob_diff": -77.825927734375,
             "rank_diff": -2
           }
         },
@@ -6259,26 +6259,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.998046875,
+            "analysis_prob": 0.98974609375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.998046875,
+                "probability": 0.98974609375,
                 "rank": 1,
                 "token": " know"
               },
               {
-                "probability": 0.00021278858184814453,
+                "probability": 0.0008678436279296875,
                 "rank": 2,
                 "token": " break"
               },
               {
-                "probability": 0.0001952648162841797,
+                "probability": 0.0008091926574707031,
                 "rank": 3,
                 "token": " help"
               }
             ],
-            "prob_diff": 0.1953125,
+            "prob_diff": 1.025390625,
             "rank_diff": 0
           }
         },
@@ -6311,26 +6311,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.291748046875,
+            "analysis_prob": 0.2587890625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.291748046875,
+                "probability": 0.2587890625,
                 "rank": 1,
                 "token": " your"
               },
               {
-                "probability": 0.25341796875,
+                "probability": 0.230224609375,
                 "rank": 2,
                 "token": " what"
               },
               {
-                "probability": 0.1715087890625,
+                "probability": 0.1671142578125,
                 "rank": 3,
                 "token": " when"
               }
             ],
-            "prob_diff": 65.7470703125,
+            "prob_diff": 69.04296875,
             "rank_diff": 0
           }
         },
@@ -6363,26 +6363,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.984375,
+            "analysis_prob": 0.95361328125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.984375,
+                "probability": 0.95361328125,
                 "rank": 1,
                 "token": " answer"
               },
               {
-                "probability": 0.0036334991455078125,
+                "probability": 0.0089263916015625,
                 "rank": 2,
                 "token": " response"
               },
               {
-                "probability": 0.0024776458740234375,
+                "probability": 0.00647735595703125,
                 "rank": 3,
                 "token": " thinking"
               }
             ],
-            "prob_diff": 1.5625,
+            "prob_diff": 4.638671875,
             "rank_diff": 0
           }
         },
@@ -6415,26 +6415,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.2296142578125,
+            "analysis_prob": 0.22265625,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.40283203125,
+                "probability": 0.355712890625,
                 "rank": 1,
                 "token": " and"
               },
               {
-                "probability": 0.256103515625,
+                "probability": 0.2445068359375,
                 "rank": 2,
                 "token": ","
               },
               {
-                "probability": 0.2296142578125,
+                "probability": 0.22265625,
                 "rank": 3,
                 "token": "!"
               }
             ],
-            "prob_diff": 76.89208984375,
+            "prob_diff": 77.587890625,
             "rank_diff": 2
           }
         },
@@ -6467,26 +6467,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.4423828125,
+            "analysis_prob": 0.362060546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.4423828125,
+                "probability": 0.362060546875,
                 "rank": 1,
                 "token": " 😊"
               },
               {
-                "probability": 0.1627197265625,
+                "probability": 0.158203125,
                 "rank": 2,
                 "token": " 😄"
               },
               {
-                "probability": 0.122802734375,
+                "probability": 0.1251220703125,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 18.896484375,
+            "prob_diff": 26.9287109375,
             "rank_diff": 0
           }
         },
@@ -6519,26 +6519,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.00012189149856567383,
+            "analysis_prob": 0.000476837158203125,
             "analysis_rank": 19,
             "analysis_top_alternatives": [
               {
-                "probability": 0.74560546875,
+                "probability": 0.6767578125,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.2169189453125,
+                "probability": 0.2413330078125,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.019866943359375,
+                "probability": 0.033172607421875,
                 "rank": 3,
                 "token": "\n"
               }
             ],
-            "prob_diff": 96.96046710014343,
+            "prob_diff": 96.92497253417969,
             "rank_diff": 18
           }
         }
@@ -6597,26 +6597,26 @@
           ],
           "is_first_token": true,
           "diff_data": {
-            "analysis_prob": 0.003391265869140625,
+            "analysis_prob": 0.007152557373046875,
             "analysis_rank": 8,
             "analysis_top_alternatives": [
               {
-                "probability": 0.80419921875,
+                "probability": 0.68017578125,
                 "rank": 1,
                 "token": "You"
               },
               {
-                "probability": 0.0513916015625,
+                "probability": 0.0694580078125,
                 "rank": 2,
                 "token": "That"
               },
               {
-                "probability": 0.04681396484375,
+                "probability": 0.063232421875,
                 "rank": 3,
                 "token": "The"
               }
             ],
-            "prob_diff": 97.12181091308594,
+            "prob_diff": 96.74568176269531,
             "rank_diff": 7
           }
         },
@@ -6649,26 +6649,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.96826171875,
+            "analysis_prob": 0.931640625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.96826171875,
+                "probability": 0.931640625,
                 "rank": 1,
                 "token": " +"
               },
               {
-                "probability": 0.021728515625,
+                "probability": 0.03936767578125,
                 "rank": 2,
                 "token": "+"
               },
               {
-                "probability": 0.0068359375,
+                "probability": 0.0149383544921875,
                 "rank": 3,
                 "token": " plus"
               }
             ],
-            "prob_diff": 3.173828125,
+            "prob_diff": 6.8359375,
             "rank_diff": 0
           }
         },
@@ -6701,26 +6701,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.99755859375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.99755859375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.00047659873962402344,
+                "probability": 0.0016994476318359375,
                 "rank": 2,
                 "token": "3"
               },
               {
-                "probability": 7.2479248046875e-05,
+                "probability": 0.0003535747528076172,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.244140625,
             "rank_diff": 0
           }
         },
@@ -6753,26 +6753,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99951171875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99951171875,
                 "rank": 1,
                 "token": "3"
               },
               {
-                "probability": 2.282857894897461e-05,
+                "probability": 0.00013494491577148438,
                 "rank": 2,
                 "token": "4"
               },
               {
-                "probability": 1.430511474609375e-05,
+                "probability": 9.131431579589844e-05,
                 "rank": 3,
                 "token": "5"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.048828125,
             "rank_diff": 0
           }
         },
@@ -6805,26 +6805,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.95068359375,
+            "analysis_prob": 0.908203125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.95068359375,
+                "probability": 0.908203125,
                 "rank": 1,
                 "token": " ="
               },
               {
-                "probability": 0.0305633544921875,
+                "probability": 0.0516357421875,
                 "rank": 2,
                 "token": " is"
               },
               {
-                "probability": 0.014434814453125,
+                "probability": 0.0276336669921875,
                 "rank": 3,
                 "token": " equals"
               }
             ],
-            "prob_diff": 4.931640625,
+            "prob_diff": 9.1796875,
             "rank_diff": 0
           }
         },
@@ -6857,26 +6857,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.98095703125,
+            "analysis_prob": 0.95751953125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.98095703125,
+                "probability": 0.95751953125,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.01215362548828125,
+                "probability": 0.0249176025390625,
                 "rank": 2,
                 "token": " **"
               },
               {
-                "probability": 0.0066070556640625,
+                "probability": 0.0149993896484375,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 1.904296875,
+            "prob_diff": 4.248046875,
             "rank_diff": 0
           }
         },
@@ -6909,26 +6909,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99951171875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99951171875,
                 "rank": 1,
                 "token": "6"
               },
               {
-                "probability": 1.1026859283447266e-05,
+                "probability": 7.367134094238281e-05,
                 "rank": 2,
                 "token": "\n\n"
               },
               {
-                "probability": 6.556510925292969e-06,
+                "probability": 4.756450653076172e-05,
                 "rank": 3,
                 "token": "5"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.048828125,
             "rank_diff": 0
           }
         },
@@ -6961,26 +6961,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.05706787109375,
+            "analysis_prob": 0.07000732421875,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.5087890625,
+                "probability": 0.432373046875,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.2327880859375,
+                "probability": 0.22607421875,
                 "rank": 2,
                 "token": "!"
               },
               {
-                "probability": 0.1285400390625,
+                "probability": 0.1370849609375,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 81.158447265625,
+            "prob_diff": 79.864501953125,
             "rank_diff": 3
           }
         },
@@ -7013,26 +7013,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.50244140625,
+            "analysis_prob": 0.389892578125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.50244140625,
+                "probability": 0.389892578125,
                 "rank": 1,
                 "token": "You"
               },
               {
-                "probability": 0.1485595703125,
+                "probability": 0.14013671875,
                 "rank": 2,
                 "token": "Good"
               },
               {
-                "probability": 0.10870361328125,
+                "probability": 0.1082763671875,
                 "rank": 3,
                 "token": "Great"
               }
             ],
-            "prob_diff": -9.1796875,
+            "prob_diff": 2.0751953125,
             "rank_diff": -1
           }
         },
@@ -7065,26 +7065,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.95361328125,
+            "analysis_prob": 0.90625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.95361328125,
+                "probability": 0.90625,
                 "rank": 1,
                 "token": " got"
               },
               {
-                "probability": 0.0306549072265625,
+                "probability": 0.051544189453125,
                 "rank": 2,
                 "token": "'"
               },
               {
-                "probability": 0.007282257080078125,
+                "probability": 0.015472412109375,
                 "rank": 3,
                 "token": " did"
               }
             ],
-            "prob_diff": 4.58984375,
+            "prob_diff": 9.326171875,
             "rank_diff": 0
           }
         },
@@ -7117,26 +7117,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.9990234375,
+            "analysis_prob": 0.99560546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9990234375,
+                "probability": 0.99560546875,
                 "rank": 1,
                 "token": " it"
               },
               {
-                "probability": 0.0003027915954589844,
+                "probability": 0.0011749267578125,
                 "rank": 2,
                 "token": " that"
               },
               {
-                "probability": 0.00021982192993164062,
+                "probability": 0.0009007453918457031,
                 "rank": 3,
                 "token": " one"
               }
             ],
-            "prob_diff": 0.09765625,
+            "prob_diff": 0.439453125,
             "rank_diff": 0
           }
         },
@@ -7169,26 +7169,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.89697265625,
+            "analysis_prob": 0.853515625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.89697265625,
+                "probability": 0.853515625,
                 "rank": 1,
                 "token": "!"
               },
               {
-                "probability": 0.10064697265625,
+                "probability": 0.13720703125,
                 "rank": 2,
                 "token": " right"
               },
               {
-                "probability": 0.0007991790771484375,
+                "probability": 0.0024356842041015625,
                 "rank": 3,
                 "token": " correct"
               }
             ],
-            "prob_diff": 10.25390625,
+            "prob_diff": 14.599609375,
             "rank_diff": 0
           }
         },
@@ -7221,26 +7221,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.057098388671875,
+            "analysis_prob": 0.06298828125,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.285400390625,
+                "probability": 0.2432861328125,
                 "rank": 1,
                 "token": " 🎉"
               },
               {
-                "probability": 0.2724609375,
+                "probability": 0.232177734375,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.1961669921875,
+                "probability": 0.177978515625,
                 "rank": 3,
                 "token": " 👍"
               }
             ],
-            "prob_diff": 74.1729736328125,
+            "prob_diff": 73.583984375,
             "rank_diff": 3
           }
         },
@@ -7273,26 +7273,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0005693435668945312,
+            "analysis_prob": 0.0014219284057617188,
             "analysis_rank": 28,
             "analysis_top_alternatives": [
               {
-                "probability": 0.40966796875,
+                "probability": 0.33984375,
                 "rank": 1,
                 "token": "🧮"
               },
               {
-                "probability": 0.319091796875,
+                "probability": 0.27734375,
                 "rank": 2,
                 "token": "\n\n"
               },
               {
-                "probability": 0.08319091796875,
+                "probability": 0.090087890625,
                 "rank": 3,
                 "token": "🧠"
               }
             ],
-            "prob_diff": 95.79267501831055,
+            "prob_diff": 95.70741653442383,
             "rank_diff": 27
           }
         },
@@ -7325,26 +7325,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.060333251953125,
+            "analysis_prob": 0.07080078125,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.6689453125,
+                "probability": 0.52294921875,
                 "rank": 1,
                 "token": " is"
               },
               {
-                "probability": 0.060333251953125,
+                "probability": 0.07080078125,
                 "rank": 2,
                 "token": "!"
               },
               {
-                "probability": 0.04278564453125,
+                "probability": 0.05303955078125,
                 "rank": 3,
                 "token": "."
               }
             ],
-            "prob_diff": 39.1571044921875,
+            "prob_diff": 38.1103515625,
             "rank_diff": 1
           }
         },
@@ -7377,26 +7377,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0001634359359741211,
+            "analysis_prob": 0.0004737377166748047,
             "analysis_rank": 51,
             "analysis_top_alternatives": [
               {
-                "probability": 0.252685546875,
+                "probability": 0.2149658203125,
                 "rank": 1,
                 "token": "  "
               },
               {
-                "probability": 0.2412109375,
+                "probability": 0.208251953125,
                 "rank": 2,
                 "token": " 🎉"
               },
               {
-                "probability": 0.15576171875,
+                "probability": 0.1431884765625,
                 "rank": 3,
                 "token": " "
               }
             ],
-            "prob_diff": 73.76295328140259,
+            "prob_diff": 73.73192310333252,
             "rank_diff": 50
           }
         }
@@ -7441,26 +7441,26 @@
           ],
           "is_first_token": true,
           "diff_data": {
-            "analysis_prob": 0.003391265869140625,
+            "analysis_prob": 0.007152557373046875,
             "analysis_rank": 8,
             "analysis_top_alternatives": [
               {
-                "probability": 0.80419921875,
+                "probability": 0.68017578125,
                 "rank": 1,
                 "token": "You"
               },
               {
-                "probability": 0.0513916015625,
+                "probability": 0.0694580078125,
                 "rank": 2,
                 "token": "That"
               },
               {
-                "probability": 0.04681396484375,
+                "probability": 0.063232421875,
                 "rank": 3,
                 "token": "The"
               }
             ],
-            "prob_diff": 97.12181091308594,
+            "prob_diff": 96.74568176269531,
             "rank_diff": 7
           }
         },
@@ -7493,26 +7493,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.96826171875,
+            "analysis_prob": 0.931640625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.96826171875,
+                "probability": 0.931640625,
                 "rank": 1,
                 "token": " +"
               },
               {
-                "probability": 0.021728515625,
+                "probability": 0.03936767578125,
                 "rank": 2,
                 "token": "+"
               },
               {
-                "probability": 0.0068359375,
+                "probability": 0.0149383544921875,
                 "rank": 3,
                 "token": " plus"
               }
             ],
-            "prob_diff": 3.173828125,
+            "prob_diff": 6.8359375,
             "rank_diff": 0
           }
         },
@@ -7545,26 +7545,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.99755859375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.99755859375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.00047659873962402344,
+                "probability": 0.0016994476318359375,
                 "rank": 2,
                 "token": "3"
               },
               {
-                "probability": 7.2479248046875e-05,
+                "probability": 0.0003535747528076172,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.244140625,
             "rank_diff": 0
           }
         },
@@ -7597,26 +7597,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99951171875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99951171875,
                 "rank": 1,
                 "token": "3"
               },
               {
-                "probability": 2.282857894897461e-05,
+                "probability": 0.00013494491577148438,
                 "rank": 2,
                 "token": "4"
               },
               {
-                "probability": 1.430511474609375e-05,
+                "probability": 9.131431579589844e-05,
                 "rank": 3,
                 "token": "5"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.048828125,
             "rank_diff": 0
           }
         },
@@ -7649,26 +7649,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.95068359375,
+            "analysis_prob": 0.908203125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.95068359375,
+                "probability": 0.908203125,
                 "rank": 1,
                 "token": " ="
               },
               {
-                "probability": 0.0305633544921875,
+                "probability": 0.0516357421875,
                 "rank": 2,
                 "token": " is"
               },
               {
-                "probability": 0.014434814453125,
+                "probability": 0.0276336669921875,
                 "rank": 3,
                 "token": " equals"
               }
             ],
-            "prob_diff": 4.931640625,
+            "prob_diff": 9.1796875,
             "rank_diff": 0
           }
         },
@@ -7701,26 +7701,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.98095703125,
+            "analysis_prob": 0.95751953125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.98095703125,
+                "probability": 0.95751953125,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.01215362548828125,
+                "probability": 0.0249176025390625,
                 "rank": 2,
                 "token": " **"
               },
               {
-                "probability": 0.0066070556640625,
+                "probability": 0.0149993896484375,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 1.904296875,
+            "prob_diff": 4.248046875,
             "rank_diff": 0
           }
         },
@@ -7753,26 +7753,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 1,
+            "analysis_prob": 0.99951171875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 1,
+                "probability": 0.99951171875,
                 "rank": 1,
                 "token": "6"
               },
               {
-                "probability": 1.1026859283447266e-05,
+                "probability": 7.367134094238281e-05,
                 "rank": 2,
                 "token": "\n\n"
               },
               {
-                "probability": 6.556510925292969e-06,
+                "probability": 4.756450653076172e-05,
                 "rank": 3,
                 "token": "5"
               }
             ],
-            "prob_diff": 0,
+            "prob_diff": 0.048828125,
             "rank_diff": 0
           }
         },
@@ -7805,26 +7805,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.05706787109375,
+            "analysis_prob": 0.07000732421875,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.5087890625,
+                "probability": 0.432373046875,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.2327880859375,
+                "probability": 0.22607421875,
                 "rank": 2,
                 "token": "!"
               },
               {
-                "probability": 0.1285400390625,
+                "probability": 0.1370849609375,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": 81.158447265625,
+            "prob_diff": 79.864501953125,
             "rank_diff": 3
           }
         },
@@ -7857,26 +7857,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.50244140625,
+            "analysis_prob": 0.389892578125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.50244140625,
+                "probability": 0.389892578125,
                 "rank": 1,
                 "token": "You"
               },
               {
-                "probability": 0.1485595703125,
+                "probability": 0.14013671875,
                 "rank": 2,
                 "token": "Good"
               },
               {
-                "probability": 0.10870361328125,
+                "probability": 0.1082763671875,
                 "rank": 3,
                 "token": "Great"
               }
             ],
-            "prob_diff": -9.1796875,
+            "prob_diff": 2.0751953125,
             "rank_diff": -1
           }
         },
@@ -7909,26 +7909,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.95361328125,
+            "analysis_prob": 0.90625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.95361328125,
+                "probability": 0.90625,
                 "rank": 1,
                 "token": " got"
               },
               {
-                "probability": 0.0306549072265625,
+                "probability": 0.051544189453125,
                 "rank": 2,
                 "token": "'"
               },
               {
-                "probability": 0.007282257080078125,
+                "probability": 0.015472412109375,
                 "rank": 3,
                 "token": " did"
               }
             ],
-            "prob_diff": 4.58984375,
+            "prob_diff": 9.326171875,
             "rank_diff": 0
           }
         },
@@ -7961,26 +7961,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.9990234375,
+            "analysis_prob": 0.99560546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9990234375,
+                "probability": 0.99560546875,
                 "rank": 1,
                 "token": " it"
               },
               {
-                "probability": 0.0003027915954589844,
+                "probability": 0.0011749267578125,
                 "rank": 2,
                 "token": " that"
               },
               {
-                "probability": 0.00021982192993164062,
+                "probability": 0.0009007453918457031,
                 "rank": 3,
                 "token": " one"
               }
             ],
-            "prob_diff": 0.09765625,
+            "prob_diff": 0.439453125,
             "rank_diff": 0
           }
         },
@@ -8013,26 +8013,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.89697265625,
+            "analysis_prob": 0.853515625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.89697265625,
+                "probability": 0.853515625,
                 "rank": 1,
                 "token": "!"
               },
               {
-                "probability": 0.10064697265625,
+                "probability": 0.13720703125,
                 "rank": 2,
                 "token": " right"
               },
               {
-                "probability": 0.0007991790771484375,
+                "probability": 0.0024356842041015625,
                 "rank": 3,
                 "token": " correct"
               }
             ],
-            "prob_diff": 10.25390625,
+            "prob_diff": 14.599609375,
             "rank_diff": 0
           }
         },
@@ -8065,26 +8065,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.00112152099609375,
+            "analysis_prob": 0.0023860931396484375,
             "analysis_rank": 26,
             "analysis_top_alternatives": [
               {
-                "probability": 0.285400390625,
+                "probability": 0.2432861328125,
                 "rank": 1,
                 "token": " 🎉"
               },
               {
-                "probability": 0.2724609375,
+                "probability": 0.232177734375,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.1961669921875,
+                "probability": 0.177978515625,
                 "rank": 3,
                 "token": " 👍"
               }
             ],
-            "prob_diff": 1.100921630859375,
+            "prob_diff": 0.9744644165039062,
             "rank_diff": 19
           }
         },
@@ -8117,26 +8117,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0345458984375,
+            "analysis_prob": 0.0550537109375,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9189453125,
+                "probability": 0.8544921875,
                 "rank": 1,
                 "token": "'"
               },
               {
-                "probability": 0.0345458984375,
+                "probability": 0.0550537109375,
                 "rank": 2,
                 "token": "’"
               },
               {
-                "probability": 0.030487060546875,
+                "probability": 0.04974365234375,
                 "rank": 3,
                 "token": " was"
               }
             ],
-            "prob_diff": 88.29345703125,
+            "prob_diff": 86.24267578125,
             "rank_diff": 1
           }
         },
@@ -8178,12 +8178,12 @@
                 "token": "s"
               },
               {
-                "probability": 7.033348083496094e-06,
+                "probability": 5.066394805908203e-05,
                 "rank": 2,
                 "token": "d"
               },
               {
-                "probability": 1.7285346984863281e-06,
+                "probability": 1.5735626220703125e-05,
                 "rank": 3,
                 "token": "re"
               }
@@ -8221,26 +8221,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.3115234375,
+            "analysis_prob": 0.304931640625,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.58203125,
+                "probability": 0.51025390625,
                 "rank": 1,
                 "token": " right"
               },
               {
-                "probability": 0.3115234375,
+                "probability": 0.304931640625,
                 "rank": 2,
                 "token": " correct"
               },
               {
-                "probability": 0.03961181640625,
+                "probability": 0.054656982421875,
                 "rank": 3,
                 "token": " a"
               }
             ],
-            "prob_diff": 67.236328125,
+            "prob_diff": 67.8955078125,
             "rank_diff": 1
           }
         },
@@ -8273,26 +8273,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.59619140625,
+            "analysis_prob": 0.533203125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.59619140625,
+                "probability": 0.533203125,
                 "rank": 1,
                 "token": "."
               },
               {
-                "probability": 0.323974609375,
+                "probability": 0.321044921875,
                 "rank": 2,
                 "token": "!"
               },
               {
-                "probability": 0.034149169921875,
+                "probability": 0.049224853515625,
                 "rank": 3,
                 "token": " 😊"
               }
             ],
-            "prob_diff": 39.453125,
+            "prob_diff": 45.751953125,
             "rank_diff": 0
           }
         },
@@ -8325,26 +8325,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.132080078125,
+            "analysis_prob": 0.12384033203125,
             "analysis_rank": 3,
             "analysis_top_alternatives": [
               {
-                "probability": 0.246826171875,
+                "probability": 0.208984375,
                 "rank": 1,
                 "token": "  "
               },
               {
-                "probability": 0.2392578125,
+                "probability": 0.2042236328125,
                 "rank": 2,
                 "token": " 👍"
               },
               {
-                "probability": 0.132080078125,
+                "probability": 0.12384033203125,
                 "rank": 3,
                 "token": " 🎉"
               }
             ],
-            "prob_diff": 7.7392578125,
+            "prob_diff": 8.563232421875,
             "rank_diff": 0
           }
         },
@@ -8377,26 +8377,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0011472702026367188,
+            "analysis_prob": 0.0028018951416015625,
             "analysis_rank": 16,
             "analysis_top_alternatives": [
               {
-                "probability": 0.52001953125,
+                "probability": 0.46044921875,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.368896484375,
+                "probability": 0.34228515625,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.05072021484375,
+                "probability": 0.0657958984375,
                 "rank": 3,
                 "token": "\n\n"
               }
             ],
-            "prob_diff": 97.93214797973633,
+            "prob_diff": 97.76668548583984,
             "rank_diff": 15
           }
         }
@@ -8455,26 +8455,26 @@
           "is_prefill_token": true,
           "is_first_token": true,
           "diff_data": {
-            "analysis_prob": 0.320068359375,
+            "analysis_prob": 0.331787109375,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.64697265625,
+                "probability": 0.59130859375,
                 "rank": 1,
                 "token": "You"
               },
               {
-                "probability": 0.320068359375,
+                "probability": 0.331787109375,
                 "rank": 2,
                 "token": "3"
               },
               {
-                "probability": 0.018341064453125,
+                "probability": 0.030609130859375,
                 "rank": 3,
                 "token": "That"
               }
             ],
-            "prob_diff": 67.9931640625,
+            "prob_diff": 66.8212890625,
             "rank_diff": 1
           }
         },
@@ -8508,26 +8508,26 @@
           ],
           "is_prefill_token": true,
           "diff_data": {
-            "analysis_prob": 0.0021800994873046875,
+            "analysis_prob": 0.006023406982421875,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99658203125,
+                "probability": 0.98974609375,
                 "rank": 1,
                 "token": " +"
               },
               {
-                "probability": 0.0021800994873046875,
+                "probability": 0.006023406982421875,
                 "rank": 2,
                 "token": "+"
               },
               {
-                "probability": 0.0011043548583984375,
+                "probability": 0.0034046173095703125,
                 "rank": 3,
                 "token": " plus"
               }
             ],
-            "prob_diff": -0.21724700927734375,
+            "prob_diff": -0.6015777587890625,
             "rank_diff": 0
           }
         },
@@ -8561,26 +8561,26 @@
           ],
           "is_prefill_token": true,
           "diff_data": {
-            "analysis_prob": 0.99951171875,
+            "analysis_prob": 0.998046875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.99951171875,
+                "probability": 0.998046875,
                 "rank": 1,
                 "token": "3"
               },
               {
-                "probability": 0.0004582405090332031,
+                "probability": 0.0016613006591796875,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 2.3245811462402344e-06,
+                "probability": 2.0325183868408203e-05,
                 "rank": 3,
                 "token": "2"
               }
             ],
-            "prob_diff": 0.048828125,
+            "prob_diff": 0.1953125,
             "rank_diff": 0
           }
         },
@@ -8614,26 +8614,26 @@
           ],
           "is_prefill_token": true,
           "diff_data": {
-            "analysis_prob": 0.019012451171875,
+            "analysis_prob": 0.034881591796875,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9599609375,
+                "probability": 0.9208984375,
                 "rank": 1,
                 "token": " ="
               },
               {
-                "probability": 0.019012451171875,
+                "probability": 0.034881591796875,
                 "rank": 2,
                 "token": "="
               },
               {
-                "probability": 0.01380157470703125,
+                "probability": 0.0267486572265625,
                 "rank": 3,
                 "token": " equals"
               }
             ],
-            "prob_diff": -1.6689300537109375,
+            "prob_diff": -3.2558441162109375,
             "rank_diff": 0
           }
         },
@@ -8667,27 +8667,27 @@
           ],
           "is_prefill_token": true,
           "diff_data": {
-            "analysis_prob": 1.1920928955078125e-07,
-            "analysis_rank": 70,
+            "analysis_prob": 1.3113021850585938e-06,
+            "analysis_rank": 67,
             "analysis_top_alternatives": [
               {
-                "probability": 0.76806640625,
+                "probability": 0.7001953125,
                 "rank": 1,
                 "token": "6"
               },
               {
-                "probability": 0.14892578125,
+                "probability": 0.1798095703125,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.0760498046875,
+                "probability": 0.10247802734375,
                 "rank": 3,
                 "token": " **"
               }
             ],
-            "prob_diff": -1.1920928955078125e-05,
-            "rank_diff": -236744
+            "prob_diff": -0.00013113021850585938,
+            "rank_diff": -236747
           }
         },
         {
@@ -8720,26 +8720,26 @@
           ],
           "is_prefill_token": true,
           "diff_data": {
-            "analysis_prob": 0.10797119140625,
+            "analysis_prob": 0.10650634765625,
             "analysis_rank": 4,
             "analysis_top_alternatives": [
               {
-                "probability": 0.4140625,
+                "probability": 0.32568359375,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.1781005859375,
+                "probability": 0.1611328125,
                 "rank": 2,
                 "token": "\n\n"
               },
               {
-                "probability": 0.15234375,
+                "probability": 0.1422119140625,
                 "rank": 3,
                 "token": "  "
               }
             ],
-            "prob_diff": -9.0789794921875,
+            "prob_diff": -8.9324951171875,
             "rank_diff": 2
           }
         },
@@ -8772,26 +8772,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.5234375,
+            "analysis_prob": 0.42431640625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.5234375,
+                "probability": 0.42431640625,
                 "rank": 1,
                 "token": " "
               },
               {
-                "probability": 0.2359619140625,
+                "probability": 0.218505859375,
                 "rank": 2,
                 "token": "  "
               },
               {
-                "probability": 0.06451416015625,
+                "probability": 0.0743408203125,
                 "rank": 3,
                 "token": "\n\n"
               }
             ],
-            "prob_diff": 42.041015625,
+            "prob_diff": 51.953125,
             "rank_diff": 0
           }
         },
@@ -8824,26 +8824,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.70068359375,
+            "analysis_prob": 0.5947265625,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.70068359375,
+                "probability": 0.5947265625,
                 "rank": 1,
                 "token": "\n\n"
               },
               {
-                "probability": 0.194580078125,
+                "probability": 0.20556640625,
                 "rank": 2,
                 "token": "\n"
               },
               {
-                "probability": 0.039520263671875,
+                "probability": 0.054046630859375,
                 "rank": 3,
                 "token": "🧮"
               }
             ],
-            "prob_diff": 29.8828125,
+            "prob_diff": 40.478515625,
             "rank_diff": 0
           }
         },
@@ -8876,26 +8876,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.41064453125,
+            "analysis_prob": 0.2919921875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.41064453125,
+                "probability": 0.2919921875,
                 "rank": 1,
                 "token": "You"
               },
               {
-                "probability": 0.18212890625,
+                "probability": 0.149169921875,
                 "rank": 2,
                 "token": "Let"
               },
               {
-                "probability": 0.06103515625,
+                "probability": 0.060272216796875,
                 "rank": 3,
                 "token": "Do"
               }
             ],
-            "prob_diff": -1.7822265625,
+            "prob_diff": 10.0830078125,
             "rank_diff": -1
           }
         },
@@ -8928,26 +8928,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.0012254714965820312,
+            "analysis_prob": 0.002925872802734375,
             "analysis_rank": 15,
             "analysis_top_alternatives": [
               {
-                "probability": 0.64501953125,
+                "probability": 0.54443359375,
                 "rank": 1,
                 "token": " got"
               },
               {
-                "probability": 0.233642578125,
+                "probability": 0.2342529296875,
                 "rank": 2,
                 "token": "'"
               },
               {
-                "probability": 0.05999755859375,
+                "probability": 0.07489013671875,
                 "rank": 3,
                 "token": " did"
               }
             ],
-            "prob_diff": 69.8969841003418,
+            "prob_diff": 69.72694396972656,
             "rank_diff": 14
           }
         },
@@ -8980,26 +8980,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.9755859375,
+            "analysis_prob": 0.9521484375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.9755859375,
+                "probability": 0.9521484375,
                 "rank": 1,
                 "token": "re"
               },
               {
-                "probability": 0.0215606689453125,
+                "probability": 0.03961181640625,
                 "rank": 2,
                 "token": "ve"
               },
               {
-                "probability": 0.0018396377563476562,
+                "probability": 0.00507354736328125,
                 "rank": 3,
                 "token": "ll"
               }
             ],
-            "prob_diff": 2.44140625,
+            "prob_diff": 4.78515625,
             "rank_diff": 0
           }
         },
@@ -9032,26 +9032,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.451416015625,
+            "analysis_prob": 0.365234375,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.451416015625,
+                "probability": 0.365234375,
                 "rank": 1,
                 "token": " doing"
               },
               {
-                "probability": 0.27392578125,
+                "probability": 0.2432861328125,
                 "rank": 2,
                 "token": " on"
               },
               {
-                "probability": 0.11962890625,
+                "probability": 0.12139892578125,
                 "rank": 3,
                 "token": " getting"
               }
             ],
-            "prob_diff": -3.9794921875,
+            "prob_diff": 4.638671875,
             "rank_diff": -1
           }
         },
@@ -9084,26 +9084,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.935546875,
+            "analysis_prob": 0.87060546875,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.935546875,
+                "probability": 0.87060546875,
                 "rank": 1,
                 "token": " great"
               },
               {
-                "probability": 0.03460693359375,
+                "probability": 0.05609130859375,
                 "rank": 2,
                 "token": " well"
               },
               {
-                "probability": 0.00861358642578125,
+                "probability": 0.0176544189453125,
                 "rank": 3,
                 "token": " a"
               }
             ],
-            "prob_diff": 6.201171875,
+            "prob_diff": 12.6953125,
             "rank_diff": 0
           }
         },
@@ -9136,26 +9136,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.82763671875,
+            "analysis_prob": 0.720703125,
             "analysis_rank": 1,
             "analysis_top_alternatives": [
               {
-                "probability": 0.82763671875,
+                "probability": 0.720703125,
                 "rank": 1,
                 "token": "!"
               },
               {
-                "probability": 0.05810546875,
+                "probability": 0.078369140625,
                 "rank": 2,
                 "token": " at"
               },
               {
-                "probability": 0.054595947265625,
+                "probability": 0.07476806640625,
                 "rank": 3,
                 "token": " with"
               }
             ],
-            "prob_diff": 17.236328125,
+            "prob_diff": 27.9296875,
             "rank_diff": 0
           }
         },
@@ -9188,26 +9188,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.1190185546875,
+            "analysis_prob": 0.10382080078125,
             "analysis_rank": 2,
             "analysis_top_alternatives": [
               {
-                "probability": 0.255859375,
+                "probability": 0.1986083984375,
                 "rank": 1,
                 "token": "  "
               },
               {
-                "probability": 0.1190185546875,
+                "probability": 0.10382080078125,
                 "rank": 2,
                 "token": " 😊"
               },
               {
-                "probability": 0.113525390625,
+                "probability": 0.099853515625,
                 "rank": 3,
                 "token": " 😄"
               }
             ],
-            "prob_diff": 71.44775390625,
+            "prob_diff": 72.967529296875,
             "rank_diff": 1
           }
         },
@@ -9240,26 +9240,26 @@
             }
           ],
           "diff_data": {
-            "analysis_prob": 0.01161956787109375,
+            "analysis_prob": 0.0164031982421875,
             "analysis_rank": 9,
             "analysis_top_alternatives": [
               {
-                "probability": 0.373046875,
+                "probability": 0.297607421875,
                 "rank": 1,
                 "token": "  "
               },
               {
-                "probability": 0.319091796875,
+                "probability": 0.258544921875,
                 "rank": 2,
                 "token": " "
               },
               {
-                "probability": 0.07940673828125,
+                "probability": 0.0814208984375,
                 "rank": 3,
                 "token": " Do"
               }
             ],
-            "prob_diff": 92.88101196289062,
+            "prob_diff": 92.40264892578125,
             "rank_diff": 8
           }
         }
@@ -9274,5 +9274,6 @@
   "model": "google/gemma-3-1b-it",
   "systemPrompt": "",
   "viewMode": "token",
-  "updatedAt": 1764754429430
+  "updatedAt": 1764740406096,
+  "temperature": 1
 }
