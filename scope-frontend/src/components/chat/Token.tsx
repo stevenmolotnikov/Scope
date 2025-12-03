@@ -234,11 +234,11 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
                   color: token.diff_data.prob_diff > 0 ? 'var(--success, #16a34a)' : token.diff_data.prob_diff < 0 ? 'var(--destructive, #dc2626)' : 'var(--muted-foreground)'
                 }}>
                   {token.diff_data.prob_diff > 0 ? '+' : ''}{token.diff_data.prob_diff.toFixed(1)}%
-                </span>
+              </span>
               ) : (
                 <span className="text-muted-foreground">
-                  {formatProbability(token.probability)}
-                </span>
+                {formatProbability(token.probability)}
+              </span>
               )}
             </div>
 
@@ -249,7 +249,7 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
                 <div>
                   <div className="font-semibold text-[9px] uppercase tracking-wider text-muted-foreground mb-1">
                     {formatModelName(conversation?.model || '')}
-                  </div>
+                </div>
                   <div className="text-muted-foreground mb-1">
                     {formatProbability(token.probability)}
                   </div>
@@ -282,16 +282,16 @@ export function Token({ token, messageId, tokenIndex }: TokenProps) {
                 {conversation && (
                   <div className="text-[10px] text-muted-foreground mb-1">
                     {formatModelName(conversation.model)}
-                  </div>
+                </div>
                 )}
                 <div className="text-muted-foreground text-[11px]">
-                  {token.top_alternatives.slice(0, 3).map((alt: TokenAlternative, idx: number) => (
+                {token.top_alternatives.slice(0, 3).map((alt: TokenAlternative, idx: number) => (
                     <div key={idx} className="flex justify-between py-0.5">
                       <span>#{alt.rank} "{formatTokenForDisplay(alt.token)}"</span>
-                      <span>{formatProbability(alt.probability)}</span>
-                    </div>
-                  ))}
-                </div>
+                    <span>{formatProbability(alt.probability)}</span>
+                  </div>
+                ))}
+              </div>
               </>
             )}
           </div>

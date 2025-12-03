@@ -201,34 +201,34 @@ export function ChatInput() {
         {/* Bottom toolbar inside the box */}
         <div className="flex flex-col gap-3 px-3 py-2 border-t border-border bg-muted/30">
           <div className="flex items-center justify-between">
-            {/* Left side: Model + Temp */}
+          {/* Left side: Model + Temp */}
             <div className="flex items-center gap-4">
-              {/* Model selector */}
+            {/* Model selector */}
               <div className="flex flex-col gap-0.5">
                 <label className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider pl-0.5">
                   Model
                 </label>
-                <select
-                  value={conversation.model}
-                  onChange={(e) => setModel(e.target.value)}
+            <select
+              value={conversation.model}
+              onChange={(e) => setModel(e.target.value)}
                   className="font-mono px-2 py-1 border border-input rounded-md text-[11px] bg-background focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer text-foreground min-w-[140px]"
-                >
-                  {AVAILABLE_MODELS.map((model) => (
-                    <option key={model} value={model}>
-                      {model.split('/').pop()}
-                    </option>
-                  ))}
-                </select>
+            >
+              {AVAILABLE_MODELS.map((model) => (
+                <option key={model} value={model}>
+                  {model.split('/').pop()}
+                </option>
+              ))}
+            </select>
               </div>
 
-              {/* Temperature */}
+            {/* Temperature */}
               <div className="flex flex-col gap-0.5">
                 <label className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider pl-0.5">
                   Temp
                 </label>
-                <input
-                  type="number"
-                  value={conversation.temperature ?? 1.0}
+              <input
+                type="number"
+                value={conversation.temperature ?? 1.0}
                   onChange={(e) => handleTemperatureChange(e.target.value)}
                   onBlur={(e) => {
                     const val = parseFloat(e.target.value);
@@ -237,18 +237,18 @@ export function ChatInput() {
                       e.target.value = val.toFixed(1);
                     }
                   }}
-                  min="0"
-                  max="2"
-                  step="0.1"
+                min="0"
+                max="2"
+                step="0.1"
                   className="w-14 px-1.5 py-1 border border-input rounded-md text-[11px] text-center bg-background focus:outline-none focus:ring-1 focus:ring-ring font-mono"
-                />
-              </div>
+              />
             </div>
+          </div>
 
-            {/* Right side: Send/Stop button */}
-            {isGenerating ? (
+          {/* Right side: Send/Stop button */}
+          {isGenerating ? (
               <Button
-                onClick={stopGeneration}
+              onClick={stopGeneration}
                 variant="danger"
                 size="sm"
                 className="h-8 self-end"
@@ -256,10 +256,10 @@ export function ChatInput() {
                 <Square className="h-3 w-3 fill-current mr-1.5" />
                 Stop
               </Button>
-            ) : (
+          ) : (
               <Button
-                onClick={handleSubmit}
-                disabled={!inputText.trim()}
+              onClick={handleSubmit}
+              disabled={!inputText.trim()}
                 variant="primary"
                 size="sm"
                 className="h-8 self-end"

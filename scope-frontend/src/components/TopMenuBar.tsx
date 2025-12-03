@@ -171,11 +171,11 @@ export function TopMenuBar() {
         <Microscope size={18} className="text-foreground" />
         <div className="flex items-baseline gap-1.5">
           <span className="font-semibold text-sm tracking-tight text-foreground">
-            Scope
-          </span>
+          Scope
+        </span>
           <span className="text-[10px] text-muted-foreground/70 font-normal">
-            by NDIF
-          </span>
+          by NDIF
+        </span>
         </div>
       </div>
 
