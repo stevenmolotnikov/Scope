@@ -1,2 +1,0 @@
-export { TokenInspector } from './TokenInspector';
-
